@@ -6,16 +6,14 @@ public class ArtistaDto extends UsuarioDto{
 
     private String competencias;
 
-    private Boolean ativo;
 
     public ArtistaDto() {
     }
 
-    public ArtistaDto(int idUsuario, String nome, String email, String telefone, String sobre, String cpf, String competencias, Boolean ativo) {
-        super(idUsuario, nome, email, telefone, sobre);
+    public ArtistaDto(int idUsuario, String nome, String email, String telefone, String sobre, boolean autenticado, String cpf, String competencias) {
+        super(idUsuario, nome, email, telefone, sobre, autenticado);
         this.cpf = cpf;
         this.competencias = competencias;
-        this.ativo = ativo;
     }
 
     public String getCpf() {
@@ -34,11 +32,4 @@ public class ArtistaDto extends UsuarioDto{
         this.competencias = competencias;
     }
 
-    public Boolean getAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(Boolean ativo) {
-        this.ativo = ativo;
-    }
 }

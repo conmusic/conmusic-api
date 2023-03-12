@@ -29,10 +29,8 @@ public class UsuarioController {
         Artista artista = new Artista(identity, dto.getNome(), dto.getEmail(), dto.getSenha(), dto.getTelefone(),
                 dto.getSobre(), dto.getCpf(), dto.getCompetencias());
         this.usuarios.add(artista);
-        ArtistaDto artistaDto = new ArtistaDto(artista.getIdUsuario(), artista.getNome(), artista.getEmail(),
-                artista.getTelefone(), artista.getSobre(), artista.getCpf(), artista.getCompetencias(),
-                artista.getAtivo());
-        return artistaDto;
+        return new ArtistaDto(artista.getIdUsuario(), artista.getNome(), artista.getEmail(), artista.getTelefone(), artista.getSobre(), artista.isAutenticado(), artista.getCpf(), artista.getCompetencias());
+         
     }
 
     @PostMapping("/casa")
@@ -40,9 +38,7 @@ public class UsuarioController {
         Casa casa = new Casa(identity, dto.getNome(), dto.getEmail(), dto.getSenha(), dto.getTelefone(), dto.getSobre(),
                 dto.getCnpj(), dto.getQtdTomada220(), dto.getQtdTomada110(), dto.getInfraestrutura());
         this.usuarios.add(casa);
-         CasaDto casaDto = new CasaDto(casa.getIdUsuario(), casa.getNome(), casa.getEmail(), casa.getTelefone(),
-                 casa.getSobre(), casa.getCnpj(), casa.getQtdTomada220(), casa.getQtdTomada110(), casa.getInfraestrutura());
-        return casaDto;
+        return new CasaDto(casa.getIdUsuario(), casa.getNome(), casa.getEmail(), casa.getTelefone(), casa.getSobre(), casa.isAutenticado(), casa.getCnpj(), casa.getQtdTomada220(), casa.getQtdTomada110(), casa.getInfraestrutura());
     }
 
     @PostMapping("/login")
@@ -51,8 +47,10 @@ public class UsuarioController {
         Usuario usuarioEncontrado = usuarioSearch.obterPorEmail(loginDto.getEmail());
         if (usuarioEncontrado != null){
             if (usuarioEncontrado.getSenha().equals(loginDto.getSenha())){
-                    return new UsuarioDto(usuarioEncontrado.getIdUsuario(), usuarioEncontrado.getEmail(), usuarioEncontrado.getNome(),
-                            usuarioEncontrado.getTelefone(), usuarioEncontrado.getSobre());
+                int index = usuarios.indexOf(usuarioEncontrado);
+                usuarioEncontrado.setAutenticado(true);
+                usuarios.set(index, usuarioEncontrado);
+                return new UsuarioDto(usuarioEncontrado.getIdUsuario(), usuarioEncontrado.getNome(), usuarioEncontrado.getEmail(), usuarioEncontrado.getTelefone(), usuarioEncontrado.getSobre(), usuarioEncontrado.isAutenticado());
             }
         }
         return null;
@@ -63,8 +61,7 @@ public class UsuarioController {
         List<UsuarioDto> usuariosDto = new ArrayList<>();
 
         for (Usuario usuario : usuarios) {
-            usuariosDto.add(new UsuarioDto(usuario.getIdUsuario(), usuario.getEmail(), usuario.getNome(),
-                    usuario.getTelefone(), usuario.getSobre()));
+            usuariosDto.add(new UsuarioDto(usuario.getIdUsuario(), usuario.getNome(), usuario.getEmail(), usuario.getTelefone(), usuario.getSobre(), usuario.isAutenticado()));
         }
 
         return usuariosDto;
@@ -79,6 +76,15 @@ public class UsuarioController {
         }
 
         return artistasDto;
+    }
+    
+    @GetMapping("/casa")
+    public List<CasaDto> listarCasas(){
+        List<CasaDto> casaDtos = new ArrayList<>();
+        for (Usuario usuario: usuarios) {
+            casaDtos.add(new CasaDto());
+        }
+        return casaDtos;
     }
 
 

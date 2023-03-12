@@ -13,6 +13,8 @@ public abstract class Usuario {
 
     private String sobre;
 
+    private boolean autenticado;
+
 
     public Usuario() {
     }
@@ -24,6 +26,7 @@ public abstract class Usuario {
         this.senha = senha;
         this.telefone = telefone;
         this.sobre = sobre;
+        this.autenticado = false;
     }
 
 
@@ -74,5 +77,13 @@ public abstract class Usuario {
 
     public void setSobre(String sobre) {
         this.sobre = sobre;
+    }
+
+    public boolean isAutenticado() {
+        return autenticado;
+    }
+
+    public void setAutenticado(boolean autenticado) {
+        this.autenticado = autenticado;
     }
 }

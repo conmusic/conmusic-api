@@ -13,8 +13,8 @@ public class CasaDto extends UsuarioDto{
     public CasaDto() {
     }
 
-    public CasaDto(int idUsuario, String nome, String email, String telefone, String sobre, String cnpj, int qtdTomada220, int qtdTomada110, String infraestrutura) {
-        super(idUsuario, nome, email, telefone, sobre);
+    public CasaDto(int idUsuario, String nome, String email, String telefone, String sobre, boolean autenticado, String cnpj, int qtdTomada220, int qtdTomada110, String infraestrutura) {
+        super(idUsuario, nome, email, telefone, sobre, autenticado);
         this.cnpj = cnpj;
         this.qtdTomada220 = qtdTomada220;
         this.qtdTomada110 = qtdTomada110;

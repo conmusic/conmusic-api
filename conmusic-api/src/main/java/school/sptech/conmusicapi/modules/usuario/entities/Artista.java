@@ -8,13 +8,13 @@ public class Artista extends Usuario {
 
     private String competencias;
 
-    private Boolean ativo;
+
 
     public Artista(int idUsuario, String nome, String email, String senha, String telefone, String sobre, String cpf, String competencias) {
         super(idUsuario, nome, email, senha, telefone, sobre);
         this.cpf = cpf;
         this.competencias = competencias;
-        this.ativo = true;
+
     }
 
     public Artista() {
@@ -36,11 +36,4 @@ public class Artista extends Usuario {
         this.competencias = competencias;
     }
 
-    public Boolean getAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(Boolean ativo) {
-        this.ativo = ativo;
-    }
 }
