@@ -1,6 +1,7 @@
 package school.sptech.conmusicapi.modules.artist.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
@@ -17,6 +18,8 @@ public class ArtistService {
     private IUserRepository userRepository;
     @Autowired
     private IArtistRepository artistRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public Optional<ArtistDto> create(CreateArtistDto dto) {
         Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
@@ -30,6 +33,9 @@ public class ArtistService {
         if (isCpfAlreadyInUse) {
             return Optional.empty();
         }
+
+        String hashedPassword = passwordEncoder.encode(dto.getPassword());
+        dto.setPassword(hashedPassword);
 
         Artist createdArtist = artistRepository.save(ArtistMapper.fromDto(dto));
         return Optional.of(ArtistMapper.toDto(createdArtist));
