@@ -3,14 +3,12 @@ package school.sptech.conmusicapi.modules.artist.controllers;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
 import school.sptech.conmusicapi.modules.artist.services.ArtistService;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -18,6 +16,13 @@ import java.util.Optional;
 public class ArtistController {
     @Autowired
     private ArtistService artistService;
+
+
+    @GetMapping
+    public ResponseEntity<List<ArtistDto>> findAll() {
+        List<ArtistDto> artists = artistService.findAll();
+        return ResponseEntity.ok().body(artists);
+    }
 
     @PostMapping
     public ResponseEntity<ArtistDto> create(@RequestBody @Valid CreateArtistDto dto) {

@@ -12,4 +12,5 @@ public class ArtistDto extends UserDto {
     public void setCpf(String cpf) {
         this.cpf = cpf;
     }
+
 }
