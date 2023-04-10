@@ -11,7 +11,7 @@ import school.sptech.conmusicapi.config.security.jwt.JwtTokenManager;
 import school.sptech.conmusicapi.modules.user.dtos.LoginDto;
 import school.sptech.conmusicapi.modules.user.dtos.UserTokenDto;
 import school.sptech.conmusicapi.modules.user.entities.User;
-import school.sptech.conmusicapi.modules.user.mapper.UserMapper;
+import school.sptech.conmusicapi.modules.user.mapper.UserTokenMapper;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 
 @Service
@@ -38,6 +38,6 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         final String token = jwtTokenManager.generateToken(authentication);
-        return UserMapper.toDto(authenticatedUser, token);
+        return UserTokenMapper.toDto(authenticatedUser, token);
     }
 }
