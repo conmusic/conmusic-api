@@ -1,11 +1,15 @@
 package school.sptech.conmusicapi.modules.user.dtos;
 
+import java.time.LocalDate;
+
 public abstract class UserDto {
     private Integer id;
     private String name;
     private String email;
     private String phoneNumber;
+    private LocalDate birthDate;
     private String about;
+    private String instagram;
 
     public Integer getId() {
         return id;
@@ -39,11 +43,27 @@ public abstract class UserDto {
         this.phoneNumber = phoneNumber;
     }
 
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
     public String getAbout() {
         return about;
     }
 
     public void setAbout(String about) {
         this.about = about;
+    }
+
+    public String getInstagram() {
+        return instagram;
+    }
+
+    public void setInstagram(String instagram) {
+        this.instagram = instagram;
     }
 }
