@@ -24,10 +24,6 @@ public class EventController {
         if (createdEvent.isEmpty()) {
             return ResponseEntity.status(400).build();
         }
-
         return ResponseEntity.status(201).body(createdEvent.get());
     }
-
-
-
 }

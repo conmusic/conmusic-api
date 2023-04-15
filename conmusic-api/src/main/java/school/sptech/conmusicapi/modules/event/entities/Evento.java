@@ -1,27 +1,33 @@
 package school.sptech.conmusicapi.modules.event.entities;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Event {
+public class Evento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String description;
+    private String about;
 
-    private String references;
+    private String inspirations;
 
     private String technicalDetails;
 
-    private Double value;
+    private Double valor;
 
     private Double coverCharge;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Schedule> schedule;
+
+    public Evento() {
+        this.schedule = new ArrayList<>();
+    }
 
     public Integer getId() {
         return id;
@@ -31,20 +37,20 @@ public class Event {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
+    public String getAbout() {
+        return about;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setAbout(String about) {
+        this.about = about;
     }
 
-    public String getReferences() {
-        return references;
+    public String getInspirations() {
+        return inspirations;
     }
 
-    public void setReferences(String references) {
-        this.references = references;
+    public void setInspirations(String inspirations) {
+        this.inspirations = inspirations;
     }
 
     public String getTechnicalDetails() {
@@ -55,12 +61,12 @@ public class Event {
         this.technicalDetails = technicalDetails;
     }
 
-    public Double getValue() {
-        return value;
+    public Double getValor() {
+        return valor;
     }
 
-    public void setValue(Double value) {
-        this.value = value;
+    public void setValor(Double valor) {
+        this.valor = valor;
     }
 
     public Double getCoverCharge() {

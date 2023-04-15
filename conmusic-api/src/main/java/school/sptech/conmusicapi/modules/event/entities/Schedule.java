@@ -17,7 +17,7 @@ public class Schedule {
     private LocalTime endTime;
 
     @ManyToOne
-    private Event event;
+    private Evento event;
 
     public Integer getId() {
         return id;
@@ -51,11 +51,11 @@ public class Schedule {
         this.endTime = endTime;
     }
 
-    public Event getEvent() {
+    public Evento getEvent() {
         return event;
     }
 
-    public void setEvent(Event event) {
+    public void setEvent(Evento event) {
         this.event = event;
     }
 
