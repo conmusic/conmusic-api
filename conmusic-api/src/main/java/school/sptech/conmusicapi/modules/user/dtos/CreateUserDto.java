@@ -6,23 +6,21 @@ import java.time.LocalDate;
 
 public abstract class CreateUserDto {
     @NotBlank
-    @Min(2)
-    @Max(45)
+    @Size(min = 2, max = 45)
     private String name;
 
     @NotBlank
     @Pattern(
-        regexp = "[-A-Za-z0-9!#$%&'*+/=?^_`{|}~]+(?:\\.[-A-Za-z0-9!#$%&'*+/=?^_`{|}~]+)*@(?:[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?",
+        regexp = "^[-A-Za-z0-9!#$%&'*+\\/=?^_`{|}~]+(?:\\.[-A-Za-z0-9!#$%&'*+\\/=?^_`{|}~]+)*@(?:[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?$",
         message = "Email must be in RFC2822 e-mail"
     )
-    @Min(5)
-    @Max(45)
+    @Size(min = 5, max = 45)
     private String email;
 
     @NotBlank
-    @Min(8)
+    @Size(min = 8)
     @Pattern(
-        regexp = "\"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$\"",
+        regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",
         message = "Password must have at least one lowercase letter, one uppercase letter, one digit, one special character and 8 characters length"
     )
     private String password;
@@ -32,18 +30,17 @@ public abstract class CreateUserDto {
         regexp = "^\\s*(\\d{2}|\\d{0})[-. ]?(\\d{5}|\\d{4})[-. ]?(\\d{4})[-. ]?\\s*$",
         message = "Phone Number must be only digits"
     )
-    @Max(11)
+    @Size(max = 11)
     private String phoneNumber;
 
-    @NotBlank
+    @NotNull
     @Past
     private LocalDate birthDate;
 
-    @Min(5)
-    @Max(45)
+    @Size(min = 5, max = 45)
     private String about;
 
-    @Max(45)
+    @Size(max = 45)
     private String instagram;
 
     public String getName() {
