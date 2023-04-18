@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Positive;
 import java.time.LocalTime;
 
 public class CreateScheduleDto {
-
     @NotNull
     private Integer dayWeek;
 

@@ -8,13 +8,13 @@ public class EventDto {
 
     private Integer id;
 
-    private String description;
+    private String about;
 
-    private String references;
+    private String inspirations;
 
     private String technicalDetails;
 
-    private Double value;
+    private Double paymentValue;
 
     private Double coverCharge;
 
@@ -31,23 +31,23 @@ public class EventDto {
     }
 
 
-    public String getDescription() {
-        return description;
+    public String getAbout() {
+        return about;
     }
 
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setAbout(String about) {
+        this.about = about;
     }
 
 
-    public String getReferences() {
-        return references;
+    public String getInspirations() {
+        return inspirations;
     }
 
 
-    public void setReferences(String references) {
-        this.references = references;
+    public void setInspirations(String inspirations) {
+        this.inspirations = inspirations;
     }
 
 
@@ -61,13 +61,13 @@ public class EventDto {
     }
 
 
-    public Double getValue() {
-        return value;
+    public Double getPaymentValue() {
+        return paymentValue;
     }
 
 
-    public void setValue(Double value) {
-        this.value = value;
+    public void setPaymentValue(Double paymentValue) {
+        this.paymentValue = paymentValue;
     }
 
 

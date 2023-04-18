@@ -6,26 +6,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Evento {
+@Table(name = "evento")
+public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "sobre", length = 45)
     private String about;
 
+    @Column(name = "referencias", length = 45)
     private String inspirations;
 
+    @Column(name = "detalhes_tecnicos", length = 45)
     private String technicalDetails;
 
-    private Double valor;
+    @Column(name = "valor")
+    private Double paymentValue;
 
+    @Column(name = "taxa_couvert")
     private Double coverCharge;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Schedule> schedule;
 
-    public Evento() {
+    public Event() {
         this.schedule = new ArrayList<>();
     }
 
@@ -61,12 +67,12 @@ public class Evento {
         this.technicalDetails = technicalDetails;
     }
 
-    public Double getValor() {
-        return valor;
+    public Double getPaymentValue() {
+        return paymentValue;
     }
 
-    public void setValor(Double valor) {
-        this.valor = valor;
+    public void setPaymentValue(Double paymentValue) {
+        this.paymentValue = paymentValue;
     }
 
     public Double getCoverCharge() {
