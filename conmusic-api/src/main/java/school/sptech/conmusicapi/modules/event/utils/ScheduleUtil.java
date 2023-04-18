@@ -2,10 +2,7 @@ package school.sptech.conmusicapi.modules.event.utils;
 
 import school.sptech.conmusicapi.modules.event.dtos.CreateScheduleDto;
 
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.LocalDate;
+import java.time.*;
 
 public class ScheduleUtil {
     private static Boolean isSchedulesValid(CreateScheduleDto schedule1, CreateScheduleDto schedule2) {
@@ -49,6 +46,7 @@ public class ScheduleUtil {
 
             if (
                     inicioShow2.isAfter(fimShow1)
+                    && Duration.between(fimShow1, inicioShow2).toMinutes() >= 10
             ) {
                 result = true;
             }
