@@ -1,46 +1,45 @@
 package school.sptech.conmusicapi.modules.event.dtos;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
 public class CreateEventDto{
+    @NotBlank
+    private String about;
 
-    @NotNull
-    private String description;
+    @NotBlank
+    private String inspirations;
 
-    @NotNull
-    private String references;
-
-    @NotNull
+    @NotBlank
     private String technicalDetails;
 
     @Min(value = 300, message = "O valor mínimo para o show é de 300")
-    @NotNull(message = "O valor ou a taxa de couvert deve ser fornecido")
-    private Double value;
+    private Double paymentValue;
 
     @Max(value = 100, message = "A taxa de couvert deve ser no máximo 100")
-    @NotNull(message = "O valor ou a taxa de couvert deve ser fornecido")
     private Double coverCharge;
 
+    @Valid
     private List<CreateScheduleDto> schedule;
 
-    public String getDescription() {
-        return description;
+    public String getAbout() {
+        return about;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setAbout(String about) {
+        this.about = about;
     }
 
-    public String getReferences() {
-        return references;
+    public String getInspirations() {
+        return inspirations;
     }
 
-    public void setReferences(String references) {
-        this.references = references;
+    public void setInspirations(String inspirations) {
+        this.inspirations = inspirations;
     }
 
     public String getTechnicalDetails() {
@@ -51,12 +50,12 @@ public class CreateEventDto{
         this.technicalDetails = technicalDetails;
     }
 
-    public Double getValue() {
-        return value;
+    public Double getPaymentValue() {
+        return paymentValue;
     }
 
-    public void setValue(Double value) {
-        this.value = value;
+    public void setPaymentValue(Double paymentValue) {
+        this.paymentValue = paymentValue;
     }
 
     public Double getCoverCharge() {
