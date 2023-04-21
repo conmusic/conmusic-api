@@ -2,6 +2,7 @@ package school.sptech.conmusicapi.modules.house.mapper;
 
 import school.sptech.conmusicapi.modules.house.dtos.CreateHouseDto;
 import school.sptech.conmusicapi.modules.house.dtos.HouseDto;
+import school.sptech.conmusicapi.modules.house.dtos.UpdateHouseDto;
 import school.sptech.conmusicapi.modules.house.entities.House;
 import school.sptech.conmusicapi.modules.user.mapper.UserMapper;
 
@@ -10,6 +11,13 @@ public class HouseMapper {
         House house = new House();
 
         UserMapper.fromDto(dto, house);
+        house.setCnpj(dto.getCnpj());
+
+        return house;
+    }
+
+    public static House fromDtoUpdate(UpdateHouseDto dto, House house){
+        UserMapper.fromDtoUpdate(dto, house);
         house.setCnpj(dto.getCnpj());
 
         return house;
