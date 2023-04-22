@@ -12,6 +12,7 @@ import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
 import school.sptech.conmusicapi.modules.artist.services.ArtistService;
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -38,4 +39,5 @@ public class ArtistController {
 
         return ResponseEntity.status(201).body(createdArtist.get());
     }
+
 }
