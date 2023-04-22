@@ -1,5 +1,8 @@
 package school.sptech.conmusicapi.shared.utils;
 
+import java.lang.reflect.Method;
+import java.util.List;
+
 public class GenericObjectList<Obj> {
     private Obj[] array;
     private int pointer;
@@ -60,6 +63,21 @@ public class GenericObjectList<Obj> {
         int creationSize = array.length;
         array = (Obj[]) new Object[creationSize];
         pointer = 0;
+    }
+
+    public boolean swap(int index1, int index2) {
+        if (isIndexInvalid(index1) || isIndexInvalid(index2)) {
+            return false;
+        }
+
+        Obj aux = getElement(index1);
+        array[index1] = getElement(index2);
+        array[index2] = aux;
+        return true;
+    }
+
+    public List<Obj> getElements() {
+        return List.of(array);
     }
 
     private boolean isIndexInvalid(int index) {

@@ -1,5 +1,6 @@
 package school.sptech.conmusicapi.modules.user.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import school.sptech.conmusicapi.modules.user.services.UserService;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "Users", description = "Responsible for managing all requests and operations related to all users")
 public class UserController {
     @Autowired
     private UserService userService;
