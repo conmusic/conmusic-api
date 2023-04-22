@@ -3,13 +3,10 @@ package school.sptech.conmusicapi.modules.artist.controllers;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
+import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
 import school.sptech.conmusicapi.modules.artist.services.ArtistService;
 
 
@@ -39,5 +36,15 @@ public class ArtistController {
 
         return ResponseEntity.status(201).body(createdArtist.get());
     }
+    
+    @PutMapping
+    public ResponseEntity<ArtistDto> update(@RequestBody @Valid UpdateArtistDto dto){
+        Optional<ArtistDto> updatedArtist = artistService.updateArtistDto(dto);
 
+        if (updatedArtist.isEmpty()){
+            return ResponseEntity.status(400).build();
+        }
+
+        return ResponseEntity.status(200).body(updatedArtist.get());
+    }
 }

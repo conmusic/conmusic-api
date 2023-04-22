@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ConMusic-API.iml" filepath="$PROJECT_DIR$/.idea/ConMusic-API.iml" />
-      <module fileurl="file://$PROJECT_DIR$/conmusic-api/conmusic-api.iml" filepath="$PROJECT_DIR$/conmusic-api/conmusic-api.iml" />
     </modules>
   </component>
 </project>
