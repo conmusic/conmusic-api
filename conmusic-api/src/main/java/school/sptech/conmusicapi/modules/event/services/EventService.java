@@ -8,6 +8,7 @@ import school.sptech.conmusicapi.modules.event.entities.Event;
 import school.sptech.conmusicapi.modules.event.mapper.EventMapper;
 import school.sptech.conmusicapi.modules.event.repositories.IEventRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,5 +24,10 @@ public class EventService {
 
         Event createdEvent = eventRepository.save(EventMapper.fromDto(dto));
         return Optional.of(EventMapper.toDto(createdEvent));
+    }
+
+    public List<EventDto> findAll() {
+        List<Event> events = eventRepository.findAll();
+        return events.stream().map(EventMapper::toDto).toList();
     }
 }

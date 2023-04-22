@@ -20,8 +20,6 @@ import java.util.Optional;
 @SecurityRequirement(name = "Bearer")
 public class EventController {
     @Autowired
-    private IEventRepository eventRepository;
-    @Autowired
     private EventService eventService;
 
     @PostMapping
@@ -35,8 +33,8 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Event>> getAllEvents() {
-        List<Event> events = eventRepository.findAll();
+    public ResponseEntity<List<EventDto>> getAllEvents() {
+        List<EventDto> events = eventService.findAll();
 
         if (events.isEmpty()) {
             return ResponseEntity.status(204).build();
