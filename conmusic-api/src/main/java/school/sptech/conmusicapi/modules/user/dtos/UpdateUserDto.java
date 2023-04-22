@@ -1,19 +1,32 @@
 package school.sptech.conmusicapi.modules.user.dtos;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
 public class UpdateUserDto {
 
     @NotNull
+    @Positive
     private Integer id;
     @Size(max = 45, min = 3)
     private String name;
 
-    @Email
     @NotBlank
+    @Pattern(
+            regexp = "^[-A-Za-z0-9!#$%&'*+\\/=?^_`{|}~]+(?:\\.[-A-Za-z0-9!#$%&'*+\\/=?^_`{|}~]+)*@(?:[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?$",
+            message = "Email must be in RFC2822 e-mail"
+    )
+    @Size(min = 5, max = 45)
+    @Schema(example = "email@email.com")
     private String email;
 
-    @Pattern(regexp = "(\\(?\\d{2}\\)?\\s)?(\\d{4,5}\\-\\d{4})", message = "Indique um telefone válido")
+    @NotBlank
+    @Pattern(
+            regexp = "^\\s*(\\d{2}|\\d{0})[-. ]?(\\d{5}|\\d{4})[-. ]?(\\d{4})[-. ]?\\s*$",
+            message = "Phone Number must be only digits"
+    )
+    @Size(max = 11)
+    @Schema(example = "11909090808")
     private String phoneNumber;
 
     @Size(max = 45)

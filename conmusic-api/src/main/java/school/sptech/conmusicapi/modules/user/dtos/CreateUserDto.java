@@ -1,5 +1,6 @@
 package school.sptech.conmusicapi.modules.user.dtos;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ public abstract class CreateUserDto {
         message = "Email must be in RFC2822 e-mail"
     )
     @Size(min = 5, max = 45)
+    @Schema(example = "email@email.com")
     private String email;
 
     @NotBlank
@@ -23,6 +25,7 @@ public abstract class CreateUserDto {
         regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",
         message = "Password must have at least one lowercase letter, one uppercase letter, one digit, one special character and 8 characters length"
     )
+    @Schema(example = "@L34st8Ch4rC4s3S3ns!t!v3W!thSpec!4ls")
     private String password;
 
     @NotBlank
@@ -31,6 +34,7 @@ public abstract class CreateUserDto {
         message = "Phone Number must be only digits"
     )
     @Size(max = 11)
+    @Schema(example = "11909090808")
     private String phoneNumber;
 
     @NotNull
