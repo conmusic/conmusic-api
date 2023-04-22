@@ -1,5 +1,7 @@
 package school.sptech.conmusicapi.modules.house.controllers;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/houses")
+@Tag(name = "Houses", description = "Responsible for managing all requests and operations related to house users")
 public class HouseController {
     @Autowired
     private HouseService houseService;
@@ -29,6 +32,7 @@ public class HouseController {
     }
 
     @PutMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<HouseDto> update(@RequestBody @Valid UpdateHouseDto dto){
         Optional<HouseDto> updatedHouse = houseService.update(dto);
 

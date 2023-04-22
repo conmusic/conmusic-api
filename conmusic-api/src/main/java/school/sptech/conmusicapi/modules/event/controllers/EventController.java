@@ -1,5 +1,7 @@
 package school.sptech.conmusicapi.modules.event.controllers;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/events")
+@Tag(name = "Events", description = "Responsible for managing all requests and operations related to events")
+@SecurityRequirement(name = "Bearer")
 public class EventController {
     @Autowired
     private IEventRepository eventRepository;
@@ -33,10 +37,12 @@ public class EventController {
     @GetMapping
     public ResponseEntity<List<Event>> getAllEvents() {
         List<Event> events = eventRepository.findAll();
+
         if (events.isEmpty()) {
-            return ResponseEntity.status(400).build();
+            return ResponseEntity.status(204).build();
         }
-        return ResponseEntity.status(201).body(events);
+
+        return ResponseEntity.status(200).body(events);
     }
 
 }
