@@ -2,11 +2,12 @@ package school.sptech.conmusicapi.modules.house.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.br.CNPJ;
-import school.sptech.conmusicapi.modules.user.dtos.CreateUserDto;
+import school.sptech.conmusicapi.modules.user.dtos.UpdateUserDto;
 
-public class CreateHouseDto extends CreateUserDto {
-    @NotBlank
+public class UpdateHouseDto extends UpdateUserDto {
+
     @CNPJ
+    @NotBlank
     private String cnpj;
 
     public String getCnpj() {

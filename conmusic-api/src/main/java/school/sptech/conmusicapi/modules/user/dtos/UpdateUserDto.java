@@ -1,14 +1,37 @@
 package school.sptech.conmusicapi.modules.user.dtos;
 
-import java.time.LocalDate;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 
-public abstract class UserDto {
+public class UpdateUserDto {
+
+    @NotNull
+    @Positive
     private Integer id;
+    @Size(max = 45, min = 3)
     private String name;
+
+    @NotBlank
+    @Pattern(
+            regexp = "^[-A-Za-z0-9!#$%&'*+\\/=?^_`{|}~]+(?:\\.[-A-Za-z0-9!#$%&'*+\\/=?^_`{|}~]+)*@(?:[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?$",
+            message = "Email must be in RFC2822 e-mail"
+    )
+    @Size(min = 5, max = 45)
+    @Schema(example = "email@email.com")
     private String email;
+
+    @NotBlank
+    @Pattern(
+            regexp = "^\\s*(\\d{2}|\\d{0})[-. ]?(\\d{5}|\\d{4})[-. ]?(\\d{4})[-. ]?\\s*$",
+            message = "Phone Number must be only digits"
+    )
+    @Size(max = 11)
+    @Schema(example = "11909090808")
     private String phoneNumber;
-    private LocalDate birthDate;
+
+    @Size(max = 45)
     private String about;
+    @Size(max = 45)
     private String instagram;
 
     public Integer getId() {
@@ -41,14 +64,6 @@ public abstract class UserDto {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
     }
 
     public String getAbout() {

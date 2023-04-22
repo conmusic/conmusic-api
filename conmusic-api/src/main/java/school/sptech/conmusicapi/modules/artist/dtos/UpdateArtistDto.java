@@ -1,12 +1,14 @@
 package school.sptech.conmusicapi.modules.artist.dtos;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.br.CPF;
-import school.sptech.conmusicapi.modules.user.dtos.CreateUserDto;
+import school.sptech.conmusicapi.modules.user.dtos.UpdateUserDto;
 
-public class CreateArtistDto extends CreateUserDto {
-    @NotBlank
+public class UpdateArtistDto extends UpdateUserDto {
+
     @CPF
+    @NotBlank
     private String cpf;
 
     public String getCpf() {
