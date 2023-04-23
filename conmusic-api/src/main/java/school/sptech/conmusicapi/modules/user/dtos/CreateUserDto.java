@@ -2,6 +2,7 @@ package school.sptech.conmusicapi.modules.user.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.br.CPF;
 
 import java.time.LocalDate;
 
@@ -27,6 +28,10 @@ public abstract class CreateUserDto {
     )
     @Schema(example = "@L34st8Ch4rC4s3S3ns!t!v3W!thSpec!4ls")
     private String password;
+
+    @NotBlank
+    @CPF
+    private String cpf;
 
     @NotBlank
     @Pattern(
@@ -69,6 +74,14 @@ public abstract class CreateUserDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public String getPhoneNumber() {

@@ -22,6 +22,9 @@ public abstract class User {
     @Column(name = "senha", length = 60, nullable = false)
     private String password;
 
+    @Column(length = 11, unique = true)
+    private String cpf;
+
     @Column(name = "telefone", length = 11)
     private String phoneNumber;
 
@@ -64,6 +67,14 @@ public abstract class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public String getPhoneNumber() {

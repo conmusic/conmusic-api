@@ -6,5 +6,5 @@ import school.sptech.conmusicapi.modules.artist.entities.Artist;
 
 @Repository
 public interface IArtistRepository extends JpaRepository<Artist, Integer> {
-    Boolean existsByCpf(String cpf);
+
 }

@@ -12,6 +12,7 @@ public class UserMapper {
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
+        user.setCpf(dto.getCpf());
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setBirthDate(dto.getBirthDate());
         user.setAbout(dto.getAbout());
@@ -21,6 +22,7 @@ public class UserMapper {
     public static void fromDtoUpdate(UpdateUserDto dto, User user){
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
+        user.setCpf(dto.getCpf());
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setAbout(dto.getAbout());
         user.setInstagram(dto.getInstagram());
@@ -30,6 +32,7 @@ public class UserMapper {
         dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
+        dto.setCpf(user.getCpf());
         dto.setPhoneNumber(user.getPhoneNumber());
         dto.setBirthDate(user.getBirthDate());
         dto.setAbout(user.getAbout());

@@ -2,9 +2,9 @@ package school.sptech.conmusicapi.modules.user.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.br.CPF;
 
-public class UpdateUserDto {
-
+public abstract class UpdateUserDto {
     @NotNull
     @Positive
     private Integer id;
@@ -19,6 +19,10 @@ public class UpdateUserDto {
     @Size(min = 5, max = 45)
     @Schema(example = "email@email.com")
     private String email;
+
+    @NotBlank
+    @CPF
+    private String cpf;
 
     @NotBlank
     @Pattern(
@@ -56,6 +60,14 @@ public class UpdateUserDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public String getPhoneNumber() {
