@@ -1,6 +1,7 @@
 package school.sptech.conmusicapi.modules.event.utils;
 
 import school.sptech.conmusicapi.modules.event.dtos.CreateScheduleDto;
+import school.sptech.conmusicapi.shared.dtos.TimeDto;
 
 import java.time.*;
 
@@ -55,12 +56,15 @@ public class ScheduleUtil {
         return result;
     }
 
-    public static LocalDateTime createDate(LocalTime startTime, int dayOfWeek) {
+    public static LocalDateTime createDate(TimeDto startTimeDto, int dayOfWeek) {
+        LocalTime startTime = LocalTime.of(startTimeDto.getHour(), startTimeDto.getMinute());
         LocalDate day = LocalDate.of(2023, 4, 17 + dayOfWeek);
         return LocalDateTime.of(day, startTime);
     }
 
-    public static LocalDateTime createDate(LocalTime endTime, int dayOfWeek, LocalTime startTime) {
+    public static LocalDateTime createDate(TimeDto endTimeDto, int dayOfWeek, TimeDto startTimeDto) {
+        LocalTime startTime = LocalTime.of(startTimeDto.getHour(), startTimeDto.getMinute());
+        LocalTime endTime = LocalTime.of(endTimeDto.getHour(), endTimeDto.getMinute());
         if (endTime.isBefore(startTime)) {
             dayOfWeek += 1;
         }

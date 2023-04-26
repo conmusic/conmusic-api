@@ -1,6 +1,6 @@
 package school.sptech.conmusicapi.modules.event.dtos;
 
-import java.time.LocalTime;
+import school.sptech.conmusicapi.shared.dtos.TimeDto;
 
 public class ScheduleDto {
 
@@ -8,9 +8,9 @@ public class ScheduleDto {
 
     private Integer dayWeek;
 
-    private LocalTime startTime;
+    private TimeDto startTime;
 
-    private LocalTime endTime;
+    private TimeDto endTime;
 
     private Integer eventId;
 
@@ -35,21 +35,21 @@ public class ScheduleDto {
     }
 
 
-    public LocalTime getStartTime() {
+    public TimeDto getStartTime() {
         return startTime;
     }
 
 
-    public void setStartTime(LocalTime startTime) {
+    public void setStartTime(TimeDto startTime) {
         this.startTime = startTime;
     }
 
 
-    public LocalTime getEndTime() {
+    public TimeDto getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalTime endTime) {
+    public void setEndTime(TimeDto endTime) {
         this.endTime = endTime;
     }
 

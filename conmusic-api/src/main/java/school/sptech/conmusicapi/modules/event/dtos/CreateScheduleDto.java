@@ -2,18 +2,17 @@ package school.sptech.conmusicapi.modules.event.dtos;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-
-import java.time.LocalTime;
+import school.sptech.conmusicapi.shared.dtos.TimeDto;
 
 public class CreateScheduleDto {
     @NotNull
     private Integer dayWeek;
 
     @NotNull
-    private LocalTime startTime;
+    private TimeDto startTime;
 
     @NotNull
-    private LocalTime endTime;
+    private TimeDto endTime;
 
     @Positive
     private Integer eventId;
@@ -26,19 +25,19 @@ public class CreateScheduleDto {
         this.dayWeek = dayWeek;
     }
 
-    public LocalTime getStartTime() {
+    public TimeDto getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalTime startTime) {
+    public void setStartTime(TimeDto startTime) {
         this.startTime = startTime;
     }
 
-    public LocalTime getEndTime() {
+    public TimeDto getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalTime endTime) {
+    public void setEndTime(TimeDto endTime) {
         this.endTime = endTime;
     }
 
