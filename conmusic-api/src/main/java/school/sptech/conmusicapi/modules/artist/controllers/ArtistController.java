@@ -39,24 +39,17 @@ public class ArtistController {
 
     @PostMapping
     public ResponseEntity<ArtistDto> create(@RequestBody @Valid CreateArtistDto dto) {
-        Optional<ArtistDto> createdArtist = artistService.create(dto);
-
-        if (createdArtist.isEmpty()) {
-            return ResponseEntity.status(400).build();
-        }
-
-        return ResponseEntity.status(201).body(createdArtist.get());
+        ArtistDto createdArtist = artistService.create(dto);
+        return ResponseEntity.status(201).body(createdArtist);
     }
     
     @PutMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<ArtistDto> update(@RequestBody @Valid UpdateArtistDto dto){
-        Optional<ArtistDto> updatedArtist = artistService.updateArtistDto(dto);
-
-        if (updatedArtist.isEmpty()){
-            return ResponseEntity.status(400).build();
-        }
-
-        return ResponseEntity.status(200).body(updatedArtist.get());
+    public ResponseEntity<ArtistDto> update(
+            @RequestBody @Valid UpdateArtistDto dto,
+            @PathVariable Integer id
+    ){
+        ArtistDto updatedArtist = artistService.updateArtistDto(dto, id);
+        return ResponseEntity.status(200).body(updatedArtist);
     }
 }

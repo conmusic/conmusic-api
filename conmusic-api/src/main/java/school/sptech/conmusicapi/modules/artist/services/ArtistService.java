@@ -10,11 +10,12 @@ import school.sptech.conmusicapi.modules.artist.entities.Artist;
 import school.sptech.conmusicapi.modules.artist.mapper.ArtistMapper;
 import school.sptech.conmusicapi.modules.artist.repositories.IArtistRepository;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
+import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
+import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 import school.sptech.conmusicapi.shared.utils.GenericObjectList;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ArtistService {
@@ -25,37 +26,49 @@ public class ArtistService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Optional<ArtistDto> create(CreateArtistDto dto) {
+    public ArtistDto create(CreateArtistDto dto) {
         Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
 
         if (isEmailAlreadyInUse) {
-            return Optional.empty();
+            throw new BusinessRuleException("Email is already in use.");
         }
 
-        Boolean isCpfAlreadyInUse = artistRepository.existsByCpf(dto.getCpf());
+        Boolean isCpfAlreadyInUse = userRepository.existsByCpf(dto.getCpf());
 
         if (isCpfAlreadyInUse) {
-            return Optional.empty();
+            throw new BusinessRuleException("CPF is already in use.");
         }
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
         dto.setPassword(hashedPassword);
 
         Artist createdArtist = artistRepository.save(ArtistMapper.fromDto(dto));
-        return Optional.of(ArtistMapper.toDto(createdArtist));
+        return ArtistMapper.toDto(createdArtist);
     }
 
-    public Optional<ArtistDto> updateArtistDto(UpdateArtistDto dto){
+    public ArtistDto updateArtistDto(UpdateArtistDto dto, Integer id){
+        Optional<Artist> artistOpt = artistRepository.findById(id);
 
-        if (userRepository.existsById(dto.getId())){
-            Artist artist = artistRepository.findById(dto.getId()).get();
-            Artist updatedArtist = ArtistMapper.fromDtoUpdate(dto, artist);
-
-            artistRepository.save(updatedArtist);
-            return Optional.of(ArtistMapper.toDto(updatedArtist));
+        if (artistOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Artist with id %d was not found.", id));
         }
 
-        return Optional.empty();
+        Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
+
+        if (isEmailAlreadyInUse && !artistOpt.get().getEmail().equals(dto.getEmail())) {
+            throw new BusinessRuleException("Email is already in use.");
+        }
+
+        Boolean isCpfAlreadyInUse = userRepository.existsByCpf(dto.getCpf());
+
+        if (isCpfAlreadyInUse && !artistOpt.get().getCpf().equals(dto.getCpf())) {
+            throw new BusinessRuleException("CPF is already in use.");
+        }
+
+        Artist updatedArtist = ArtistMapper.fromDtoUpdate(dto, artistOpt.get());
+        updatedArtist.setId(id);
+        artistRepository.save(updatedArtist);
+        return ArtistMapper.toDto(updatedArtist);
     }
 
     public List<ArtistDto> findAll() {

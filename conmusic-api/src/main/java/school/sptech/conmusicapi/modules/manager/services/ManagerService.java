@@ -10,6 +10,8 @@ import school.sptech.conmusicapi.modules.manager.entities.Manager;
 import school.sptech.conmusicapi.modules.manager.mapper.ManagerMapper;
 import school.sptech.conmusicapi.modules.manager.repositories.IManagerRepository;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
+import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
+import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 
 import java.util.Optional;
 
@@ -22,37 +24,48 @@ public class ManagerService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Optional<ManagerDto> create(CreateManagerDto dto) {
+    public ManagerDto create(CreateManagerDto dto) {
         Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
 
         if (isEmailAlreadyInUse) {
-            return Optional.empty();
+            throw new BusinessRuleException("Email is already in use.");
         }
 
         Boolean isCpfAlreadyInUse = userRepository.existsByCpf(dto.getCpf());
 
         if (isCpfAlreadyInUse) {
-            return Optional.empty();
+            throw new BusinessRuleException("CPF is already in use.");
         }
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
         dto.setPassword(hashedPassword);
 
         Manager createdManager = managerRepository.save(ManagerMapper.fromDto(dto));
-        return Optional.of(ManagerMapper.toDto(createdManager));
+        return ManagerMapper.toDto(createdManager);
     }
 
-    public Optional<ManagerDto> update(UpdateManagerDto dto){
+    public ManagerDto update(UpdateManagerDto dto, Integer id){
+        Optional<Manager> managerOpt = managerRepository.findById(id);
 
-        if (userRepository.existsById(dto.getId())){
-            Manager manager = managerRepository.findById(dto.getId()).get();
-            Manager updatedManager = ManagerMapper.fromDtoUpdate(dto, manager);
-
-            managerRepository.save(updatedManager);
-            return Optional.of(ManagerMapper.toDto(updatedManager));
+        if (managerOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Manager with id %d was not found.", id));
         }
 
-        return Optional.empty();
+        Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
 
+        if (isEmailAlreadyInUse && !managerOpt.get().getEmail().equals(dto.getEmail())) {
+            throw new BusinessRuleException("Email is already in use.");
+        }
+
+        Boolean isCpfAlreadyInUse = userRepository.existsByCpf(dto.getCpf());
+
+        if (isCpfAlreadyInUse && !managerOpt.get().getCpf().equals(dto.getCpf())) {
+            throw new BusinessRuleException("CPF is already in use.");
+        }
+
+        Manager updatedArtist = ManagerMapper.fromDtoUpdate(dto, managerOpt.get());
+        updatedArtist.setId(id);
+        managerRepository.save(updatedArtist);
+        return ManagerMapper.toDto(updatedArtist);
     }
 }

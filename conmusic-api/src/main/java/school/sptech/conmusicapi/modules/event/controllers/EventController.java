@@ -24,12 +24,8 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity<EventDto> create(@RequestBody @Valid CreateEventDto dto) {
-        Optional<EventDto> createdEvent = eventService.create(dto);
-
-        if (createdEvent.isEmpty()) {
-            return ResponseEntity.status(400).build();
-        }
-        return ResponseEntity.status(201).body(createdEvent.get());
+        EventDto createdEvent = eventService.create(dto);
+        return ResponseEntity.status(201).body(createdEvent);
     }
 
     @GetMapping

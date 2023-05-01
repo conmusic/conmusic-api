@@ -5,9 +5,7 @@ import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.br.CPF;
 
 public abstract class UpdateUserDto {
-    @NotNull
-    @Positive
-    private Integer id;
+    @NotBlank
     @Size(max = 45, min = 3)
     private String name;
 
@@ -38,13 +36,6 @@ public abstract class UpdateUserDto {
     @Size(max = 45)
     private String instagram;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

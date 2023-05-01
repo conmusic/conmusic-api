@@ -22,24 +22,17 @@ public class ManagerController {
 
     @PostMapping
     public ResponseEntity<ManagerDto> create(@RequestBody @Valid CreateManagerDto dto) {
-        Optional<ManagerDto> createdHouse = managerService.create(dto);
-
-        if (createdHouse.isEmpty()) {
-            return ResponseEntity.status(400).build();
-        }
-
-        return ResponseEntity.status(201).body(createdHouse.get());
+        ManagerDto createdHouse = managerService.create(dto);
+        return ResponseEntity.status(201).body(createdHouse);
     }
 
     @PutMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<ManagerDto> update(@RequestBody @Valid UpdateManagerDto dto){
-        Optional<ManagerDto> updatedHouse = managerService.update(dto);
-
-        if (updatedHouse.isEmpty()){
-            return ResponseEntity.status(400).build();
-        }
-
-        return ResponseEntity.status(200).body(updatedHouse.get());
+    public ResponseEntity<ManagerDto> update(
+            @RequestBody @Valid UpdateManagerDto dto,
+            @PathVariable Integer id
+    ){
+        ManagerDto updatedHouse = managerService.update(dto, id);
+        return ResponseEntity.status(200).body(updatedHouse);
     }
 }
