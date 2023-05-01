@@ -44,6 +44,7 @@ public class Establishment {
     private String zipCode;
 
     @ManyToOne
+    @JoinColumn(name = "fk_gerente")
     private Manager manager;
 
     public Integer getId() {

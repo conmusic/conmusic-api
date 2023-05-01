@@ -1,5 +1,7 @@
 package school.sptech.conmusicapi.modules.artist.controllers;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,7 +26,6 @@ public class ArtistController {
     @Autowired
     private ArtistService artistService;
 
-
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ArtistDto>> findAll() {
@@ -43,7 +44,7 @@ public class ArtistController {
         return ResponseEntity.status(201).body(createdArtist);
     }
     
-    @PutMapping
+    @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ArtistDto> update(
             @RequestBody @Valid UpdateArtistDto dto,
@@ -51,5 +52,12 @@ public class ArtistController {
     ){
         ArtistDto updatedArtist = artistService.updateArtistDto(dto, id);
         return ResponseEntity.status(200).body(updatedArtist);
+    }
+
+    @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<ArtistDto> getById(@PathVariable Integer id) {
+        ArtistDto artist = artistService.getByArtistId(id);
+        return ResponseEntity.status(200).body(artist);
     }
 }

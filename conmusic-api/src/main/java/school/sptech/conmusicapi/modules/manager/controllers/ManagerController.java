@@ -26,7 +26,7 @@ public class ManagerController {
         return ResponseEntity.status(201).body(createdHouse);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ManagerDto> update(
             @RequestBody @Valid UpdateManagerDto dto,
@@ -34,5 +34,12 @@ public class ManagerController {
     ){
         ManagerDto updatedHouse = managerService.update(dto, id);
         return ResponseEntity.status(200).body(updatedHouse);
+    }
+
+    @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<ManagerDto> getById(@PathVariable Integer id) {
+        ManagerDto manager = managerService.getById(id);
+        return ResponseEntity.status(200).body(manager);
     }
 }

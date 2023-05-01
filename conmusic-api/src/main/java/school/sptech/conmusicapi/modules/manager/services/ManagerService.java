@@ -68,4 +68,14 @@ public class ManagerService {
         managerRepository.save(updatedArtist);
         return ManagerMapper.toDto(updatedArtist);
     }
+
+    public ManagerDto getById(Integer id) {
+        Optional<Manager> managerOpt = managerRepository.findById(id);
+
+        if (managerOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Manager with id %d was not found.", id));
+        }
+
+        return ManagerMapper.toDto(managerOpt.get());
+    }
 }

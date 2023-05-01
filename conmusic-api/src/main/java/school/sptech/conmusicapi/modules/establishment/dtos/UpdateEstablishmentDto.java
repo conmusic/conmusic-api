@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.br.CNPJ;
 
-public class CreateEstablishmentDto {
+public class UpdateEstablishmentDto {
     @NotBlank
     @CNPJ
     private String cnpj;
@@ -50,10 +50,6 @@ public class CreateEstablishmentDto {
     @NotBlank
     @Size(min = 8, max = 8)
     private String zipCode;
-
-    @NotNull
-    @Positive
-    private Integer managerId;
 
     public String getCnpj() {
         return cnpj;
@@ -141,13 +137,5 @@ public class CreateEstablishmentDto {
 
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
-    }
-
-    public Integer getManagerId() {
-        return managerId;
-    }
-
-    public void setManagerId(Integer managerId) {
-        this.managerId = managerId;
     }
 }

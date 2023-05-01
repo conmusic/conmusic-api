@@ -97,4 +97,14 @@ public class ArtistService {
         
         return auxOrdered.getElements();
     }
+
+    public ArtistDto getByArtistId(Integer id) {
+        Optional<Artist> artistOpt = artistRepository.findById(id);
+
+        if (artistOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Artist with id %d was not found.", id));
+        }
+
+        return ArtistMapper.toDto(artistOpt.get());
+    }
 }
