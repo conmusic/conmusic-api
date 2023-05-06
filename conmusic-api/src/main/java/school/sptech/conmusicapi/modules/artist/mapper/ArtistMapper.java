@@ -12,14 +12,12 @@ public class ArtistMapper {
         Artist artist = new Artist();
 
         UserMapper.fromDto(dto, artist);
-        artist.setCpf(dto.getCpf());
 
         return artist;
     }
 
     public static Artist fromDtoUpdate(UpdateArtistDto dto, Artist artist){
         UserMapper.fromDtoUpdate(dto, artist);
-        artist.setCpf(dto.getCpf());
 
         return artist;
     }
@@ -28,7 +26,6 @@ public class ArtistMapper {
         ArtistDto dto = new ArtistDto();
 
         UserMapper.toDto(artist, dto);
-        dto.setCpf(artist.getCpf());
 
         return dto;
     }

@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
                 contact = @Contact(
                         name = "Grupo 2 - ConMusic"
                 ),
-                version = "0.4.1"
+                version = "0.7.0"
         )
 )
 @SecurityScheme(

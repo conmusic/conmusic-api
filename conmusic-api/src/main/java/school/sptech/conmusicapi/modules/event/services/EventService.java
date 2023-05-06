@@ -7,6 +7,7 @@ import school.sptech.conmusicapi.modules.event.dtos.EventDto;
 import school.sptech.conmusicapi.modules.event.entities.Event;
 import school.sptech.conmusicapi.modules.event.mapper.EventMapper;
 import school.sptech.conmusicapi.modules.event.repositories.IEventRepository;
+import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,14 +17,14 @@ public class EventService {
     @Autowired
     private IEventRepository eventRepository;
 
-    public Optional<EventDto> create(CreateEventDto dto) {
+    public EventDto create(CreateEventDto dto) {
 
         if (dto.getPaymentValue() == null && dto.getCoverCharge() == null){
-            return Optional.empty();
+            throw new BusinessRuleException("At least payment value or cover charge must be informed.");
         }
 
         Event createdEvent = eventRepository.save(EventMapper.fromDto(dto));
-        return Optional.of(EventMapper.toDto(createdEvent));
+        return EventMapper.toDto(createdEvent);
     }
 
     public List<EventDto> findAll() {

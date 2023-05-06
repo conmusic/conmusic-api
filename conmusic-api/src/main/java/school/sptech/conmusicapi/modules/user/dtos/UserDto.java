@@ -6,6 +6,7 @@ public abstract class UserDto {
     private Integer id;
     private String name;
     private String email;
+    private String cpf;
     private String phoneNumber;
     private LocalDate birthDate;
     private String about;
@@ -33,6 +34,14 @@ public abstract class UserDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public String getPhoneNumber() {

@@ -1,5 +1,7 @@
 package school.sptech.conmusicapi.modules.artist.controllers;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,7 +26,6 @@ public class ArtistController {
     @Autowired
     private ArtistService artistService;
 
-
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ArtistDto>> findAll() {
@@ -39,24 +40,24 @@ public class ArtistController {
 
     @PostMapping
     public ResponseEntity<ArtistDto> create(@RequestBody @Valid CreateArtistDto dto) {
-        Optional<ArtistDto> createdArtist = artistService.create(dto);
-
-        if (createdArtist.isEmpty()) {
-            return ResponseEntity.status(400).build();
-        }
-
-        return ResponseEntity.status(201).body(createdArtist.get());
+        ArtistDto createdArtist = artistService.create(dto);
+        return ResponseEntity.status(201).body(createdArtist);
     }
     
-    @PutMapping
+    @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<ArtistDto> update(@RequestBody @Valid UpdateArtistDto dto){
-        Optional<ArtistDto> updatedArtist = artistService.updateArtistDto(dto);
+    public ResponseEntity<ArtistDto> update(
+            @RequestBody @Valid UpdateArtistDto dto,
+            @PathVariable Integer id
+    ){
+        ArtistDto updatedArtist = artistService.updateArtistDto(dto, id);
+        return ResponseEntity.status(200).body(updatedArtist);
+    }
 
-        if (updatedArtist.isEmpty()){
-            return ResponseEntity.status(400).build();
-        }
-
-        return ResponseEntity.status(200).body(updatedArtist.get());
+    @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<ArtistDto> getById(@PathVariable Integer id) {
+        ArtistDto artist = artistService.getByArtistId(id);
+        return ResponseEntity.status(200).body(artist);
     }
 }
