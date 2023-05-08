@@ -7,13 +7,13 @@ import java.util.List;
 
 public class ArtistDto extends UserDto {
 
-    private List<Gender> genders;
+    private List<Gender> musicalGenres;
 
-    public List<Gender> getGenders() {
-        return genders;
+    public List<Gender> getMusicalGenres() {
+        return musicalGenres;
     }
 
-    public void setGenders(List<Gender> genders) {
-        this.genders = genders;
+    public void setMusicalGenres(List<Gender> musicalGenres) {
+        this.musicalGenres = musicalGenres;
     }
 }

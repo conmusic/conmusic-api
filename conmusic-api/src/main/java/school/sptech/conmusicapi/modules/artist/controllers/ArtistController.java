@@ -63,7 +63,7 @@ public class ArtistController {
         return ResponseEntity.status(200).body(artist);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/generos/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ArtistDto> registerGender(
             @PathVariable Integer id,
@@ -72,6 +72,6 @@ public class ArtistController {
 
         ArtistDto artistDto = artistService.registerGenderArtist(id, gender);
 
-        return ResponseEntity.status(200).body(artistDto);
+        return ResponseEntity.status(201).body(artistDto);
     }
 }

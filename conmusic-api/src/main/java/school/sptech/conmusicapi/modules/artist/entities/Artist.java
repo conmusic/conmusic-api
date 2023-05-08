@@ -11,14 +11,19 @@ import java.util.List;
 @DiscriminatorValue("artista")
 public class Artist extends User {
 
-    @ManyToMany( mappedBy = "artists")
-    private List<Gender> genders = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "usuario_genero",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    private List<Gender> musicalGenres = new ArrayList<>();
 
-    public List<Gender> getGenders() {
-        return genders;
+    public List<Gender> getMusicalGenres() {
+        return musicalGenres;
     }
 
     public void addGenders(Gender gender) {
-        this.genders.add(gender);
+        this.musicalGenres.add(gender);
     }
 }

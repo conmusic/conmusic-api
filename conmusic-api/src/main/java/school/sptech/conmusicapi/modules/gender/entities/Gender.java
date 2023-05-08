@@ -11,16 +11,12 @@ public class Gender {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "genre_id")
     private Integer id;
 
     private String name;
 
-    @ManyToMany
-    @JoinTable(
-            name = "usuario_genero",
-            joinColumns = @JoinColumn(name = "fk_genero"),
-            inverseJoinColumns = @JoinColumn(name = "fk_usuario")
-    )
+    @ManyToMany( mappedBy = "musicalGenres")
     private List<Artist> artists = new ArrayList<>();
 
 

@@ -127,7 +127,7 @@ public class ArtistService {
 
             artist.addGenders(gender);
 
-            return ArtistMapper.toDto(artist);
+            return ArtistMapper.toDto(artistRepository.save(artist));
         }
 
         throw new EntityNotFoundException(String.format("Artist with id %d was not found.", id));
