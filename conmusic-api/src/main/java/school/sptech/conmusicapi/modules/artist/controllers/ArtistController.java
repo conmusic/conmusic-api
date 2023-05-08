@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
+import school.sptech.conmusicapi.modules.artist.entities.Artist;
 import school.sptech.conmusicapi.modules.artist.services.ArtistService;
+import school.sptech.conmusicapi.modules.gender.entities.Gender;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,5 +61,17 @@ public class ArtistController {
     public ResponseEntity<ArtistDto> getById(@PathVariable Integer id) {
         ArtistDto artist = artistService.getByArtistId(id);
         return ResponseEntity.status(200).body(artist);
+    }
+
+    @PostMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<ArtistDto> registerGender(
+            @PathVariable Integer id,
+            @RequestParam String gender
+    ){
+
+        ArtistDto artistDto = artistService.registerGenderArtist(id, gender);
+
+        return ResponseEntity.status(200).body(artistDto);
     }
 }
