@@ -1,8 +1,10 @@
 package school.sptech.conmusicapi.modules.events.dtos;
 
 import jakarta.validation.constraints.*;
+import school.sptech.conmusicapi.modules.schedules.dtos.CreateScheduleDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class CreateEventDto {
     @NotBlank
@@ -30,6 +32,8 @@ public class CreateEventDto {
     @NotNull
     @Positive
     private Integer establishmentId;
+
+    private List<CreateScheduleDto> schedules;
 
     public String getName() {
         return name;
@@ -93,5 +97,13 @@ public class CreateEventDto {
 
     public void setEstablishmentId(Integer establishmentId) {
         this.establishmentId = establishmentId;
+    }
+
+    public List<CreateScheduleDto> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(List<CreateScheduleDto> schedules) {
+        this.schedules = schedules;
     }
 }

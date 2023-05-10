@@ -1,8 +1,10 @@
 package school.sptech.conmusicapi.modules.events.dtos;
 
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
+import school.sptech.conmusicapi.modules.schedules.dtos.BasicScheduleDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class EventDto {
     private Integer id;
@@ -14,6 +16,7 @@ public class EventDto {
     private LocalDateTime endDate;
     private Boolean isUnique;
     private EstablishmentDto establishment;
+    private List<BasicScheduleDto> schedules;
 
     public Integer getId() {
         return id;
@@ -85,5 +88,13 @@ public class EventDto {
 
     public void setEstablishment(EstablishmentDto establishment) {
         this.establishment = establishment;
+    }
+
+    public List<BasicScheduleDto> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(List<BasicScheduleDto> schedules) {
+        this.schedules = schedules;
     }
 }

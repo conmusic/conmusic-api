@@ -4,6 +4,7 @@ import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapp
 import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
 import school.sptech.conmusicapi.modules.events.entities.Event;
+import school.sptech.conmusicapi.modules.schedules.mappers.ScheduleMapper;
 
 public class EventMapper {
     public static Event fromDto(CreateEventDto dto) {
@@ -16,6 +17,7 @@ public class EventMapper {
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());
         entity.setUnique(dto.getUnique());
+        entity.setSchedules(dto.getSchedules().stream().map(ScheduleMapper::fromDto).toList());
 
         return entity;
     }
@@ -32,6 +34,7 @@ public class EventMapper {
         dto.setEndDate(entity.getEndDate());
         dto.setUnique(entity.getUnique());
         dto.setEstablishment(EstablishmentMapper.toDto(entity.getEstablishment()));
+        dto.setSchedules(entity.getSchedules().stream().map(ScheduleMapper::toBasicDto).toList());
 
         return dto;
     }

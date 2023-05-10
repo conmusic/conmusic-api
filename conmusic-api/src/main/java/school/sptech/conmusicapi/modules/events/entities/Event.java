@@ -2,8 +2,10 @@ package school.sptech.conmusicapi.modules.events.entities;
 
 import jakarta.persistence.*;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
+import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "evento")
@@ -34,7 +36,11 @@ public class Event {
     private Boolean isUnique;
 
     @ManyToOne
+    @JoinColumn(name = "fk_estabelecimento")
     private Establishment establishment;
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    private List<Schedule> schedules;
 
     public Integer getId() {
         return id;
@@ -106,5 +112,13 @@ public class Event {
 
     public void setEstablishment(Establishment establishment) {
         this.establishment = establishment;
+    }
+
+    public List<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
     }
 }
