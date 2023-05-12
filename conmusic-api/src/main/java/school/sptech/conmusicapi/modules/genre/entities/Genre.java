@@ -1,4 +1,4 @@
-package school.sptech.conmusicapi.modules.gender.entities;
+package school.sptech.conmusicapi.modules.genre.entities;
 
 import jakarta.persistence.*;
 import school.sptech.conmusicapi.modules.artist.entities.Artist;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Gender {
+public class Genre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

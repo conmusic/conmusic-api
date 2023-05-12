@@ -50,7 +50,7 @@ public class SecurityConfiguration {
             new AntPathRequestMatcher("/managers", HttpMethod.POST.name()),
             new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/error/**"),
-            new AntPathRequestMatcher("/generos/**")
+            new AntPathRequestMatcher("/genre/**")
     };
 
     @Bean

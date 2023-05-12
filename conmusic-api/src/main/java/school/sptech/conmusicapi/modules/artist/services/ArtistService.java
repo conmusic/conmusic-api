@@ -9,8 +9,8 @@ import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
 import school.sptech.conmusicapi.modules.artist.entities.Artist;
 import school.sptech.conmusicapi.modules.artist.mapper.ArtistMapper;
 import school.sptech.conmusicapi.modules.artist.repositories.IArtistRepository;
-import school.sptech.conmusicapi.modules.gender.entities.Gender;
-import school.sptech.conmusicapi.modules.gender.repository.IGenderRepository;
+import school.sptech.conmusicapi.modules.genre.entities.Genre;
+import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
@@ -28,7 +28,7 @@ public class ArtistService {
     private IArtistRepository artistRepository;
 
     @Autowired
-    private IGenderRepository genderRepository;
+    private IGenreRepository genreRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -115,21 +115,28 @@ public class ArtistService {
         return ArtistMapper.toDto(artistOpt.get());
     }
 
-    public ArtistDto registerGenderArtist(Integer id, String nameGender){
-        if (artistRepository.existsById(id)){
-            if (genderRepository.findByName(nameGender).isEmpty()){
-                throw new EntityNotFoundException(String.format("Gender with name %s was not found", nameGender));
-            }
+    public ArtistDto registerGenreArtist(Integer id, String nameGenre){
 
-            Artist artist = artistRepository.findById(id).get();
+        Genre genre = genreRepository.findByName(nameGenre).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Gender with name %s was not found", nameGenre))
+        );
 
-            Gender gender = genderRepository.findByName(nameGender).get();
+        Artist artist = artistRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Artist with id %d was not found.", id))
+        );
 
-            artist.addGenders(gender);
+        artist.addGenders(genre);
 
-            return ArtistMapper.toDto(artistRepository.save(artist));
-        }
+        return ArtistMapper.toDto(artistRepository.save(artist));
+    }
 
-        throw new EntityNotFoundException(String.format("Artist with id %d was not found.", id));
+    public int deleteGenreArtist(Integer id, String nameGenre){
+        Genre genre = genreRepository.findByName(nameGenre).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Gender with name %s was not found", nameGenre))
+        );
+
+        Integer genreId = genre.getId();
+
+        return artistRepository.deleteGenreArtist(id, genreId);
     }
 }
