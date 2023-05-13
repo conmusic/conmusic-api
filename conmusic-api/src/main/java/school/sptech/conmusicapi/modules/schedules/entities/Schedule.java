@@ -1,6 +1,7 @@
-package school.sptech.conmusicapi.modules.event.entities;
+package school.sptech.conmusicapi.modules.schedules.entities;
 
 import jakarta.persistence.*;
+import school.sptech.conmusicapi.modules.events.entities.Event;
 
 import java.time.LocalTime;
 
@@ -11,8 +12,8 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "dia_semana", precision = 1)
-    private Integer dayWeek;
+    @Column(name = "dia_semana")
+    private Integer dayOfWeek;
 
     @Column(name = "horario_inicio")
     private LocalTime startTime;
@@ -21,6 +22,7 @@ public class Schedule {
     private LocalTime endTime;
 
     @ManyToOne
+    @JoinColumn(name = "fk_evento")
     private Event event;
 
     public Integer getId() {
@@ -31,12 +33,12 @@ public class Schedule {
         this.id = id;
     }
 
-    public Integer getDayWeek() {
-        return dayWeek;
+    public Integer getDayOfWeek() {
+        return dayOfWeek;
     }
 
-    public void setDayWeek(Integer dayWeek) {
-        this.dayWeek = dayWeek;
+    public void setDayOfWeek(Integer dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 
     public LocalTime getStartTime() {
@@ -62,6 +64,4 @@ public class Schedule {
     public void setEvent(Event event) {
         this.event = event;
     }
-
-
 }

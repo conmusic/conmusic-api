@@ -1,49 +1,41 @@
-package school.sptech.conmusicapi.modules.event.dtos;
+package school.sptech.conmusicapi.modules.schedules.dtos;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import school.sptech.conmusicapi.shared.dtos.TimeDto;
 
-public class ScheduleDto {
+public class CreateScheduleDto {
+    @NotNull
+    @Min(0)
+    @Max(6)
+    private Integer dayOfWeek;
 
-    private Integer id;
-
-    private Integer dayWeek;
-
+    @NotNull
     private TimeDto startTime;
 
+    @NotNull
     private TimeDto endTime;
 
+    @Positive
     private Integer eventId;
 
-
-    public Integer getId() {
-        return id;
+    public Integer getDayOfWeek() {
+        return dayOfWeek;
     }
 
-
-    public void setId(Integer id) {
-        this.id = id;
+    public void setDayOfWeek(Integer dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
-
-
-    public Integer getDayWeek() {
-        return dayWeek;
-    }
-
-
-    public void setDayWeek(Integer dayWeek) {
-        this.dayWeek = dayWeek;
-    }
-
 
     public TimeDto getStartTime() {
         return startTime;
     }
 
-
     public void setStartTime(TimeDto startTime) {
         this.startTime = startTime;
     }
-
 
     public TimeDto getEndTime() {
         return endTime;
