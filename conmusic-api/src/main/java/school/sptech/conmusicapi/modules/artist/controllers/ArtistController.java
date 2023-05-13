@@ -1,14 +1,9 @@
 package school.sptech.conmusicapi.modules.artist.controllers;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
@@ -17,7 +12,6 @@ import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
 import school.sptech.conmusicapi.modules.artist.services.ArtistService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/artists")
@@ -59,5 +53,32 @@ public class ArtistController {
     public ResponseEntity<ArtistDto> getById(@PathVariable Integer id) {
         ArtistDto artist = artistService.getByArtistId(id);
         return ResponseEntity.status(200).body(artist);
+    }
+
+    @PutMapping("/genre/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<ArtistDto> registerGenre(
+            @PathVariable Integer id,
+            @RequestParam String genre
+    ){
+
+        ArtistDto artistDto = this.artistService.registerGenreArtist(id, genre);
+
+        return ResponseEntity.created(null).body(artistDto);
+    }
+
+    @PutMapping("/delete-genre/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> deleteGenre(
+            @PathVariable Integer id,
+            @RequestParam String genre
+    ){
+        int deleted = this.artistService.deleteGenreArtist(id, genre);
+
+        if (deleted > 0){
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }

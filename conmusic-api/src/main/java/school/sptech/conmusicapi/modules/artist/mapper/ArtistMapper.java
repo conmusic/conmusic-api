@@ -26,6 +26,7 @@ public class ArtistMapper {
         ArtistDto dto = new ArtistDto();
 
         UserMapper.toDto(artist, dto);
+        dto.setMusicalGenres(artist.getMusicalGenres());
 
         return dto;
     }
