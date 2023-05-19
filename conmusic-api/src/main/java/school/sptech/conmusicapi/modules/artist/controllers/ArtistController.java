@@ -88,12 +88,4 @@ public class ArtistController {
 
         return ResponseEntity.notFound().build();
     }
-
-    // APENAS PARA TESTE
-    @GetMapping("/dados-autenticado")
-    @SecurityRequirement(name = "Bearer")
-    @PreAuthorize("hasAuthority('Artist')")
-    public ResponseEntity<Authentication> pegarDadosAutenticado(){
-        return ResponseEntity.ok(SecurityContextHolder.getContext().getAuthentication());
-    }
 }
