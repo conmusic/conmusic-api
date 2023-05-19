@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
@@ -22,6 +25,7 @@ public class ArtistController {
 
     @GetMapping
     @SecurityRequirement(name = "Bearer")
+    @PreAuthorize("hasAuthority('Manager') or hasAuthority('Admin')")
     public ResponseEntity<List<ArtistDto>> findAll() {
         List<ArtistDto> artists = artistService.findAll();
 
@@ -40,6 +44,7 @@ public class ArtistController {
     
     @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
+    @PreAuthorize("hasAuthority('Artist') or hasAuthority('Admin')")
     public ResponseEntity<ArtistDto> update(
             @RequestBody @Valid UpdateArtistDto dto,
             @PathVariable Integer id
@@ -57,6 +62,7 @@ public class ArtistController {
 
     @PutMapping("/genre/{id}")
     @SecurityRequirement(name = "Bearer")
+    @PreAuthorize("hasAuthority('Artist') or hasAuthority('Admin')")
     public ResponseEntity<ArtistDto> registerGenre(
             @PathVariable Integer id,
             @RequestParam String genre
@@ -69,6 +75,7 @@ public class ArtistController {
 
     @PutMapping("/delete-genre/{id}")
     @SecurityRequirement(name = "Bearer")
+    @PreAuthorize("hasAuthority('Artist') or hasAuthority('Admin')")
     public ResponseEntity<Void> deleteGenre(
             @PathVariable Integer id,
             @RequestParam String genre
@@ -80,5 +87,13 @@ public class ArtistController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    // APENAS PARA TESTE
+    @GetMapping("/dados-autenticado")
+    @SecurityRequirement(name = "Bearer")
+    @PreAuthorize("hasAuthority('Artist')")
+    public ResponseEntity<Authentication> pegarDadosAutenticado(){
+        return ResponseEntity.ok(SecurityContextHolder.getContext().getAuthentication());
     }
 }
