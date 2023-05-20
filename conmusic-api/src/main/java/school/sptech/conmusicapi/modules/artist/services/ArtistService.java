@@ -1,6 +1,8 @@
 package school.sptech.conmusicapi.modules.artist.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
@@ -14,6 +16,7 @@ import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
+import school.sptech.conmusicapi.shared.exceptions.UserForbiddenActionException;
 import school.sptech.conmusicapi.shared.utils.GenericObjectList;
 
 import java.util.List;
@@ -54,25 +57,29 @@ public class ArtistService {
     }
 
     public ArtistDto updateArtistDto(UpdateArtistDto dto, Integer id){
-        Optional<Artist> artistOpt = artistRepository.findById(id);
+        Artist artistOpt = artistRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Artist with id %d was not found.", id))
+        );
 
-        if (artistOpt.isEmpty()) {
-            throw new EntityNotFoundException(String.format("Artist with id %d was not found.", id));
-        }
+        userRepository.findById(id).filter(artist ->
+           artist.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())
+        ).orElseThrow(
+                () -> new UserForbiddenActionException("User does not have permission to update this user.")
+        );
 
         Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
 
-        if (isEmailAlreadyInUse && !artistOpt.get().getEmail().equals(dto.getEmail())) {
+        if (isEmailAlreadyInUse && !artistOpt.getEmail().equals(dto.getEmail())) {
             throw new BusinessRuleException("Email is already in use.");
         }
 
         Boolean isCpfAlreadyInUse = userRepository.existsByCpf(dto.getCpf());
 
-        if (isCpfAlreadyInUse && !artistOpt.get().getCpf().equals(dto.getCpf())) {
+        if (isCpfAlreadyInUse && !artistOpt.getCpf().equals(dto.getCpf())) {
             throw new BusinessRuleException("CPF is already in use.");
         }
 
-        Artist updatedArtist = ArtistMapper.fromDtoUpdate(dto, artistOpt.get());
+        Artist updatedArtist = ArtistMapper.fromDtoUpdate(dto, artistOpt);
         updatedArtist.setId(id);
         artistRepository.save(updatedArtist);
         return ArtistMapper.toDto(updatedArtist);
@@ -117,6 +124,12 @@ public class ArtistService {
 
     public ArtistDto registerGenreArtist(Integer id, String nameGenre){
 
+        userRepository.findById(id).filter(artist ->
+                artist.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())
+        ).orElseThrow(
+                () -> new UserForbiddenActionException("The user does not have permission to register genre for this user.")
+        );
+
         Genre genre = genreRepository.findByName(nameGenre).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Gender with name %s was not found", nameGenre))
         );
@@ -131,6 +144,14 @@ public class ArtistService {
     }
 
     public int deleteGenreArtist(Integer id, String nameGenre){
+
+//        FIQUEI EM DÚVIDA SE ISSO VAI NO EM DELETE - ACREDITO QUE DEVERIA
+//        userRepository.findById(id).filter(artist ->
+//                artist.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())
+//        ).orElseThrow(
+//                () -> new UserForbiddenActionException("The user does not have permission to register genre for this user.")
+//        );
+
         Genre genre = genreRepository.findByName(nameGenre).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Gender with name %s was not found", nameGenre))
         );
@@ -139,4 +160,5 @@ public class ArtistService {
 
         return artistRepository.deleteGenreArtist(id, genreId);
     }
+
 }

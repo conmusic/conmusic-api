@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.establishment.dtos.CreateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
@@ -22,12 +23,14 @@ public class EstablishmentController {
     private EstablishmentService establishmentService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('Admin') or hasAuthority('Manager')")
     public ResponseEntity<EstablishmentDto> create(@RequestBody @Valid CreateEstablishmentDto dto) {
         EstablishmentDto establishment = establishmentService.create(dto);
         return ResponseEntity.status(201).body(establishment);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('Admin') or hasAuthority('Manager')")
     public ResponseEntity<EstablishmentDto> update(
             @RequestBody @Valid UpdateEstablishmentDto dto,
             @PathVariable Integer id

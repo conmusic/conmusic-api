@@ -7,4 +7,9 @@ import school.sptech.conmusicapi.modules.user.entities.User;
 @Entity
 @DiscriminatorValue("gerente")
 public class Manager extends User {
+
+    @Override
+    public String getUserType() {
+        return "Manager";
+    }
 }

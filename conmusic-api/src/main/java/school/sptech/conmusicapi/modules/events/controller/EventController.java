@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,8 @@ public class EventController {
     private EventService eventService;
 
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
+    @PreAuthorize("hasAuthority('Manager')")
     public ResponseEntity<EventDto> create(@RequestBody @Valid CreateEventDto dto) {
         EventDto event = eventService.create(dto);
         return ResponseEntity.status(201).body(event);

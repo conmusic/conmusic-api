@@ -26,4 +26,9 @@ public class Artist extends User {
     public void addGenders(Genre genre) {
         this.musicalGenres.add(genre);
     }
+
+    @Override
+    public String getUserType() {
+        return "Artist";
+    }
 }

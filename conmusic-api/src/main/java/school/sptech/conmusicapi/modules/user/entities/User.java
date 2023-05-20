@@ -153,4 +153,6 @@ public abstract class User {
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
+
+    public abstract String getUserType();
 }

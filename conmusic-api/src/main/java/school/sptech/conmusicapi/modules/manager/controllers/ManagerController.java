@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.manager.dtos.CreateManagerDto;
 import school.sptech.conmusicapi.modules.manager.dtos.ManagerDto;
@@ -28,6 +29,7 @@ public class ManagerController {
 
     @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
+    @PreAuthorize("hasAuthority('Admin') or hasAuthority('Manager')")
     public ResponseEntity<ManagerDto> update(
             @RequestBody @Valid UpdateManagerDto dto,
             @PathVariable Integer id
