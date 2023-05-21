@@ -3,7 +3,7 @@ package school.sptech.conmusicapi.modules.schedules.entities;
 import jakarta.persistence.*;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "agenda")
@@ -12,14 +12,14 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "dia_semana")
-    private Integer dayOfWeek;
+    @Column(name = "data_inicio")
+    private LocalDateTime startDateTime;
 
-    @Column(name = "horario_inicio")
-    private LocalTime startTime;
+    @Column(name = "data_termino")
+    private LocalDateTime endDateTime;
 
-    @Column(name = "horario_termino")
-    private LocalTime endTime;
+    @Column(name = "confirmado")
+    private Boolean confirmed;
 
     @ManyToOne
     @JoinColumn(name = "fk_evento")
@@ -33,28 +33,28 @@ public class Schedule {
         this.id = id;
     }
 
-    public Integer getDayOfWeek() {
-        return dayOfWeek;
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
     }
 
-    public void setDayOfWeek(Integer dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
     }
 
-    public LocalTime getStartTime() {
-        return startTime;
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
     }
 
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
+    public void setEndDateTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
     }
 
-    public LocalTime getEndTime() {
-        return endTime;
+    public Boolean getConfirmed() {
+        return confirmed;
     }
 
-    public void setEndTime(LocalTime endTime) {
-        this.endTime = endTime;
+    public void setConfirmed(Boolean confirmed) {
+        this.confirmed = confirmed;
     }
 
     public Event getEvent() {

@@ -1,13 +1,15 @@
 package school.sptech.conmusicapi.modules.schedules.dtos;
 
-import school.sptech.conmusicapi.shared.dtos.TimeDto;
+import school.sptech.conmusicapi.modules.events.dtos.DisplayScheduleEventDto;
+
+import java.time.LocalDateTime;
 
 public class ScheduleDto {
     private Integer id;
-    private Integer dayOfWeek;
-    private TimeDto startTime;
-    private TimeDto endTime;
-    private Integer eventId;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
+    private Boolean confirmed;
+    private DisplayScheduleEventDto event;
 
     public Integer getId() {
         return id;
@@ -17,35 +19,35 @@ public class ScheduleDto {
         this.id = id;
     }
 
-    public Integer getDayOfWeek() {
-        return dayOfWeek;
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
     }
 
-    public void setDayOfWeek(Integer dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
     }
 
-    public TimeDto getStartTime() {
-        return startTime;
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
     }
 
-    public void setStartTime(TimeDto startTime) {
-        this.startTime = startTime;
+    public void setEndDateTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
     }
 
-    public TimeDto getEndTime() {
-        return endTime;
+    public Boolean getConfirmed() {
+        return confirmed;
     }
 
-    public void setEndTime(TimeDto endTime) {
-        this.endTime = endTime;
+    public void setConfirmed(Boolean confirmed) {
+        this.confirmed = confirmed;
     }
 
-    public Integer getEventId() {
-        return eventId;
+    public DisplayScheduleEventDto getEvent() {
+        return event;
     }
 
-    public void setEventId(Integer eventId) {
-        this.eventId = eventId;
+    public void setEvent(DisplayScheduleEventDto event) {
+        this.event = event;
     }
 }

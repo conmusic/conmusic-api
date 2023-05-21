@@ -13,8 +13,6 @@ import school.sptech.conmusicapi.modules.schedules.utils.ScheduleUtil;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 
-import java.util.Optional;
-
 @Service
 public class ScheduleService {
     @Autowired
@@ -24,25 +22,21 @@ public class ScheduleService {
     private IScheduleRepository scheduleRepository;
 
     public ScheduleDto create(CreateScheduleDto dto, Integer eventId) {
-        Optional<Event> eventOpt = eventRepository.findById(eventId);
-
-        if (eventOpt.isEmpty()) {
-            throw new EntityNotFoundException(String.format("Event with id %d was not found", eventId));
-        }
-
         Schedule schedule = ScheduleMapper.fromDto(dto);
-        schedule.setEvent(eventOpt.get());
 
-        Boolean isNewScheduleInvalid = false;
-        for (Schedule s : eventOpt.get().getSchedules()) {
-            if (ScheduleUtil.isScheduleValid(schedule, s)) {
-                isNewScheduleInvalid = true;
-                break;
-            }
+        if (ScheduleUtil.isDurationIntervalInvalid(schedule)) {
+            throw new BusinessRuleException("Schedule with invalid dates. Start DateTime MUST be before End DateTime");
         }
 
-        if (isNewScheduleInvalid) {
-            throw new BusinessRuleException("Schedule is invalid due to overlapping or invalid interval");
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Event with id %d was not found", eventId)));
+
+        schedule.setEvent(event);
+
+        for (Schedule s : event.getSchedules()) {
+            if (ScheduleUtil.isScheduleOverlappingOtherSchedule(schedule, s)) {
+                throw new BusinessRuleException("Schedule is overlapping other schedule.");
+            }
         }
 
         Schedule createdSchedule = scheduleRepository.save(schedule);

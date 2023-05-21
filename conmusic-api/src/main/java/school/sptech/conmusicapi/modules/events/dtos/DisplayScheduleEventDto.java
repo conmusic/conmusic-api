@@ -2,11 +2,8 @@ package school.sptech.conmusicapi.modules.events.dtos;
 
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.genre.dto.DisplayingGenreDto;
-import school.sptech.conmusicapi.modules.schedules.dtos.BasicScheduleDto;
 
-import java.util.List;
-
-public class EventDto {
+public class DisplayScheduleEventDto {
     private Integer id;
     private String name;
     private String description;
@@ -14,7 +11,6 @@ public class EventDto {
     private Double coverCharge;
     private EstablishmentDto establishment;
     private DisplayingGenreDto genre;
-    private List<BasicScheduleDto> schedules;
 
     public Integer getId() {
         return id;
@@ -70,13 +66,5 @@ public class EventDto {
 
     public void setGenre(DisplayingGenreDto genre) {
         this.genre = genre;
-    }
-
-    public List<BasicScheduleDto> getSchedules() {
-        return schedules;
-    }
-
-    public void setSchedules(List<BasicScheduleDto> schedules) {
-        this.schedules = schedules;
     }
 }

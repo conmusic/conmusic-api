@@ -15,8 +15,8 @@ import school.sptech.conmusicapi.modules.genre.dto.RegisterGenreDto;
 import school.sptech.conmusicapi.modules.genre.service.GenreService;
 
 @RestController
-@RequestMapping("/genre")
-@Tag(name = "Genre", description = "This endpoint is responsible for creating music genres in the API")
+@RequestMapping("/genres")
+@Tag(name = "Genres", description = "This endpoint is responsible for creating music genres in the API")
 @SecurityRequirement(name = "Bearer")
 public class GenreController {
 
