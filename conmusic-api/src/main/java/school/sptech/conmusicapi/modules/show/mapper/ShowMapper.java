@@ -5,8 +5,8 @@ import school.sptech.conmusicapi.modules.events.mappers.EventMapper;
 import school.sptech.conmusicapi.modules.schedules.mappers.ScheduleMapper;
 import school.sptech.conmusicapi.modules.show.dtos.CreateShowDto;
 import school.sptech.conmusicapi.modules.show.dtos.ShowDto;
+import school.sptech.conmusicapi.modules.show.dtos.UpdateShowDto;
 import school.sptech.conmusicapi.modules.show.entities.Show;
-import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 
 public class ShowMapper {
     public static Show fromDto(CreateShowDto dto) {
@@ -14,11 +14,6 @@ public class ShowMapper {
 
         entity.setValue(dto.getValue());
         entity.setCoverCharge(dto.getCoverCharge());
-        switch (dto.getSenderType()) {
-            case "artist": entity.setStatus(ShowStatusEnum.ARTIST_PROPOSAL); break;
-            case "manager": entity.setStatus(ShowStatusEnum.MANAGER_PROPOSAL); break;
-            default: entity.setStatus(ShowStatusEnum.UNDEFINED); break;
-        }
 
         return entity;
     }
@@ -35,5 +30,10 @@ public class ShowMapper {
         dto.setSchedule(ScheduleMapper.toBasicDto(entity.getSchedule()));
 
         return dto;
+    }
+
+    public static void fromDtoUpdate(UpdateShowDto dto, Show show) {
+        show.setValue(dto.getValue());
+        show.setCoverCharge(dto.getCoverCharge());
     }
 }

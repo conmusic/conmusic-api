@@ -1,7 +1,12 @@
 package school.sptech.conmusicapi.modules.establishment.entities;
 
 import jakarta.persistence.*;
+import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.manager.entities.Manager;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "estabelecimento")
@@ -46,6 +51,9 @@ public class Establishment {
     @ManyToOne
     @JoinColumn(name = "fk_gerente")
     private Manager manager;
+
+    @OneToMany(mappedBy = "establishment", fetch = FetchType.LAZY)
+    private List<Event> events;
 
     public Integer getId() {
         return id;
@@ -149,5 +157,13 @@ public class Establishment {
 
     public void setManager(Manager manager) {
         this.manager = manager;
+    }
+
+    public List<Event> getEvents() {
+        return Objects.isNull(events) ? Collections.emptyList() : events;
+    }
+
+    public void setEvents(List<Event> events) {
+        this.events = events;
     }
 }

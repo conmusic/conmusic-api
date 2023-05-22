@@ -1,18 +1,15 @@
 package school.sptech.conmusicapi.modules.show.dtos;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 
 public class CreateShowDto {
     @Positive
+    @Min(200)
     private Double value;
 
     @Positive
+    @Max(100)
     private Double coverCharge;
-
-    @NotBlank
-    private String senderType;
 
     @NotNull
     @Positive
@@ -40,14 +37,6 @@ public class CreateShowDto {
 
     public void setCoverCharge(Double coverCharge) {
         this.coverCharge = coverCharge;
-    }
-
-    public String getSenderType() {
-        return senderType;
-    }
-
-    public void setSenderType(String senderType) {
-        this.senderType = senderType;
     }
 
     public Integer getEventId() {

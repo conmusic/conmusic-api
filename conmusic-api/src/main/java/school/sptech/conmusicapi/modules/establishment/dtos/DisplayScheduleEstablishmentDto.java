@@ -1,12 +1,6 @@
 package school.sptech.conmusicapi.modules.establishment.dtos;
 
-import school.sptech.conmusicapi.modules.events.dtos.DisplayEstablishmentEventDto;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
-public class EstablishmentDto {
+public class DisplayScheduleEstablishmentDto {
     private Integer id;
     private String cnpj;
     private String fantasyName;
@@ -20,7 +14,6 @@ public class EstablishmentDto {
     private String state;
     private String zipCode;
     private Integer managerId;
-    private List<DisplayEstablishmentEventDto> events;
 
     public Integer getId() {
         return id;
@@ -124,13 +117,5 @@ public class EstablishmentDto {
 
     public void setManagerId(Integer managerId) {
         this.managerId = managerId;
-    }
-
-    public List<DisplayEstablishmentEventDto> getEvents() {
-        return Objects.isNull(events) ? Collections.emptyList() : events;
-    }
-
-    public void setEvents(List<DisplayEstablishmentEventDto> events) {
-        this.events = events;
     }
 }

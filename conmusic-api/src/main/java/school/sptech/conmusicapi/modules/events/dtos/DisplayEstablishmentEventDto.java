@@ -1,15 +1,13 @@
 package school.sptech.conmusicapi.modules.events.dtos;
 
-import school.sptech.conmusicapi.modules.establishment.dtos.DisplayScheduleEstablishmentDto;
 import school.sptech.conmusicapi.modules.genre.dto.DisplayingGenreDto;
 
-public class DisplayScheduleEventDto {
+public class DisplayEstablishmentEventDto {
     private Integer id;
     private String name;
     private String description;
     private Double value;
     private Double coverCharge;
-    private DisplayScheduleEstablishmentDto establishment;
     private DisplayingGenreDto genre;
 
     public Integer getId() {
@@ -50,14 +48,6 @@ public class DisplayScheduleEventDto {
 
     public void setCoverCharge(Double coverCharge) {
         this.coverCharge = coverCharge;
-    }
-
-    public DisplayScheduleEstablishmentDto getEstablishment() {
-        return establishment;
-    }
-
-    public void setEstablishment(DisplayScheduleEstablishmentDto establishment) {
-        this.establishment = establishment;
     }
 
     public DisplayingGenreDto getGenre() {

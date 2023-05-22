@@ -19,3 +19,8 @@ INSERT INTO evento
     (nome, descricao, valor, taxa_cover, fk_estabelecimento, fk_genero)
 VALUES
     ('Almocinho com Pagode', 'Bastante animação em Fortaleza!', 1750, 4, 1, 5);
+
+INSERT INTO agenda
+    (confirmado, data_inicio, data_termino, fk_evento)
+VALUES
+    (FALSE, '2023-06-21 20:05:36.904', '2023-06-21 22:05:36.904', 1);
