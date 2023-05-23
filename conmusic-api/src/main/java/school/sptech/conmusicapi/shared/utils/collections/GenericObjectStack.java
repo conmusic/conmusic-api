@@ -1,5 +1,8 @@
 package school.sptech.conmusicapi.shared.utils.collections;
 
+import school.sptech.conmusicapi.shared.utils.iterator.GenericObjectStackIterator;
+import school.sptech.conmusicapi.shared.utils.iterator.IGenericIterator;
+
 import java.util.List;
 
 public class GenericObjectStack<Obj> implements IGenericObjectCollection {
@@ -86,6 +89,11 @@ public class GenericObjectStack<Obj> implements IGenericObjectCollection {
         } while (!auxStack.isEmpty());
 
         return target;
+    }
+
+    @Override
+    public IGenericIterator<Obj> createIterator() {
+        return new GenericObjectStackIterator<Obj>(this);
     }
 
     private boolean isIndexInvalid(int index) {

@@ -1,5 +1,8 @@
 package school.sptech.conmusicapi.shared.utils.collections;
 
+import school.sptech.conmusicapi.shared.utils.iterator.GenericObjectQueueIterator;
+import school.sptech.conmusicapi.shared.utils.iterator.IGenericIterator;
+
 import java.util.List;
 
 public class GenericObjectQueue<Obj> implements IGenericObjectCollection {
@@ -71,6 +74,11 @@ public class GenericObjectQueue<Obj> implements IGenericObjectCollection {
         int originalMaxSize = queue.length;
         this.queue = (Obj[]) new Object[originalMaxSize];
         this.size = 0;
+    }
+
+    @Override
+    public IGenericIterator<Obj> createIterator() {
+        return new GenericObjectQueueIterator<Obj>(this);
     }
 
     private boolean isIndexInvalid(int index) {

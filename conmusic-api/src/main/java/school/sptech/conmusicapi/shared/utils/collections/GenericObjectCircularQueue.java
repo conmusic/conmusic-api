@@ -1,5 +1,8 @@
 package school.sptech.conmusicapi.shared.utils.collections;
 
+import school.sptech.conmusicapi.shared.utils.iterator.GenericObjectQueueIterator;
+import school.sptech.conmusicapi.shared.utils.iterator.IGenericIterator;
+
 public class GenericObjectCircularQueue<Obj> extends GenericObjectQueue<Obj> {
     private int start;
     private int end;
@@ -88,6 +91,11 @@ public class GenericObjectCircularQueue<Obj> extends GenericObjectQueue<Obj> {
         }
 
         return value;
+    }
+
+    @Override
+    public IGenericIterator<Obj> createIterator() {
+        return new GenericObjectQueueIterator<Obj>(this);
     }
 
     private boolean isIndexInvalid(int index) {

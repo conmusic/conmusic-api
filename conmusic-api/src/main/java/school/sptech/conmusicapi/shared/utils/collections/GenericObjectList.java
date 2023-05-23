@@ -1,5 +1,8 @@
 package school.sptech.conmusicapi.shared.utils.collections;
 
+import school.sptech.conmusicapi.shared.utils.iterator.GenericObjectListIterator;
+import school.sptech.conmusicapi.shared.utils.iterator.IGenericIterator;
+
 import java.util.List;
 
 public class GenericObjectList<Obj> implements IGenericObjectCollection {
@@ -44,6 +47,17 @@ public class GenericObjectList<Obj> implements IGenericObjectCollection {
 
     public boolean remove(Obj element) {
         return remove(search(element));
+    }
+
+    public boolean swap(int index1, int index2) {
+        if (isIndexInvalid(index1) || isIndexInvalid(index2)) {
+            return false;
+        }
+
+        Obj aux = getByIndex(index1);
+        array[index1] = getByIndex(index2);
+        array[index2] = aux;
+        return true;
     }
 
     private boolean isIndexInvalid(int index) {
@@ -91,14 +105,8 @@ public class GenericObjectList<Obj> implements IGenericObjectCollection {
         return array[index];
     }
 
-    public boolean swap(int index1, int index2) {
-        if (isIndexInvalid(index1) || isIndexInvalid(index2)) {
-            return false;
-        }
-
-        Obj aux = getByIndex(index1);
-        array[index1] = getByIndex(index2);
-        array[index2] = aux;
-        return true;
+    @Override
+    public IGenericIterator<Obj> createIterator() {
+        return new GenericObjectListIterator<Obj>(this);
     }
 }

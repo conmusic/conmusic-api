@@ -1,5 +1,7 @@
 package school.sptech.conmusicapi.shared.utils.collections;
 
+import school.sptech.conmusicapi.shared.utils.iterator.IGenericIterator;
+
 import java.util.List;
 
 public interface IGenericObjectCollection<Obj> {
@@ -10,4 +12,5 @@ public interface IGenericObjectCollection<Obj> {
     Obj[] asArray();
     List<Obj> asList();
     void clear();
+    IGenericIterator<Obj> createIterator();
 }

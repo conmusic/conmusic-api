@@ -1,6 +1,7 @@
 package school.sptech.conmusicapi.shared.utils.iterator;
 
-public interface IGenericObjectCollectionIterator<Obj> {
+public interface IGenericIterator<Obj> {
     Obj getNext();
     boolean hasMore();
+    void reset();
 }
