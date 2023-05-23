@@ -16,7 +16,7 @@ import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 import school.sptech.conmusicapi.shared.exceptions.UserForbiddenActionException;
-import school.sptech.conmusicapi.shared.utils.GenericObjectList;
+import school.sptech.conmusicapi.shared.utils.collections.GenericObjectList;
 
 import java.util.List;
 import java.util.Optional;

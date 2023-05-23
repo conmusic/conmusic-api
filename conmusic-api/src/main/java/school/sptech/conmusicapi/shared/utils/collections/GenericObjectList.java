@@ -1,4 +1,4 @@
-package school.sptech.conmusicapi.shared.utils;
+package school.sptech.conmusicapi.shared.utils.collections;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class GenericObjectList<Obj> implements IGenericObjectCollection {
     }
 
     public void add(Obj element) {
-        if (pointer == array.length) {
+        if (isFull()) {
             throw new IllegalStateException("List is already full");
         } else {
             array[pointer++] = element;
@@ -46,14 +46,15 @@ public class GenericObjectList<Obj> implements IGenericObjectCollection {
         return remove(search(element));
     }
 
+    private boolean isIndexInvalid(int index) {
+        return index < 0 || index >= pointer;
+    }
+
+    @Override
     public void clear() {
         int creationSize = array.length;
         array = (Obj[]) new Object[creationSize];
         pointer = 0;
-    }
-
-    private boolean isIndexInvalid(int index) {
-        return index < 0 || index >= pointer;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class GenericObjectList<Obj> implements IGenericObjectCollection {
     }
 
     @Override
-    public Object[] asArray() {
+    public Obj[] asArray() {
         return array;
     }
 
@@ -90,7 +91,6 @@ public class GenericObjectList<Obj> implements IGenericObjectCollection {
         return array[index];
     }
 
-    @Override
     public boolean swap(int index1, int index2) {
         if (isIndexInvalid(index1) || isIndexInvalid(index2)) {
             return false;
