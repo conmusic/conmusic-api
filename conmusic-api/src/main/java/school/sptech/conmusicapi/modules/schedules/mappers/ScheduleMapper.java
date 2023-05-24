@@ -5,7 +5,6 @@ import school.sptech.conmusicapi.modules.schedules.dtos.BasicScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.dtos.CreateScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.dtos.ScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
-import school.sptech.conmusicapi.shared.mappers.TimeMapper;
 
 public class ScheduleMapper {
     public static Schedule fromDto(CreateScheduleDto dto) {

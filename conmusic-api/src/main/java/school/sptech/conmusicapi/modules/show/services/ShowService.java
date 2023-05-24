@@ -14,14 +14,23 @@ import school.sptech.conmusicapi.modules.show.dtos.CreateShowDto;
 import school.sptech.conmusicapi.modules.show.dtos.ShowDto;
 import school.sptech.conmusicapi.modules.show.dtos.UpdateShowDto;
 import school.sptech.conmusicapi.modules.show.entities.Show;
+import school.sptech.conmusicapi.modules.show.entities.ShowRecord;
 import school.sptech.conmusicapi.modules.show.mapper.ShowMapper;
+import school.sptech.conmusicapi.modules.show.repositories.IShowRecordRepository;
 import school.sptech.conmusicapi.modules.show.repositories.IShowRepository;
 import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
+import school.sptech.conmusicapi.modules.show.util.ShowUtil;
 import school.sptech.conmusicapi.modules.user.dtos.UserDetailsDto;
+import school.sptech.conmusicapi.modules.user.entities.User;
+import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
+import school.sptech.conmusicapi.shared.utils.collections.GenericObjectQueue;
+import school.sptech.conmusicapi.shared.utils.collections.GenericObjectStack;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,10 +42,18 @@ public class ShowService {
     private IArtistRepository artistRepository;
 
     @Autowired
+    private IUserRepository userRepository;
+
+    @Autowired
     private IEventRepository eventRepository;
 
     @Autowired
     private IScheduleRepository scheduleRepository;
+
+    @Autowired
+    private IShowRecordRepository showRecordRepository;
+
+    private GenericObjectStack<Integer> stack = new GenericObjectStack<Integer>();
 
     public ShowDto create(CreateShowDto dto) {
         Optional<Show> showOpt = showRepository.findByArtistIdAndEventIdAndScheduleId(
@@ -94,6 +111,21 @@ public class ShowService {
                         String.format("Show with id %d was not found", id)
                 ));
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email %s was not found", details.getUsername())
+                ));
+
+        if (
+            !show.getEvent().getEstablishment().getManager().getId().equals(user.getId())
+            && !show.getArtist().getId().equals(user.getId())
+        ) {
+            throw new BusinessRuleException("Unrelated users cannot request for changes");
+        }
+
         if (
                 show.getSchedule().getStartDateTime().isBefore(LocalDateTime.now())
                 || show.getSchedule().getStartDateTime().equals(LocalDateTime.now())
@@ -115,6 +147,9 @@ public class ShowService {
         ) {
             throw new BusinessRuleException("It's not possible to negotiate the details of this show");
         }
+
+        ShowRecord record = showRecordRepository.save(ShowUtil.createRecord(show, user));
+
 
         ShowMapper.fromDtoUpdate(dto, show);
         show.setStatus(ShowStatusEnum.NEGOTIATION);
