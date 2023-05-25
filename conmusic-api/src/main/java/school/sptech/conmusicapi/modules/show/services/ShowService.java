@@ -12,10 +12,12 @@ import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
 import school.sptech.conmusicapi.modules.schedules.repositories.IScheduleRepository;
 import school.sptech.conmusicapi.modules.show.dtos.CreateShowDto;
 import school.sptech.conmusicapi.modules.show.dtos.ShowDto;
+import school.sptech.conmusicapi.modules.show.dtos.ShowRecordDto;
 import school.sptech.conmusicapi.modules.show.dtos.UpdateShowDto;
 import school.sptech.conmusicapi.modules.show.entities.Show;
 import school.sptech.conmusicapi.modules.show.entities.ShowRecord;
 import school.sptech.conmusicapi.modules.show.mapper.ShowMapper;
+import school.sptech.conmusicapi.modules.show.mapper.ShowRecordMapper;
 import school.sptech.conmusicapi.modules.show.repositories.IShowRecordRepository;
 import school.sptech.conmusicapi.modules.show.repositories.IShowRepository;
 import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
@@ -25,13 +27,13 @@ import school.sptech.conmusicapi.modules.user.entities.User;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
-import school.sptech.conmusicapi.shared.utils.collections.GenericObjectQueue;
+import school.sptech.conmusicapi.shared.utils.collections.GenericObjectCircularQueue;
+import school.sptech.conmusicapi.shared.utils.collections.GenericObjectList;
 import school.sptech.conmusicapi.shared.utils.collections.GenericObjectStack;
+import school.sptech.conmusicapi.shared.utils.iterator.IGenericIterator;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ShowService {
@@ -52,8 +54,6 @@ public class ShowService {
 
     @Autowired
     private IShowRecordRepository showRecordRepository;
-
-    private GenericObjectStack<Integer> stack = new GenericObjectStack<Integer>();
 
     public ShowDto create(CreateShowDto dto) {
         Optional<Show> showOpt = showRepository.findByArtistIdAndEventIdAndScheduleId(
@@ -148,8 +148,7 @@ public class ShowService {
             throw new BusinessRuleException("It's not possible to negotiate the details of this show");
         }
 
-        ShowRecord record = showRecordRepository.save(ShowUtil.createRecord(show, user));
-
+        showRecordRepository.save(ShowUtil.createRecord(show, user));
 
         ShowMapper.fromDtoUpdate(dto, show);
         show.setStatus(ShowStatusEnum.NEGOTIATION);
@@ -202,5 +201,46 @@ public class ShowService {
         show.setStatus(status);
         Show updatedShow = showRepository.save(show);
         return ShowMapper.toDto(updatedShow);
+    }
+
+    public List<ShowDto> listByStatus(EnumSet status) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email %s was not found", details.getUsername())
+                ));
+
+        List<Show> shows = showRepository.findAllByUserIdAndStatus(user.getId(), status);
+        GenericObjectList<Show> list = new GenericObjectList<>(shows.size());
+        shows.forEach(list::add);
+
+        GenericObjectCircularQueue<ShowDto> queue = new GenericObjectCircularQueue<>(list.getSize());
+        IGenericIterator<Show> iterator = list.createIterator();
+        while (iterator.hasMore()) {
+            queue.insert(ShowMapper.toDto(iterator.getNext()));
+        }
+
+        return queue.asList();
+    }
+
+    public List<ShowRecordDto> listAllChangesByShowId(Integer id) {
+        Show show = showRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Show with id %d was not found", id)
+                ));
+
+        List<ShowRecord> records = showRecordRepository.findByShowId(show.getId());
+        GenericObjectList<ShowRecord> list = new GenericObjectList<ShowRecord>(records.size());
+        records.forEach(list::add);
+
+        GenericObjectStack<ShowRecordDto> stack = new GenericObjectStack<>(list.getSize());
+        IGenericIterator<ShowRecord> iterator = list.createIterator();
+        while (iterator.hasMore()) {
+            stack.push(ShowRecordMapper.toDto(iterator.getNext()));
+        }
+
+        return stack.asList();
     }
 }

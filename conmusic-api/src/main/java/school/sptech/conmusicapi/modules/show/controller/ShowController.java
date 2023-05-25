@@ -9,8 +9,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.show.dtos.CreateShowDto;
 import school.sptech.conmusicapi.modules.show.dtos.ShowDto;
+import school.sptech.conmusicapi.modules.show.dtos.ShowRecordDto;
 import school.sptech.conmusicapi.modules.show.dtos.UpdateShowDto;
 import school.sptech.conmusicapi.modules.show.services.ShowService;
+import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
+
+import java.util.EnumSet;
+import java.util.List;
 
 @RestController
 @RequestMapping("/shows")
@@ -37,6 +42,33 @@ public class ShowController {
         return ResponseEntity.status(200).body(show);
     }
 
+    @GetMapping("/history/{id}")
+    @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
+    public ResponseEntity<List<ShowRecordDto>> listAllChangesByShowId(
+            @PathVariable Integer id
+    ) {
+        List<ShowRecordDto> history = showService.listAllChangesByShowId(id);
+
+        if (history.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(200).body(history);
+    }
+
+    @GetMapping("/proposals")
+    @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
+    public ResponseEntity<List<ShowDto>> listAllProposals() {
+        List<ShowDto> showDtos = showService
+                .listByStatus(EnumSet.of(ShowStatusEnum.ARTIST_PROPOSAL, ShowStatusEnum.MANAGER_PROPOSAL));
+
+        if (showDtos.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(200).body(showDtos);
+    }
+
     @PatchMapping("/proposals/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<ShowDto> startNegotiation(
@@ -55,6 +87,28 @@ public class ShowController {
         final String NEW_STATUS = "REJECTED";
         showService.updateStatus(id, NEW_STATUS);
         return ResponseEntity.status(204).build();
+    }
+
+    @GetMapping("/negotiations")
+    @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
+    public ResponseEntity<List<ShowDto>> listAllNegotiations() {
+        List<ShowDto> showDtos = showService
+                .listByStatus(EnumSet.of(
+                        ShowStatusEnum.NEGOTIATION,
+                        ShowStatusEnum.ARTIST_ACCEPTED,
+                        ShowStatusEnum.MANAGER_ACCEPTED,
+                        ShowStatusEnum.CONFIRMED,
+                        ShowStatusEnum.ARTIST_WITHDRAW,
+                        ShowStatusEnum.MANAGER_WITHDRAW,
+                        ShowStatusEnum.ARTIST_CANCELED,
+                        ShowStatusEnum.MANAGER_CANCELED
+                ));
+
+        if (showDtos.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(200).body(showDtos);
     }
 
     @PatchMapping("/negotiations/{id}")
