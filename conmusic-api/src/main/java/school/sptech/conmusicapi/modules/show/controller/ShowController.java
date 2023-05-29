@@ -42,6 +42,13 @@ public class ShowController {
         return ResponseEntity.status(200).body(show);
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
+    public ResponseEntity<ShowDto> getById(@PathVariable Integer id) {
+        ShowDto show = showService.getById(id);
+        return ResponseEntity.status(200).body(show);
+    }
+
     @GetMapping("/history/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<List<ShowRecordDto>> listAllChangesByShowId(
@@ -71,21 +78,15 @@ public class ShowController {
 
     @PatchMapping("/proposals/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
-    public ResponseEntity<ShowDto> startNegotiation(
-            @PathVariable Integer id
-    ) {
-        final String NEW_STATUS = "NEGOTIATION";
-        ShowDto showDto = showService.updateStatus(id, NEW_STATUS);
+    public ResponseEntity<ShowDto> startNegotiation(@PathVariable Integer id) {
+        ShowDto showDto = showService.acceptProposal(id);
         return ResponseEntity.status(200).body(showDto);
     }
 
     @DeleteMapping("/proposals/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
-    public ResponseEntity<Void> rejectProposal(
-            @PathVariable Integer id
-    ) {
-        final String NEW_STATUS = "REJECTED";
-        showService.updateStatus(id, NEW_STATUS);
+    public ResponseEntity<Void> rejectProposal(@PathVariable Integer id) {
+        showService.rejectProposal(id);
         return ResponseEntity.status(204).build();
     }
 
@@ -113,41 +114,29 @@ public class ShowController {
 
     @PatchMapping("/negotiations/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
-    public ResponseEntity<ShowDto> acceptTermsOfNegotiation(
-            @PathVariable Integer id
-    ) {
-        final String NEW_STATUS = "ACCEPTED";
-        ShowDto showDto = showService.updateStatus(id, NEW_STATUS);
+    public ResponseEntity<ShowDto> acceptTermsOfNegotiation(@PathVariable Integer id) {
+        ShowDto showDto = showService.acceptTermsOfNegotiation(id);
         return ResponseEntity.status(200).body(showDto);
     }
 
     @DeleteMapping("/negotiations/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
-    public ResponseEntity<Void> withdrawFromNegotiation(
-            @PathVariable Integer id
-    ) {
-        final String NEW_STATUS = "WITHDRAW";
-        showService.updateStatus(id, NEW_STATUS);
+    public ResponseEntity<Void> withdrawFromNegotiation(@PathVariable Integer id) {
+        showService.withdrawNegotiation(id);
         return ResponseEntity.status(204).build();
     }
 
     @PatchMapping("/confirmed/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
-    public ResponseEntity<ShowDto> concludeShow(
-            @PathVariable Integer id
-    ) {
-        final String NEW_STATUS = "CONCLUDED";
-        ShowDto showDto = showService.updateStatus(id, NEW_STATUS);
+    public ResponseEntity<ShowDto> concludeShow(@PathVariable Integer id) {
+        ShowDto showDto = showService.concludeShow(id);
         return ResponseEntity.status(200).body(showDto);
     }
 
     @DeleteMapping("/confirmed/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
-    public ResponseEntity<Void> cancel(
-            @PathVariable Integer id
-    ) {
-        final String NEW_STATUS = "CANCELED";
-        showService.updateStatus(id, NEW_STATUS);
+    public ResponseEntity<Void> cancel(@PathVariable Integer id) {
+        showService.cancelShow(id);
         return ResponseEntity.status(204).build();
     }
 }

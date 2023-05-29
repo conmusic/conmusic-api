@@ -23,4 +23,6 @@ public interface IShowRepository extends JpaRepository<Show, Integer> {
         ORDER BY s.schedule.startDateTime
     """)
     List<Show> findAllByUserIdAndStatus(Integer id, EnumSet status);
+
+    List<Show> findByIdNotEqualsAndScheduleIdEquals(Integer id, Integer id1);
 }

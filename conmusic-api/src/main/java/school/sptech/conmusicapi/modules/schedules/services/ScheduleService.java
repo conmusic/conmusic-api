@@ -2,6 +2,7 @@ package school.sptech.conmusicapi.modules.schedules.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishmentRepository;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.events.repositories.IEventRepository;
 import school.sptech.conmusicapi.modules.schedules.dtos.CreateScheduleDto;
@@ -13,10 +14,15 @@ import school.sptech.conmusicapi.modules.schedules.utils.ScheduleUtil;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 
+import java.util.List;
+
 @Service
 public class ScheduleService {
     @Autowired
     private IEventRepository eventRepository;
+
+    @Autowired
+    private IEstablishmentRepository establishmentRepository;
 
     @Autowired
     private IScheduleRepository scheduleRepository;
@@ -41,5 +47,31 @@ public class ScheduleService {
 
         Schedule createdSchedule = scheduleRepository.save(schedule);
         return ScheduleMapper.toDto(createdSchedule);
+    }
+
+    public List<ScheduleDto> listByEventId(Integer id) {
+        if (!eventRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format("Event with id %d was not found", id));
+        }
+
+        List<Schedule> schedules = scheduleRepository.findByEventId(id);
+
+        return schedules
+                .stream()
+                .map(ScheduleMapper::toDto)
+                .toList();
+    }
+
+    public List<ScheduleDto> listByEstablishmentId(Integer id) {
+        if (!establishmentRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format("Establishment with id %d was not found", id));
+        }
+
+        List<Schedule> schedules = scheduleRepository.findByEstablishmentId(id);
+
+        return schedules
+                .stream()
+                .map(ScheduleMapper::toDto)
+                .toList();
     }
 }

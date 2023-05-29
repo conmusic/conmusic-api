@@ -6,13 +6,12 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.genre.dto.DisplayingGenreDto;
 import school.sptech.conmusicapi.modules.genre.dto.RegisterGenreDto;
 import school.sptech.conmusicapi.modules.genre.service.GenreService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/genres")
@@ -28,5 +27,16 @@ public class GenreController {
     @PreAuthorize("hasAuthority('Admin')")
     public ResponseEntity<DisplayingGenreDto> registerGender(@RequestBody @Valid RegisterGenreDto registerGenreDto){
         return ResponseEntity.created(null).body(genreService.register(registerGenreDto));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<DisplayingGenreDto>> listAll() {
+        List<DisplayingGenreDto> genres = genreService.list();
+
+        if (genres.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(200).body(genres);
     }
 }

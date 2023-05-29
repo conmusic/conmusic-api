@@ -62,50 +62,64 @@ public class ShowService {
                 dto.getScheduleId()
         );
 
+        if (showOpt.isPresent()) {
+            return this.acceptProposal(showOpt.get().getId());
+        }
+
         Show show = ShowMapper.fromDto(dto);
-        if (showOpt.isEmpty()) {
-            Artist artist = artistRepository.findById(dto.getArtistId())
+
+        Artist artist = artistRepository.findById(dto.getArtistId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Artist with id %d was not found", dto.getArtistId())));
 
-            Event event = eventRepository.findById(dto.getEventId())
+        Event event = eventRepository.findById(dto.getEventId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Event with id %d was not found", dto.getEventId())));
 
-            Schedule schedule = scheduleRepository.findById(dto.getScheduleId())
+        Schedule schedule = scheduleRepository.findById(dto.getScheduleId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Schedule with id %d was not found", dto.getScheduleId())));
 
-            if (
-                    schedule.getStartDateTime().isBefore(LocalDateTime.now())
-                    || schedule.getStartDateTime().equals(LocalDateTime.now())
-            ) {
-                throw new BusinessRuleException("The date of this show has already happened.");
-            }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
 
-            if (schedule.getConfirmed()) {
-                throw new BusinessRuleException("Schedule is already confirmed");
-            }
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User with email %s was not found", details.getUsername())));
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
-
-            ShowStatusEnum status = ShowStatusEnum.getStatusByName(String.format("%S_PROPOSAL", details.getUserType()));
-
-            show.setArtist(artist);
-            show.setEvent(event);
-            show.setSchedule(schedule);
-            show.setStatus(status);
-        } else {
-            show.setId(showOpt.get().getId());
-            show.setArtist(showOpt.get().getArtist());
-            show.setEvent(showOpt.get().getEvent());
-            show.setSchedule(showOpt.get().getSchedule());
-            show.setStatus(ShowStatusEnum.NEGOTIATION);
+        if (
+                !artist.getId().equals(user.getId())
+                && !event.getEstablishment().getManager().getId().equals(user.getId())
+        ) {
+            throw new BusinessRuleException("The user is neither the artist nor the manager of the show");
         }
+
+        if (!schedule.getEvent().getId().equals(event.getId())) {
+            throw new BusinessRuleException("Schedule is not from the event that was informed");
+        }
+
+        if (
+                schedule.getStartDateTime().isBefore(LocalDateTime.now())
+                        || schedule.getStartDateTime().equals(LocalDateTime.now())
+        ) {
+            throw new BusinessRuleException("The date of this show has already happened.");
+        }
+
+        if (schedule.getConfirmed()) {
+            throw new BusinessRuleException("Schedule is already confirmed");
+        }
+
+        ShowStatusEnum status = ShowStatusEnum.getStatusByName(String.format("%S_PROPOSAL", details.getUserType()));
+        if (status.equals(ShowStatusEnum.UNDEFINED)) {
+            throw new BusinessRuleException("Invalid show status");
+        }
+
+        show.setArtist(artist);
+        show.setEvent(event);
+        show.setSchedule(schedule);
+        show.setStatus(status);
 
         Show createdShow = showRepository.save(show);
         return ShowMapper.toDto(createdShow);
     }
 
-    public ShowDto update(int id, UpdateShowDto dto) {
+    public ShowDto update(Integer id, UpdateShowDto dto) {
         Show show = showRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Show with id %d was not found", id)
@@ -157,40 +171,328 @@ public class ShowService {
         return ShowMapper.toDto(updatedShow);
     }
 
-    public ShowDto updateStatus(int id, String newStatus) {
+    public ShowDto acceptProposal(Integer id) {
         Show show = showRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Show with id %d was not found", id)
                 ));
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email %s was not found", details.getUsername())
+                ));
+
         if (
-                newStatus.equals("ACCEPTED")
-                || newStatus.equals("REJECTED")
-                || newStatus.equals("WITHDRAW")
-                || newStatus.equals("CANCELED")
+                !show.getEvent().getEstablishment().getManager().getId().equals(user.getId())
+                && !show.getArtist().getId().equals(user.getId())
         ) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
-
-            if (!details.getUserType().equals("Artist") && !details.getUserType().equals("Manager")) {
-                throw new BusinessRuleException("Invalid user requesting changes for show");
-            }
-
-            newStatus = String.format("%S_%S", details.getUserType(), newStatus);
-        } else if (
-                !newStatus.equals("NEGOTIATION")
-                && !newStatus.equals("CONFIRMED")
-                && !newStatus.equals("CONCLUDED")
-        ) {
-            throw new BusinessRuleException(String.format("Invalid newStatus: %s", newStatus));
+            throw new BusinessRuleException("Unrelated users cannot request for changes");
         }
 
-        ShowStatusEnum status = ShowStatusEnum.getStatusByName(newStatus);
-        if (status.equals(ShowStatusEnum.UNDEFINED)) {
-            throw new BusinessRuleException(String.format("Invalid newStatus: %s", newStatus));
+        if (show.getStatus().equals(ShowStatusEnum.NEGOTIATION)) {
+            throw new BusinessRuleException("Show is already in negotiation");
         }
 
+        if (!show.getStatus().isStatusChangeValid(ShowStatusEnum.NEGOTIATION)) {
+            throw new BusinessRuleException(String.format(
+                    "It is forbidden to change status from %s to %s",
+                    show.getStatus().name(),
+                    ShowStatusEnum.NEGOTIATION
+            ));
+        }
+
+        if (show.getStatus().name().contains(details.getUserType().toUpperCase())) {
+            throw new BusinessRuleException("The user who made the proposal cannot accept it");
+        }
+
+        showRecordRepository.save(ShowUtil.createRecord(show, user));
+
+        if (
+                show.getSchedule().getStartDateTime().isBefore(LocalDateTime.now())
+                || show.getSchedule().getStartDateTime().equals(LocalDateTime.now())
+        ) {
+            show.setStatus(ShowStatusEnum.getStatusByName(String.format("%S_REJECTED", details.getUserType())));
+            showRepository.save(show);
+
+            throw new BusinessRuleException("The proposal date has passed");
+        }
+
+        if (show.getSchedule().getConfirmed()) {
+            show.setStatus(ShowStatusEnum.MANAGER_REJECTED);
+            showRepository.save(show);
+
+            throw new BusinessRuleException("The schedule already has one show confirmed");
+        }
+
+        show.setStatus(ShowStatusEnum.NEGOTIATION);
+        Show updatedShow = showRepository.save(show);
+        return ShowMapper.toDto(updatedShow);
+    }
+
+    public void rejectProposal(Integer id) {
+        Show show = showRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Show with id %d was not found", id)
+                ));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email %s was not found", details.getUsername())
+                ));
+
+        if (
+                !show.getEvent().getEstablishment().getManager().getId().equals(user.getId())
+                        && !show.getArtist().getId().equals(user.getId())
+        ) {
+            throw new BusinessRuleException("Unrelated users cannot request for changes");
+        }
+
+        ShowStatusEnum status = ShowStatusEnum.getStatusByName(String.format("%S_REJECTED", details.getUserType()));
         if (!show.getStatus().isStatusChangeValid(status)) {
+            throw new BusinessRuleException(String.format(
+                    "It is forbidden to change status from %s to %s",
+                    show.getStatus().name(),
+                    status
+            ));
+        }
+
+        showRecordRepository.save(ShowUtil.createRecord(show, user));
+
+        show.setStatus(status);
+        showRepository.save(show);
+    }
+
+    public ShowDto acceptTermsOfNegotiation(Integer id) {
+        Show show = showRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Show with id %d was not found", id)
+                ));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email %s was not found", details.getUsername())
+                ));
+
+        if (
+                !show.getEvent().getEstablishment().getManager().getId().equals(user.getId())
+                        && !show.getArtist().getId().equals(user.getId())
+        ) {
+            throw new BusinessRuleException("Unrelated users cannot request for changes");
+        }
+
+        ShowStatusEnum status = ShowStatusEnum.getStatusByName(String.format("%S_ACCEPTED", details.getUserType()));
+        if (show.getStatus().equals(status)) {
+            throw new BusinessRuleException("Both have to accept the terms of negotiation for the show to be confirmed");
+        } else if (
+                show.getStatus().equals(ShowStatusEnum.MANAGER_ACCEPTED)
+                || show.getStatus().equals(ShowStatusEnum.ARTIST_ACCEPTED)
+        ) {
+            return this.confirmShow(id);
+        } else if (!show.getStatus().isStatusChangeValid(status)) {
+            throw new BusinessRuleException(String.format(
+                    "It is forbidden to change status from %s to %s",
+                    show.getStatus().name(),
+                    status
+            ));
+        }
+
+        showRecordRepository.save(ShowUtil.createRecord(show, user));
+
+        if (
+                show.getSchedule().getStartDateTime().isBefore(LocalDateTime.now())
+                || show.getSchedule().getStartDateTime().equals(LocalDateTime.now())
+        ) {
+            show.setStatus(ShowStatusEnum.getStatusByName(String.format("%S_WITHDRAW", details.getUserType())));
+            showRepository.save(show);
+
+            throw new BusinessRuleException("The schedule date has already passed");
+        }
+
+        if (show.getSchedule().getConfirmed()) {
+            show.setStatus(ShowStatusEnum.MANAGER_WITHDRAW);
+            showRepository.save(show);
+
+            throw new BusinessRuleException("Schedule has already one show confirmed");
+        }
+
+        show.setStatus(status);
+        Show updatedShow = showRepository.save(show);
+        return ShowMapper.toDto(updatedShow);
+    }
+
+    public ShowDto confirmShow(Integer id) {
+        Show show = showRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Show with id %d was not found", id)
+                ));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email %s was not found", details.getUsername())
+                ));
+
+        if (
+                !show.getEvent().getEstablishment().getManager().getId().equals(user.getId())
+                        && !show.getArtist().getId().equals(user.getId())
+        ) {
+            throw new BusinessRuleException("Unrelated users cannot request for changes");
+        }
+
+        if (
+                !show.getStatus().equals(ShowStatusEnum.MANAGER_ACCEPTED)
+                && !show.getStatus().equals(ShowStatusEnum.ARTIST_ACCEPTED)
+        ) {
+            throw new BusinessRuleException(String.format(
+                    "It is forbidden to change status from %s to %s",
+                    show.getStatus().name(),
+                    ShowStatusEnum.CONFIRMED
+            ));
+        }
+
+        showRecordRepository.save(ShowUtil.createRecord(show, user));
+
+        if (
+                show.getSchedule().getStartDateTime().isBefore(LocalDateTime.now())
+                        || show.getSchedule().getStartDateTime().equals(LocalDateTime.now())
+        ) {
+            show.setStatus(ShowStatusEnum.getStatusByName(String.format("%S_WITHDRAW", details.getUserType())));
+            showRepository.save(show);
+
+            throw new BusinessRuleException("The schedule date has already passed");
+        }
+
+        if (show.getSchedule().getConfirmed()) {
+            show.setStatus(ShowStatusEnum.MANAGER_WITHDRAW);
+            showRepository.save(show);
+
+            throw new BusinessRuleException("Schedule has already one show confirmed");
+        }
+
+        show.setStatus(ShowStatusEnum.CONFIRMED);
+        Show updatedShow = showRepository.save(show);
+
+        List<Show> otherShowWithSameSchedule = showRepository.findByIdNotEqualsAndScheduleIdEquals(show.getId(), show.getSchedule().getId());
+
+        List<ShowRecord> records = otherShowWithSameSchedule.stream().map(s -> ShowUtil.createRecord(s, user)).toList();
+        otherShowWithSameSchedule.forEach(s -> s.setStatus(ShowStatusEnum.MANAGER_WITHDRAW));
+
+        showRecordRepository.saveAll(records);
+        showRepository.saveAll(otherShowWithSameSchedule);
+
+        return ShowMapper.toDto(updatedShow);
+    }
+
+    public void withdrawNegotiation(Integer id) {
+        Show show = showRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Show with id %d was not found", id)
+                ));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email %s was not found", details.getUsername())
+                ));
+
+        if (
+                !show.getEvent().getEstablishment().getManager().getId().equals(user.getId())
+                        && !show.getArtist().getId().equals(user.getId())
+        ) {
+            throw new BusinessRuleException("Unrelated users cannot request for changes");
+        }
+
+        ShowStatusEnum status = ShowStatusEnum.getStatusByName(String.format("%S_WITHDRAW", details.getUserType()));
+        if (!show.getStatus().isStatusChangeValid(status)) {
+            throw new BusinessRuleException(String.format(
+                    "It is forbidden to change status from %s to %s",
+                    show.getStatus().name(),
+                    status
+            ));
+        }
+
+        showRecordRepository.save(ShowUtil.createRecord(show, user));
+
+        show.setStatus(status);
+        showRepository.save(show);
+    }
+
+    public ShowDto concludeShow(Integer id) {
+        Show show = showRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Show with id %d was not found", id)
+                ));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email %s was not found", details.getUsername())
+                ));
+
+        if (
+                !show.getEvent().getEstablishment().getManager().getId().equals(user.getId())
+                        && !show.getArtist().getId().equals(user.getId())
+        ) {
+            throw new BusinessRuleException("Unrelated users cannot request for changes");
+        }
+
+        if (!show.getStatus().isStatusChangeValid(ShowStatusEnum.CONCLUDED)) {
+            throw new BusinessRuleException(String.format(
+                    "It is forbidden to change status from %s to %s",
+                    show.getStatus().name(),
+                    ShowStatusEnum.CONCLUDED
+            ));
+        }
+
+        if (show.getSchedule().getEndDateTime().isAfter(LocalDateTime.now())) {
+            throw new BusinessRuleException("Show has not finished yet.");
+        }
+
+        showRecordRepository.save(ShowUtil.createRecord(show, user));
+
+        show.setStatus(ShowStatusEnum.CONCLUDED);
+        Show updatedShow = showRepository.save(show);
+        return ShowMapper.toDto(updatedShow);
+    }
+
+    public void cancelShow(Integer id) {
+        Show show = showRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Show with id %d was not found", id)
+                ));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email %s was not found", details.getUsername())
+                ));
+
+        if (
+                !show.getEvent().getEstablishment().getManager().getId().equals(user.getId())
+                        && !show.getArtist().getId().equals(user.getId())
+        ) {
+            throw new BusinessRuleException("Unrelated users cannot request for changes");
+        }
+
+        ShowStatusEnum status = ShowStatusEnum.getStatusByName(String.format("%S_CANCELED", details.getUserType()));
+        if (show.getStatus().isStatusChangeValid(status)) {
             throw new BusinessRuleException(String.format(
                     "It is forbidden to change status from %s to %s",
                     show.getStatus().name(),
@@ -198,9 +500,10 @@ public class ShowService {
             ));
         }
 
+        showRecordRepository.save(ShowUtil.createRecord(show,user));
+
         show.setStatus(status);
-        Show updatedShow = showRepository.save(show);
-        return ShowMapper.toDto(updatedShow);
+        showRepository.save(show);
     }
 
     public List<ShowDto> listByStatus(EnumSet status) {
@@ -242,5 +545,14 @@ public class ShowService {
         }
 
         return stack.asList();
+    }
+
+    public ShowDto getById(Integer id) {
+        Show show = showRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Show with id %d was not found", id)
+                ));
+
+        return ShowMapper.toDto(show);
     }
 }
