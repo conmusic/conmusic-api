@@ -17,7 +17,7 @@ import school.sptech.conmusicapi.modules.artist.services.ArtistService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/artists")
+@RequestMapping("/artist")
 @Tag(name = "Artists", description = "Responsible for managing all requests and operations related to artist users")
 public class ArtistController {
     @Autowired
@@ -60,7 +60,7 @@ public class ArtistController {
         return ResponseEntity.status(200).body(artist);
     }
 
-    @PutMapping("/genre/{id}")
+    @PatchMapping("/genre/{id}")
     @SecurityRequirement(name = "Bearer")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Admin')")
     public ResponseEntity<ArtistDto> registerGenre(
@@ -73,7 +73,7 @@ public class ArtistController {
         return ResponseEntity.created(null).body(artistDto);
     }
 
-    @PutMapping("/delete-genre/{id}")
+    @DeleteMapping("/genre/{id}")
     @SecurityRequirement(name = "Bearer")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Admin')")
     public ResponseEntity<Void> deleteGenre(

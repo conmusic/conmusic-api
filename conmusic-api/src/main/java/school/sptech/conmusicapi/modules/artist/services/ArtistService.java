@@ -2,7 +2,6 @@ package school.sptech.conmusicapi.modules.artist.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
@@ -17,7 +16,7 @@ import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 import school.sptech.conmusicapi.shared.exceptions.UserForbiddenActionException;
-import school.sptech.conmusicapi.shared.utils.GenericObjectList;
+import school.sptech.conmusicapi.shared.utils.collections.GenericObjectList;
 
 import java.util.List;
 import java.util.Optional;
@@ -98,9 +97,9 @@ public class ArtistService {
 
             for (int j = i + 1; j < auxOrdered.getSize(); j++) {
                 if (
-                    auxOrdered.getElement(j)
+                    auxOrdered.getByIndex(j)
                             .getBirthDate().isAfter(
-                                auxOrdered.getElement(oldestIndex).getBirthDate()
+                                auxOrdered.getByIndex(oldestIndex).getBirthDate()
                             )
                 ) {
                     oldestIndex = j;
@@ -109,7 +108,7 @@ public class ArtistService {
             auxOrdered.swap(i, oldestIndex);
         }
         
-        return auxOrdered.getElements();
+        return auxOrdered.asList();
     }
 
     public ArtistDto getByArtistId(Integer id) {

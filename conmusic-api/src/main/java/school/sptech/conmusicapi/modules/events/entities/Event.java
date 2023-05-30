@@ -2,10 +2,13 @@ package school.sptech.conmusicapi.modules.events.entities;
 
 import jakarta.persistence.*;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
+import school.sptech.conmusicapi.modules.genre.entities.Genre;
 import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "evento")
@@ -17,7 +20,7 @@ public class Event {
     @Column(name = "nome", length = 45)
     private String name;
 
-    @Column(name = "description", length = 45)
+    @Column(name = "descricao", length = 45)
     private String description;
 
     @Column(name = "valor")
@@ -26,18 +29,13 @@ public class Event {
     @Column(name = "taxa_cover")
     private Double coverCharge;
 
-    @Column(name = "data_inicio")
-    private LocalDateTime startDate;
-
-    @Column(name = "data_termino")
-    private LocalDateTime endDate;
-
-    @Column(name = "unico")
-    private Boolean isUnique;
-
     @ManyToOne
     @JoinColumn(name = "fk_estabelecimento")
     private Establishment establishment;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_genero")
+    private Genre genre;
 
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
     private List<Schedule> schedules;
@@ -82,30 +80,6 @@ public class Event {
         this.coverCharge = coverCharge;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
-
-    public Boolean getUnique() {
-        return isUnique;
-    }
-
-    public void setUnique(Boolean unique) {
-        isUnique = unique;
-    }
-
     public Establishment getEstablishment() {
         return establishment;
     }
@@ -114,8 +88,16 @@ public class Event {
         this.establishment = establishment;
     }
 
+    public Genre getGenre() {
+        return genre;
+    }
+
+    public void setGenre(Genre genre) {
+        this.genre = genre;
+    }
+
     public List<Schedule> getSchedules() {
-        return schedules;
+        return Objects.isNull(schedules) ? Collections.emptyList() : schedules;
     }
 
     public void setSchedules(List<Schedule> schedules) {

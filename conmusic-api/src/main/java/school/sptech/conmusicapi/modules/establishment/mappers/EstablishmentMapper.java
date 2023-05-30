@@ -1,9 +1,11 @@
 package school.sptech.conmusicapi.modules.establishment.mappers;
 
 import school.sptech.conmusicapi.modules.establishment.dtos.CreateEstablishmentDto;
+import school.sptech.conmusicapi.modules.establishment.dtos.DisplayScheduleEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.UpdateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
+import school.sptech.conmusicapi.modules.events.mappers.EventMapper;
 
 public class EstablishmentMapper {
     public static Establishment fromDto(CreateEstablishmentDto dto) {
@@ -40,6 +42,7 @@ public class EstablishmentMapper {
         dto.setState(establishment.getState());
         dto.setZipCode(establishment.getZipCode());
         dto.setManagerId(establishment.getManager().getId());
+        dto.setEvents(establishment.getEvents().stream().map(EventMapper::toDisplayEstablishmentEventDto).toList());
 
         return dto;
     }
@@ -58,5 +61,25 @@ public class EstablishmentMapper {
         establishment.setZipCode(dto.getZipCode());
 
         return establishment;
+    }
+
+    public static DisplayScheduleEstablishmentDto toDisplayScheduleEstablishmentDto(Establishment entity) {
+        DisplayScheduleEstablishmentDto dto = new DisplayScheduleEstablishmentDto();
+
+        dto.setId(entity.getId());
+        dto.setCnpj(entity.getCnpj());
+        dto.setFantasyName(entity.getFantasyName());
+        dto.setEstablishmentName(entity.getEstablishmentName());
+        dto.setPhoneNumber(entity.getPhoneNumber());
+        dto.setAmount110Outlets(entity.getAmount110Outlets());
+        dto.setAmount220Outlets(entity.getAmount220Outlets());
+        dto.setCapacity(entity.getCapacity());
+        dto.setAddress(entity.getAddress());
+        dto.setCity(entity.getCity());
+        dto.setState(entity.getState());
+        dto.setZipCode(entity.getZipCode());
+        dto.setManagerId(entity.getManager().getId());
+
+        return dto;
     }
 }

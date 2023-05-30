@@ -1,55 +1,33 @@
 package school.sptech.conmusicapi.modules.schedules.dtos;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import school.sptech.conmusicapi.shared.dtos.TimeDto;
+
+import java.time.LocalDateTime;
 
 public class CreateScheduleDto {
+    @Future
     @NotNull
-    @Min(0)
-    @Max(6)
-    private Integer dayOfWeek;
+    private LocalDateTime startDateTime;
 
+    @Future
     @NotNull
-    private TimeDto startTime;
+    private LocalDateTime endDateTime;
 
-    @NotNull
-    private TimeDto endTime;
-
-    @Positive
-    private Integer eventId;
-
-    public Integer getDayOfWeek() {
-        return dayOfWeek;
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
     }
 
-    public void setDayOfWeek(Integer dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
     }
 
-    public TimeDto getStartTime() {
-        return startTime;
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
     }
 
-    public void setStartTime(TimeDto startTime) {
-        this.startTime = startTime;
-    }
-
-    public TimeDto getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(TimeDto endTime) {
-        this.endTime = endTime;
-    }
-
-    public Integer getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(Integer eventId) {
-        this.eventId = eventId;
+    public void setEndDateTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
     }
 }

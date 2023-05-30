@@ -1,9 +1,9 @@
 package school.sptech.conmusicapi.modules.events.dtos;
 
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
+import school.sptech.conmusicapi.modules.genre.dto.DisplayingGenreDto;
 import school.sptech.conmusicapi.modules.schedules.dtos.BasicScheduleDto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class EventDto {
@@ -12,10 +12,8 @@ public class EventDto {
     private String description;
     private Double value;
     private Double coverCharge;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private Boolean isUnique;
     private EstablishmentDto establishment;
+    private DisplayingGenreDto genre;
     private List<BasicScheduleDto> schedules;
 
     public Integer getId() {
@@ -58,36 +56,20 @@ public class EventDto {
         this.coverCharge = coverCharge;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
-
-    public Boolean getUnique() {
-        return isUnique;
-    }
-
-    public void setUnique(Boolean unique) {
-        isUnique = unique;
-    }
-
     public EstablishmentDto getEstablishment() {
         return establishment;
     }
 
     public void setEstablishment(EstablishmentDto establishment) {
         this.establishment = establishment;
+    }
+
+    public DisplayingGenreDto getGenre() {
+        return genre;
+    }
+
+    public void setGenre(DisplayingGenreDto genre) {
+        this.genre = genre;
     }
 
     public List<BasicScheduleDto> getSchedules() {
