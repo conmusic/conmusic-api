@@ -383,7 +383,7 @@ public class ShowService {
         show.setStatus(ShowStatusEnum.CONFIRMED);
         Show updatedShow = showRepository.save(show);
 
-        List<Show> otherShowWithSameSchedule = showRepository.findByIdNotEqualsAndScheduleIdEquals(show.getId(), show.getSchedule().getId());
+        List<Show> otherShowWithSameSchedule = showRepository.findByIdNotAndScheduleIdEquals(show.getId(), show.getSchedule().getId());
 
         List<ShowRecord> records = otherShowWithSameSchedule.stream().map(s -> ShowUtil.createRecord(s, user)).toList();
         otherShowWithSameSchedule.forEach(s -> s.setStatus(ShowStatusEnum.MANAGER_WITHDRAW));

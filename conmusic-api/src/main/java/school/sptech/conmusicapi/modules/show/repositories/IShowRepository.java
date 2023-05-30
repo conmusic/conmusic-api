@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import school.sptech.conmusicapi.modules.show.entities.Show;
-import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -24,5 +23,5 @@ public interface IShowRepository extends JpaRepository<Show, Integer> {
     """)
     List<Show> findAllByUserIdAndStatus(Integer id, EnumSet status);
 
-    List<Show> findByIdNotEqualsAndScheduleIdEquals(Integer id, Integer id1);
+    List<Show> findByIdNotAndScheduleIdEquals(Integer id, Integer id1);
 }

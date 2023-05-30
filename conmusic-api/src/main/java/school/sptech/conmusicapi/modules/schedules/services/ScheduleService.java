@@ -67,7 +67,7 @@ public class ScheduleService {
             throw new EntityNotFoundException(String.format("Establishment with id %d was not found", id));
         }
 
-        List<Schedule> schedules = scheduleRepository.findByEstablishmentId(id);
+        List<Schedule> schedules = scheduleRepository.findByEventEstablishmentId(id);
 
         return schedules
                 .stream()

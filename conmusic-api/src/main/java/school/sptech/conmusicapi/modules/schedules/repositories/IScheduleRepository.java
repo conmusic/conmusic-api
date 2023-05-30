@@ -10,5 +10,5 @@ import java.util.List;
 public interface IScheduleRepository extends JpaRepository<Schedule, Integer> {
     List<Schedule> findByEventId(Integer id);
 
-    List<Schedule> findByEstablishmentId(Integer id);
+    List<Schedule> findByEventEstablishmentId(Integer id);
 }
