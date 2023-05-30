@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -243,9 +245,10 @@ public class ShowServiceTest {
         assertInstanceOf(EntityNotFoundException.class, result);
     }
 
-    @Test
-    @DisplayName("create - Throw exception when user is not the artist from the show")
-    void createShouldThrowExceptionWhenUserIsNotArtistFromShow() {
+    @ParameterizedTest
+    @ValueSource(strings = { "Artist", "Manager" })
+    @DisplayName("create - Throw exception when user is neither the artist nor the manager from the show")
+    void createShouldThrowExceptionWhenUserIsNeitherArtistNorManagerFromShow(String userType) {
         // given
         String errorMessage = "The user is neither the artist nor the manager of the show";
 
@@ -267,86 +270,9 @@ public class ShowServiceTest {
         manager.setId(managerId);
         manager.setEmail(managerEmail);
 
-        Integer establishmentId = 5;
-        Establishment establishment = new Establishment();
-        establishment.setId(establishmentId);
-        establishment.setManager(manager);
-
-        Integer eventId = 10;
-        Event event = new Event();
-        event.setId(eventId);
-        event.setEstablishment(establishment);
-
-        Integer scheduleId = 100;
-        Schedule schedule = new Schedule();
-        schedule.setId(scheduleId);
-        schedule.setConfirmed(false);
-        schedule.setEvent(event);
-        schedule.setStartDateTime(LocalDateTime.now().plusMinutes(60));
-        schedule.setEndDateTime(LocalDateTime.now().plusMinutes(120));
-
-        Authentication authenticationMock = Mockito.mock(Authentication.class);
-        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
-
-        UserDetailsDto userDetailsDto = new UserDetailsDto(otherArtist);
-
-        CreateShowDto dto = new CreateShowDto();
-        dto.setArtistId(artistId);
-        dto.setEventId(eventId);
-        dto.setCoverCharge(5.0);
-        dto.setValue(200.0);
-        dto.setScheduleId(100);
-
-        // when
-        Mockito.when(
-                        showRepository.findByArtistIdAndEventIdAndScheduleId(
-                                Mockito.anyInt(),
-                                Mockito.anyInt(),
-                                Mockito.anyInt())
-                )
-                .thenReturn(Optional.empty());
-
-        Mockito.when(artistRepository.findById(artistId)).thenReturn(Optional.of(artist));
-
-        Mockito.when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
-
-        Mockito.when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.of(schedule));
-
-        SecurityContextHolder.setContext(securityContextMock);
-        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
-        Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
-
-        Mockito.when(userRepository.findByEmail(otherArtistEmail)).thenReturn(Optional.of(otherArtist));
-
-        // then
-        BusinessRuleException result = assertThrows(BusinessRuleException.class, () -> service.create(dto));
-
-        // assert
-        assertEquals(errorMessage, result.getMessage());
-        assertInstanceOf(BusinessRuleException.class, result);
-    }
-
-    @Test
-    @DisplayName("create - Throw exception when user is not the manager from the show")
-    void createShouldThrowExceptionWhenUserIsNotManagerFromShow() {
-        // given
-        String errorMessage = "The user is neither the artist nor the manager of the show";
-
-        Integer artistId = 1;
-        String artistEmail = "artist1@email.com";
-        Artist artist = new Artist();
-        artist.setId(artistId);
-        artist.setEmail(artistEmail);
-
-        Integer managerId = 2;
-        String managerEmail = "manager2@email.com";
-        Manager manager = new Manager();
-        manager.setId(managerId);
-        manager.setEmail(managerEmail);
-
-        Integer otherManagerId = 3;
-        String otherManagerEmail = "manager3@email.com";
-        Artist otherManager = new Artist();
+        Integer otherManagerId = 4;
+        String otherManagerEmail = "manager4@email.com";
+        Manager otherManager = new Manager();
         otherManager.setId(otherManagerId);
         otherManager.setEmail(otherManagerEmail);
 
@@ -371,7 +297,15 @@ public class ShowServiceTest {
         Authentication authenticationMock = Mockito.mock(Authentication.class);
         SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
 
-        UserDetailsDto userDetailsDto = new UserDetailsDto(otherManager);
+        String authenticatedUserEmail = userType.equals("Artist")
+                ? otherArtistEmail
+                : otherManagerEmail;
+
+        User authenticatedUser = userType.equals("Artist")
+                ? otherArtist
+                : otherManager;
+
+        UserDetailsDto userDetailsDto = new UserDetailsDto(authenticatedUser);
 
         CreateShowDto dto = new CreateShowDto();
         dto.setArtistId(artistId);
@@ -399,7 +333,7 @@ public class ShowServiceTest {
         Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
         Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
 
-        Mockito.when(userRepository.findByEmail(otherManagerEmail)).thenReturn(Optional.of(otherManager));
+        Mockito.when(userRepository.findByEmail(authenticatedUserEmail)).thenReturn(Optional.of(authenticatedUser));
 
         // then
         BusinessRuleException result = assertThrows(BusinessRuleException.class, () -> service.create(dto));
@@ -944,9 +878,10 @@ public class ShowServiceTest {
         assertInstanceOf(EntityNotFoundException.class, result);
     }
 
-    @Test
-    @DisplayName("update - Throw exception when user is not the artist from the show")
-    void updateShouldThrowExceptionWhenUserIsNotArtistFromShow() {
+    @ParameterizedTest
+    @ValueSource(strings = { "Artist", "Manager" })
+    @DisplayName("update - Throw exception when user is neither the artist nor the manager from the show")
+    void updateShouldThrowExceptionWhenUserIsNeitherArtistNorManagerFromShow(String userType) {
         // given
         String errorMessage = "Unrelated users cannot request for changes";
 
@@ -977,89 +912,8 @@ public class ShowServiceTest {
         manager.setId(managerId);
         manager.setEmail(managerEmail);
 
-        Integer establishmentId = 5;
-        Establishment establishment = new Establishment();
-        establishment.setId(establishmentId);
-        establishment.setManager(manager);
-
-        Integer eventId = 10;
-        Event event = new Event();
-        event.setId(eventId);
-        event.setEstablishment(establishment);
-        event.setGenre(genre);
-
-        Integer scheduleId = 100;
-        Schedule schedule = new Schedule();
-        schedule.setId(scheduleId);
-        schedule.setConfirmed(false);
-        schedule.setEvent(event);
-        schedule.setStartDateTime(LocalDateTime.now().plusMinutes(60));
-        schedule.setEndDateTime(LocalDateTime.now().plusMinutes(120));
-
-        Authentication authenticationMock = Mockito.mock(Authentication.class);
-        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
-
-        UserDetailsDto userDetailsDto = new UserDetailsDto(otherArtist);
-
-        Show show = new Show();
-        show.setId(showId);
-        show.setStatus(ShowStatusEnum.ARTIST_PROPOSAL);
-        show.setEvent(event);
-        show.setSchedule(schedule);
-        show.setArtist(artist);
-        show.setValue(100.0);
-        show.setCoverCharge(5.0);
-
-        UpdateShowDto dto = new UpdateShowDto();
-        dto.setValue(expectedValue);
-        dto.setCoverCharge(expectedCoverCharge);
-
-        // when
-        Mockito.when(showRepository.findById(showId)).thenReturn(Optional.of(show));
-
-        SecurityContextHolder.setContext(securityContextMock);
-        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
-        Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
-
-        Mockito.when(userRepository.findByEmail(otherArtistEmail)).thenReturn(Optional.of(otherArtist));
-
-        // then
-        BusinessRuleException result = assertThrows(BusinessRuleException.class, () -> service.update(showId, dto));
-
-        // assert
-        assertEquals(errorMessage, result.getMessage());
-        assertInstanceOf(BusinessRuleException.class, result);
-    }
-
-    @Test
-    @DisplayName("update - Throw exception when user is not the manager from the show")
-    void updateShouldThrowExceptionWhenUserIsNotManagerFromShow() {
-        // given
-        String errorMessage = "Unrelated users cannot request for changes";
-
-        Integer showId = 1000;
-        Double expectedValue = 500.0;
-        Double expectedCoverCharge = 5.0;
-
-        Genre genre = new Genre();
-        genre.setId(9);
-        genre.setName("Genre name");
-
-        Integer artistId = 1;
-        String artistEmail = "artist1@email.com";
-        Artist artist = new Artist();
-        artist.setId(artistId);
-        artist.setEmail(artistEmail);
-        artist.addGenders(genre);
-
-        Integer managerId = 2;
-        String managerEmail = "manager2@email.com";
-        Manager manager = new Manager();
-        manager.setId(managerId);
-        manager.setEmail(managerEmail);
-
-        Integer otherManagerId = 3;
-        String otherManagerEmail = "manager3@email.com";
+        Integer otherManagerId = 4;
+        String otherManagerEmail = "manager4@email.com";
         Manager otherManager = new Manager();
         otherManager.setId(otherManagerId);
         otherManager.setEmail(otherManagerEmail);
@@ -1086,7 +940,15 @@ public class ShowServiceTest {
         Authentication authenticationMock = Mockito.mock(Authentication.class);
         SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
 
-        UserDetailsDto userDetailsDto = new UserDetailsDto(otherManager);
+        String authenticatedUserEmail = userType.equals("Artist")
+                ? otherArtistEmail
+                : otherManagerEmail;
+
+        User authenticatedUser = userType.equals("Artist")
+                ? otherArtist
+                : otherManager;
+
+        UserDetailsDto userDetailsDto = new UserDetailsDto(authenticatedUser);
 
         Show show = new Show();
         show.setId(showId);
@@ -1108,7 +970,7 @@ public class ShowServiceTest {
         Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
         Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
 
-        Mockito.when(userRepository.findByEmail(otherManagerEmail)).thenReturn(Optional.of(otherManager));
+        Mockito.when(userRepository.findByEmail(authenticatedUserEmail)).thenReturn(Optional.of(authenticatedUser));
 
         // then
         BusinessRuleException result = assertThrows(BusinessRuleException.class, () -> service.update(showId, dto));
@@ -1871,9 +1733,809 @@ public class ShowServiceTest {
         assertInstanceOf(BusinessRuleException.class, result);
     }
 
+    @ParameterizedTest
+    @EnumSource(value = ShowStatusEnum.class, names = { "ARTIST_PROPOSAL", "MANAGER_PROPOSAL" })
+    @DisplayName("acceptProposal - Return Record and update Proposal to Reject when Schedule has already happened")
+    void acceptProposalShouldSaveRecordAndUpdateProposalToRejectedWhenScheduleHasAlreadyHappened(ShowStatusEnum showStatusEnum) {
+        // given
+        int expectedRecordSaves = 1;
+        String errorMessage = "The proposal date has passed";
+        Integer showId = 1000;
+        Double expectedValue = 100.0;
+        Double expectedCoverCharge = 5.0;
+        ShowStatusEnum expectedStatus = showStatusEnum.equals(ShowStatusEnum.ARTIST_PROPOSAL)
+                ? ShowStatusEnum.MANAGER_REJECTED
+                : ShowStatusEnum.ARTIST_REJECTED;
+
+        Genre genre = new Genre();
+        genre.setId(9);
+        genre.setName("Genre name");
+
+        Integer artistId = 1;
+        String artistEmail = "artist1@email.com";
+        Artist artist = new Artist();
+        artist.setId(artistId);
+        artist.setEmail(artistEmail);
+        artist.addGenders(genre);
+
+        Integer managerId = 2;
+        String managerEmail = "manager2@email.com";
+        Manager manager = new Manager();
+        manager.setId(managerId);
+        manager.setEmail(managerEmail);
+
+        Integer establishmentId = 5;
+        Establishment establishment = new Establishment();
+        establishment.setId(establishmentId);
+        establishment.setManager(manager);
+
+        Integer eventId = 10;
+        Event event = new Event();
+        event.setId(eventId);
+        event.setEstablishment(establishment);
+        event.setGenre(genre);
+
+        Integer scheduleId = 100;
+        Schedule schedule = new Schedule();
+        schedule.setId(scheduleId);
+        schedule.setConfirmed(false);
+        schedule.setEvent(event);
+        schedule.setStartDateTime(LocalDateTime.now().minusMinutes(60));
+        schedule.setEndDateTime(LocalDateTime.now().plusMinutes(120));
+
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+
+        String authenticatedUserEmail = showStatusEnum.equals(ShowStatusEnum.ARTIST_PROPOSAL)
+                ? managerEmail
+                : artistEmail;
+
+        User authenticatedUser = showStatusEnum.equals(ShowStatusEnum.ARTIST_PROPOSAL)
+                ? manager
+                : artist;
+
+        UserDetailsDto userDetailsDto = new UserDetailsDto(authenticatedUser);
+
+        Show show = new Show();
+        show.setId(showId);
+        show.setStatus(showStatusEnum);
+        show.setEvent(event);
+        show.setSchedule(schedule);
+        show.setArtist(artist);
+        show.setValue(expectedValue);
+        show.setCoverCharge(expectedCoverCharge);
+
+        ArgumentCaptor<Show> showRepositorySaveCaptor = ArgumentCaptor.forClass(Show.class);
+
+        // when
+        Mockito.when(showRepository.findById(showId)).thenReturn(Optional.of(show));
+
+        SecurityContextHolder.setContext(securityContextMock);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
+
+        Mockito.when(userRepository.findByEmail(authenticatedUserEmail)).thenReturn(Optional.of(authenticatedUser));
+
+        // then
+        BusinessRuleException error = assertThrows(BusinessRuleException.class, () -> service.acceptProposal(showId));
+
+        // assert
+        assertEquals(errorMessage, error.getMessage());
+        assertInstanceOf(BusinessRuleException.class, error);
+        Mockito.verify(showRecordRepository, Mockito.times(expectedRecordSaves)).save(Mockito.any(ShowRecord.class));
+        Mockito.verify(showRepository).save(showRepositorySaveCaptor.capture());
+        assertEquals(expectedStatus, showRepositorySaveCaptor.getValue().getStatus());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = ShowStatusEnum.class, names = { "ARTIST_PROPOSAL", "MANAGER_PROPOSAL" })
+    @DisplayName("acceptProposal - Return Record and update Proposal to Manager Rejected when Schedule has already been confirmed")
+    void acceptProposalShouldSaveRecordAndUpdateProposalToManagerRejectedWhenScheduleHasAlreadyBeenConfirmed(ShowStatusEnum showStatusEnum) {
+        // given
+        int expectedRecordSaves = 1;
+        String errorMessage = "The schedule already has one show confirmed";
+        Integer showId = 1000;
+        Double expectedValue = 100.0;
+        Double expectedCoverCharge = 5.0;
+        ShowStatusEnum expectedStatus = ShowStatusEnum.MANAGER_REJECTED;
+
+        Genre genre = new Genre();
+        genre.setId(9);
+        genre.setName("Genre name");
+
+        Integer artistId = 1;
+        String artistEmail = "artist1@email.com";
+        Artist artist = new Artist();
+        artist.setId(artistId);
+        artist.setEmail(artistEmail);
+        artist.addGenders(genre);
+
+        Integer managerId = 2;
+        String managerEmail = "manager2@email.com";
+        Manager manager = new Manager();
+        manager.setId(managerId);
+        manager.setEmail(managerEmail);
+
+        Integer establishmentId = 5;
+        Establishment establishment = new Establishment();
+        establishment.setId(establishmentId);
+        establishment.setManager(manager);
+
+        Integer eventId = 10;
+        Event event = new Event();
+        event.setId(eventId);
+        event.setEstablishment(establishment);
+        event.setGenre(genre);
+
+        Integer scheduleId = 100;
+        Schedule schedule = new Schedule();
+        schedule.setId(scheduleId);
+        schedule.setConfirmed(true);
+        schedule.setEvent(event);
+        schedule.setStartDateTime(LocalDateTime.now().plusMinutes(60));
+        schedule.setEndDateTime(LocalDateTime.now().plusMinutes(120));
+
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+
+        String authenticatedUserEmail = showStatusEnum.equals(ShowStatusEnum.ARTIST_PROPOSAL)
+                ? managerEmail
+                : artistEmail;
+
+        User authenticatedUser = showStatusEnum.equals(ShowStatusEnum.ARTIST_PROPOSAL)
+                ? manager
+                : artist;
+
+        UserDetailsDto userDetailsDto = new UserDetailsDto(authenticatedUser);
+
+        Show show = new Show();
+        show.setId(showId);
+        show.setStatus(showStatusEnum);
+        show.setEvent(event);
+        show.setSchedule(schedule);
+        show.setArtist(artist);
+        show.setValue(expectedValue);
+        show.setCoverCharge(expectedCoverCharge);
+
+        ArgumentCaptor<Show> showRepositorySaveCaptor = ArgumentCaptor.forClass(Show.class);
+
+        // when
+        Mockito.when(showRepository.findById(showId)).thenReturn(Optional.of(show));
+
+        SecurityContextHolder.setContext(securityContextMock);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
+
+        Mockito.when(userRepository.findByEmail(authenticatedUserEmail)).thenReturn(Optional.of(authenticatedUser));
+
+        // then
+        BusinessRuleException error = assertThrows(BusinessRuleException.class, () -> service.acceptProposal(showId));
+
+        // assert
+        assertEquals(errorMessage, error.getMessage());
+        assertInstanceOf(BusinessRuleException.class, error);
+        Mockito.verify(showRecordRepository, Mockito.times(expectedRecordSaves)).save(Mockito.any(ShowRecord.class));
+        Mockito.verify(showRepository).save(showRepositorySaveCaptor.capture());
+        assertEquals(expectedStatus, showRepositorySaveCaptor.getValue().getStatus());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = ShowStatusEnum.class, names = { "ARTIST_PROPOSAL", "MANAGER_PROPOSAL" })
+    @DisplayName("acceptProposal - Return Record and update Proposal to Negotiation")
+    void acceptProposalShouldSaveRecordAndUpdateProposalToNegotiation(ShowStatusEnum showStatusEnum) {
+        // given
+        int expectedSaves = 1;
+        Integer showId = 1000;
+        Double expectedValue = 100.0;
+        Double expectedCoverCharge = 5.0;
+        ShowStatusEnum expectedStatus = ShowStatusEnum.NEGOTIATION;
+
+        Genre genre = new Genre();
+        genre.setId(9);
+        genre.setName("Genre name");
+
+        Integer artistId = 1;
+        String artistEmail = "artist1@email.com";
+        Artist artist = new Artist();
+        artist.setId(artistId);
+        artist.setEmail(artistEmail);
+        artist.addGenders(genre);
+
+        Integer managerId = 2;
+        String managerEmail = "manager2@email.com";
+        Manager manager = new Manager();
+        manager.setId(managerId);
+        manager.setEmail(managerEmail);
+
+        Integer establishmentId = 5;
+        Establishment establishment = new Establishment();
+        establishment.setId(establishmentId);
+        establishment.setManager(manager);
+
+        Integer eventId = 10;
+        Event event = new Event();
+        event.setId(eventId);
+        event.setEstablishment(establishment);
+        event.setGenre(genre);
+
+        Integer scheduleId = 100;
+        Schedule schedule = new Schedule();
+        schedule.setId(scheduleId);
+        schedule.setConfirmed(false);
+        schedule.setEvent(event);
+        schedule.setStartDateTime(LocalDateTime.now().plusMinutes(60));
+        schedule.setEndDateTime(LocalDateTime.now().plusMinutes(120));
+
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+
+        String authenticatedUserEmail = showStatusEnum.equals(ShowStatusEnum.ARTIST_PROPOSAL)
+                ? managerEmail
+                : artistEmail;
+
+        User authenticatedUser = showStatusEnum.equals(ShowStatusEnum.ARTIST_PROPOSAL)
+                ? manager
+                : artist;
+
+        UserDetailsDto userDetailsDto = new UserDetailsDto(authenticatedUser);
+
+        Show show = new Show();
+        show.setId(showId);
+        show.setStatus(showStatusEnum);
+        show.setEvent(event);
+        show.setSchedule(schedule);
+        show.setArtist(artist);
+        show.setValue(expectedValue);
+        show.setCoverCharge(expectedCoverCharge);
+
+        // when
+        Mockito.when(showRepository.findById(showId)).thenReturn(Optional.of(show));
+
+        SecurityContextHolder.setContext(securityContextMock);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
+
+        Mockito.when(userRepository.findByEmail(authenticatedUserEmail)).thenReturn(Optional.of(authenticatedUser));
+
+        Mockito.when(showRepository.save(Mockito.any(Show.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        // then
+        ShowDto result = service.acceptProposal(showId);
+
+        // assert
+        Mockito.verify(showRecordRepository, Mockito.times(expectedSaves)).save(Mockito.any(ShowRecord.class));
+        Mockito.verify(showRepository, Mockito.times(expectedSaves)).save(Mockito.any(Show.class));
+        assertEquals(showId, result.getId());
+        assertEquals(expectedValue, result.getValue());
+        assertEquals(expectedCoverCharge, result.getCoverCharge());
+        assertEquals(expectedStatus, result.getStatus());
+        assertEquals(eventId, result.getEvent().getId());
+        assertEquals(artistId, result.getArtist().getId());
+        assertEquals(scheduleId, result.getSchedule().getId());
+    }
+
     // rejectProposal
+    @Test
+    @DisplayName("rejectProposal - Throw exception when show is not found")
+    void rejectProposalShouldThrowExceptionWhenShowIsNotFound() {
+        // given
+        String errorMessage = "Show with id 1000 was not found";
+        Integer showId = 1000;
+
+        // when
+        Mockito.when(showRepository.findById(showId)).thenReturn(Optional.empty());
+
+        // then
+        EntityNotFoundException result = assertThrows(EntityNotFoundException.class, () -> service.rejectProposal(showId));
+
+        // assert
+        assertEquals(errorMessage, result.getMessage());
+        assertInstanceOf(EntityNotFoundException.class, result);
+    }
+
+    @Test
+    @DisplayName("rejectProposal - Throw exception when user is not found")
+    void rejectProposalShouldThrowExceptionWhenUserIsNotFound() {
+        // given
+        String errorMessage = "User with email artist1@email.com was not found";
+
+        Integer showId = 1000;
+
+        Genre genre = new Genre();
+        genre.setId(9);
+        genre.setName("Genre name");
+
+        Integer artistId = 1;
+        String artistEmail = "artist1@email.com";
+        Artist artist = new Artist();
+        artist.setId(artistId);
+        artist.setEmail(artistEmail);
+        artist.addGenders(genre);
+
+        Integer managerId = 2;
+        String managerEmail = "manager2@email.com";
+        Manager manager = new Manager();
+        manager.setId(managerId);
+        manager.setEmail(managerEmail);
+
+        Integer establishmentId = 5;
+        Establishment establishment = new Establishment();
+        establishment.setId(establishmentId);
+        establishment.setManager(manager);
+
+        Integer eventId = 10;
+        Event event = new Event();
+        event.setId(eventId);
+        event.setEstablishment(establishment);
+        event.setGenre(genre);
+
+        Integer scheduleId = 100;
+        Schedule schedule = new Schedule();
+        schedule.setId(scheduleId);
+        schedule.setConfirmed(false);
+        schedule.setEvent(event);
+        schedule.setStartDateTime(LocalDateTime.now().plusMinutes(60));
+        schedule.setEndDateTime(LocalDateTime.now().plusMinutes(120));
+
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+
+        UserDetailsDto userDetailsDto = new UserDetailsDto(artist);
+
+        Show show = new Show();
+        show.setId(showId);
+        show.setStatus(ShowStatusEnum.ARTIST_PROPOSAL);
+        show.setEvent(event);
+        show.setSchedule(schedule);
+        show.setArtist(artist);
+        show.setValue(100.0);
+        show.setCoverCharge(5.0);
+
+        // when
+        Mockito.when(showRepository.findById(showId)).thenReturn(Optional.of(show));
+
+        SecurityContextHolder.setContext(securityContextMock);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
+
+        Mockito.when(userRepository.findByEmail(artistEmail)).thenReturn(Optional.empty());
+
+        // then
+        EntityNotFoundException result = assertThrows(EntityNotFoundException.class, () -> service.rejectProposal(showId));
+
+        // assert
+        assertEquals(errorMessage, result.getMessage());
+        assertInstanceOf(EntityNotFoundException.class, result);
+    }
+
+    @Test
+    @DisplayName("rejectProposal - Throw exception when user is not the artist from show")
+    void rejectProposalShouldThrowExceptionWhenUserIsNotArtistFromShow() {
+        // given
+        String errorMessage = "Unrelated users cannot request for changes";
+
+        Integer showId = 1000;
+
+        Genre genre = new Genre();
+        genre.setId(9);
+        genre.setName("Genre name");
+
+        Integer artistId = 1;
+        String artistEmail = "artist1@email.com";
+        Artist artist = new Artist();
+        artist.setId(artistId);
+        artist.setEmail(artistEmail);
+        artist.addGenders(genre);
+
+        Integer otherArtistId = 3;
+        String otherArtistEmail = "artist3@email.com";
+        Artist otherArtist = new Artist();
+        otherArtist.setId(otherArtistId);
+        otherArtist.setEmail(otherArtistEmail);
+
+        Integer managerId = 2;
+        String managerEmail = "manager2@email.com";
+        Manager manager = new Manager();
+        manager.setId(managerId);
+        manager.setEmail(managerEmail);
+
+        Integer establishmentId = 5;
+        Establishment establishment = new Establishment();
+        establishment.setId(establishmentId);
+        establishment.setManager(manager);
+
+        Integer eventId = 10;
+        Event event = new Event();
+        event.setId(eventId);
+        event.setEstablishment(establishment);
+        event.setGenre(genre);
+
+        Integer scheduleId = 100;
+        Schedule schedule = new Schedule();
+        schedule.setId(scheduleId);
+        schedule.setConfirmed(false);
+        schedule.setEvent(event);
+        schedule.setStartDateTime(LocalDateTime.now().plusMinutes(60));
+        schedule.setEndDateTime(LocalDateTime.now().plusMinutes(120));
+
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+
+        UserDetailsDto userDetailsDto = new UserDetailsDto(otherArtist);
+
+        Show show = new Show();
+        show.setId(showId);
+        show.setStatus(ShowStatusEnum.ARTIST_PROPOSAL);
+        show.setEvent(event);
+        show.setSchedule(schedule);
+        show.setArtist(artist);
+        show.setValue(100.0);
+        show.setCoverCharge(5.0);
+
+        // when
+        Mockito.when(showRepository.findById(showId)).thenReturn(Optional.of(show));
+
+        SecurityContextHolder.setContext(securityContextMock);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
+
+        Mockito.when(userRepository.findByEmail(otherArtistEmail)).thenReturn(Optional.of(otherArtist));
+
+        // then
+        BusinessRuleException result = assertThrows(BusinessRuleException.class, () -> service.rejectProposal(showId));
+
+        // assert
+        assertEquals(errorMessage, result.getMessage());
+        assertInstanceOf(BusinessRuleException.class, result);
+    }
+
+    @Test
+    @DisplayName("rejectProposal - Throw exception when user is not the manager from show")
+    void rejectProposalShouldThrowExceptionWhenUserIsNotManagerFromShow() {
+        // given
+        String errorMessage = "Unrelated users cannot request for changes";
+
+        Integer showId = 1000;
+
+        Genre genre = new Genre();
+        genre.setId(9);
+        genre.setName("Genre name");
+
+        Integer artistId = 1;
+        String artistEmail = "artist1@email.com";
+        Artist artist = new Artist();
+        artist.setId(artistId);
+        artist.setEmail(artistEmail);
+        artist.addGenders(genre);
+
+        Integer managerId = 2;
+        String managerEmail = "manager2@email.com";
+        Manager manager = new Manager();
+        manager.setId(managerId);
+        manager.setEmail(managerEmail);
+
+        Integer otherManagerId = 3;
+        String otherManagerEmail = "manager3@email.com";
+        Manager otherManager = new Manager();
+        otherManager.setId(otherManagerId);
+        otherManager.setEmail(otherManagerEmail);
+
+        Integer establishmentId = 5;
+        Establishment establishment = new Establishment();
+        establishment.setId(establishmentId);
+        establishment.setManager(manager);
+
+        Integer eventId = 10;
+        Event event = new Event();
+        event.setId(eventId);
+        event.setEstablishment(establishment);
+        event.setGenre(genre);
+
+        Integer scheduleId = 100;
+        Schedule schedule = new Schedule();
+        schedule.setId(scheduleId);
+        schedule.setConfirmed(false);
+        schedule.setEvent(event);
+        schedule.setStartDateTime(LocalDateTime.now().plusMinutes(60));
+        schedule.setEndDateTime(LocalDateTime.now().plusMinutes(120));
+
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+
+        UserDetailsDto userDetailsDto = new UserDetailsDto(otherManager);
+
+        Show show = new Show();
+        show.setId(showId);
+        show.setStatus(ShowStatusEnum.ARTIST_PROPOSAL);
+        show.setEvent(event);
+        show.setSchedule(schedule);
+        show.setArtist(artist);
+        show.setValue(100.0);
+        show.setCoverCharge(5.0);
+
+        // when
+        Mockito.when(showRepository.findById(showId)).thenReturn(Optional.of(show));
+
+        SecurityContextHolder.setContext(securityContextMock);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
+
+        Mockito.when(userRepository.findByEmail(otherManagerEmail)).thenReturn(Optional.of(otherManager));
+
+        // then
+        BusinessRuleException result = assertThrows(BusinessRuleException.class, () -> service.acceptProposal(showId));
+
+        // assert
+        assertEquals(errorMessage, result.getMessage());
+        assertInstanceOf(BusinessRuleException.class, result);
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+            value = ShowStatusEnum.class,
+            names = { "ARTIST_PROPOSAL", "MANAGER_PROPOSAL" },
+            mode = EnumSource.Mode.EXCLUDE)
+    @DisplayName("rejectProposal - Throw exception when show status forbids status change")
+    void rejectProposalShouldThrowExceptionWhenShowStatusForbidsStatusChange(ShowStatusEnum showStatusEnum) {
+        // given
+        String errorMessage = String.format("It is forbidden to change status from %s to ARTIST_REJECTED", showStatusEnum);
+
+        Integer showId = 1000;
+
+        Genre genre = new Genre();
+        genre.setId(9);
+        genre.setName("Genre name");
+
+        Integer artistId = 1;
+        String artistEmail = "artist1@email.com";
+        Artist artist = new Artist();
+        artist.setId(artistId);
+        artist.setEmail(artistEmail);
+        artist.addGenders(genre);
+
+        Integer managerId = 2;
+        String managerEmail = "manager2@email.com";
+        Manager manager = new Manager();
+        manager.setId(managerId);
+        manager.setEmail(managerEmail);
+
+        Integer establishmentId = 5;
+        Establishment establishment = new Establishment();
+        establishment.setId(establishmentId);
+        establishment.setManager(manager);
+
+        Integer eventId = 10;
+        Event event = new Event();
+        event.setId(eventId);
+        event.setEstablishment(establishment);
+        event.setGenre(genre);
+
+        Integer scheduleId = 100;
+        Schedule schedule = new Schedule();
+        schedule.setId(scheduleId);
+        schedule.setConfirmed(false);
+        schedule.setEvent(event);
+        schedule.setStartDateTime(LocalDateTime.now().plusMinutes(60));
+        schedule.setEndDateTime(LocalDateTime.now().plusMinutes(120));
+
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+
+        UserDetailsDto userDetailsDto = new UserDetailsDto(artist);
+
+        Show show = new Show();
+        show.setId(showId);
+        show.setStatus(showStatusEnum);
+        show.setEvent(event);
+        show.setSchedule(schedule);
+        show.setArtist(artist);
+        show.setValue(100.0);
+        show.setCoverCharge(5.0);
+
+        // when
+        Mockito.when(showRepository.findById(showId)).thenReturn(Optional.of(show));
+
+        SecurityContextHolder.setContext(securityContextMock);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
+
+        Mockito.when(userRepository.findByEmail(artistEmail)).thenReturn(Optional.of(artist));
+
+        // then
+        BusinessRuleException result = assertThrows(BusinessRuleException.class, () -> service.rejectProposal(showId));
+
+        // assert
+        assertEquals(errorMessage, result.getMessage());
+        assertInstanceOf(BusinessRuleException.class, result);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = ShowStatusEnum.class, names = { "ARTIST_PROPOSAL", "MANAGER_PROPOSAL" })
+    @DisplayName("rejectProposal - Save record and update show status to Rejected")
+    void rejectProposalShouldSaveRecordAndUpdateShowStatusToRejected(ShowStatusEnum showStatusEnum) {
+        // given
+        int expectedSaves = 1;
+        Integer showId = 1000;
+        ShowStatusEnum expectedStatus = showStatusEnum.equals(ShowStatusEnum.ARTIST_PROPOSAL)
+                ? ShowStatusEnum.MANAGER_REJECTED
+                : ShowStatusEnum.ARTIST_REJECTED;
+
+        Genre genre = new Genre();
+        genre.setId(9);
+        genre.setName("Genre name");
+
+        Integer artistId = 1;
+        String artistEmail = "artist1@email.com";
+        Artist artist = new Artist();
+        artist.setId(artistId);
+        artist.setEmail(artistEmail);
+        artist.addGenders(genre);
+
+        Integer managerId = 2;
+        String managerEmail = "manager2@email.com";
+        Manager manager = new Manager();
+        manager.setId(managerId);
+        manager.setEmail(managerEmail);
+
+        Integer establishmentId = 5;
+        Establishment establishment = new Establishment();
+        establishment.setId(establishmentId);
+        establishment.setManager(manager);
+
+        Integer eventId = 10;
+        Event event = new Event();
+        event.setId(eventId);
+        event.setEstablishment(establishment);
+        event.setGenre(genre);
+
+        Integer scheduleId = 100;
+        Schedule schedule = new Schedule();
+        schedule.setId(scheduleId);
+        schedule.setConfirmed(false);
+        schedule.setEvent(event);
+        schedule.setStartDateTime(LocalDateTime.now().plusMinutes(60));
+        schedule.setEndDateTime(LocalDateTime.now().plusMinutes(120));
+
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+
+        String authenticatedEmail = showStatusEnum.equals(ShowStatusEnum.ARTIST_PROPOSAL)
+                ? managerEmail
+                : artistEmail;
+
+        User authenticatedUser = showStatusEnum.equals(ShowStatusEnum.ARTIST_PROPOSAL)
+                ? manager
+                : artist;
+
+        UserDetailsDto userDetailsDto = new UserDetailsDto(authenticatedUser);
+
+        Show show = new Show();
+        show.setId(showId);
+        show.setStatus(showStatusEnum);
+        show.setEvent(event);
+        show.setSchedule(schedule);
+        show.setArtist(artist);
+        show.setValue(100.0);
+        show.setCoverCharge(5.0);
+
+        ArgumentCaptor<ShowRecord> showRecordRepositorySaveCaptor = ArgumentCaptor.forClass(ShowRecord.class);
+        ArgumentCaptor<Show> showRepositorySaveCaptor = ArgumentCaptor.forClass(Show.class);
+
+        // when
+        Mockito.when(showRepository.findById(showId)).thenReturn(Optional.of(show));
+
+        SecurityContextHolder.setContext(securityContextMock);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
+
+        Mockito.when(userRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(authenticatedUser));
+
+        // then
+        service.rejectProposal(showId);
+
+        // assert
+        Mockito.verify(showRecordRepository, Mockito.times(expectedSaves)).save(Mockito.any(ShowRecord.class));
+        Mockito.verify(showRecordRepository).save(showRecordRepositorySaveCaptor.capture());
+        assertEquals(showStatusEnum, showRecordRepositorySaveCaptor.getValue().getStatus());
+
+        Mockito.verify(showRepository, Mockito.times(expectedSaves)).save(Mockito.any(Show.class));
+        Mockito.verify(showRepository).save(showRepositorySaveCaptor.capture());
+        assertEquals(expectedStatus, showRepositorySaveCaptor.getValue().getStatus());
+    }
 
     // acceptTermsOfNegotiation
+    @Test
+    @DisplayName("acceptTermsOfNegotiation - Throw exception when show is not found")
+    void acceptTermsOfNegotiationShouldThrowExceptionWhenShowIsNotFound() {
+        // given
+        String errorMessage = "Show with id 1000 was not found";
+        Integer showId = 1000;
+
+        // when
+        Mockito.when(showRepository.findById(showId)).thenReturn(Optional.empty());
+
+        // then
+        EntityNotFoundException result = assertThrows(EntityNotFoundException.class, () -> service.acceptTermsOfNegotiation(showId));
+
+        // assert
+        assertEquals(errorMessage, result.getMessage());
+        assertInstanceOf(EntityNotFoundException.class, result);
+    }
+
+    @Test
+    @DisplayName("acceptTermsOfNegotiation - Throw exception when user is not found")
+    void acceptTermsOfNegotiationShouldThrowExceptionWhenUserIsNotFound() {
+        // given
+        String errorMessage = "User with email artist1@email.com was not found";
+
+        Integer showId = 1000;
+
+        Genre genre = new Genre();
+        genre.setId(9);
+        genre.setName("Genre name");
+
+        Integer artistId = 1;
+        String artistEmail = "artist1@email.com";
+        Artist artist = new Artist();
+        artist.setId(artistId);
+        artist.setEmail(artistEmail);
+        artist.addGenders(genre);
+
+        Integer managerId = 2;
+        String managerEmail = "manager2@email.com";
+        Manager manager = new Manager();
+        manager.setId(managerId);
+        manager.setEmail(managerEmail);
+
+        Integer establishmentId = 5;
+        Establishment establishment = new Establishment();
+        establishment.setId(establishmentId);
+        establishment.setManager(manager);
+
+        Integer eventId = 10;
+        Event event = new Event();
+        event.setId(eventId);
+        event.setEstablishment(establishment);
+        event.setGenre(genre);
+
+        Integer scheduleId = 100;
+        Schedule schedule = new Schedule();
+        schedule.setId(scheduleId);
+        schedule.setConfirmed(false);
+        schedule.setEvent(event);
+        schedule.setStartDateTime(LocalDateTime.now().plusMinutes(60));
+        schedule.setEndDateTime(LocalDateTime.now().plusMinutes(120));
+
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+
+        UserDetailsDto userDetailsDto = new UserDetailsDto(artist);
+
+        Show show = new Show();
+        show.setId(showId);
+        show.setStatus(ShowStatusEnum.ARTIST_PROPOSAL);
+        show.setEvent(event);
+        show.setSchedule(schedule);
+        show.setArtist(artist);
+        show.setValue(100.0);
+        show.setCoverCharge(5.0);
+
+        // when
+        Mockito.when(showRepository.findById(showId)).thenReturn(Optional.of(show));
+
+        SecurityContextHolder.setContext(securityContextMock);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
+
+        Mockito.when(userRepository.findByEmail(artistEmail)).thenReturn(Optional.empty());
+
+        // then
+        EntityNotFoundException result = assertThrows(EntityNotFoundException.class, () -> service.acceptTermsOfNegotiation(showId));
+
+        // assert
+        assertEquals(errorMessage, result.getMessage());
+        assertInstanceOf(EntityNotFoundException.class, result);
+    }
 
     // confirmShow
 
