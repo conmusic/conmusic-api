@@ -14,7 +14,6 @@ import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +35,7 @@ public class EventService {
             throw new EntityNotFoundException(String.format("Establishment with id %d was not found", dto.getEstablishmentId()));
         }
 
-        Optional<Genre> genre = genreRepository.findByName(dto.getGenre());
+        Optional<Genre> genre = genreRepository.findByNameIgnoreCase(dto.getGenre());
 
         if (genre.isEmpty()) {
             throw new EntityNotFoundException(String.format("Genre with name %s was not found", dto.getGenre()));
