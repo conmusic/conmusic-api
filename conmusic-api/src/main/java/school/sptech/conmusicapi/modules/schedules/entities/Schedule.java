@@ -2,6 +2,7 @@ package school.sptech.conmusicapi.modules.schedules.entities;
 
 import jakarta.persistence.*;
 import school.sptech.conmusicapi.modules.events.entities.Event;
+import school.sptech.conmusicapi.modules.recurrence.entities.Recurrence;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +25,10 @@ public class Schedule {
     @ManyToOne
     @JoinColumn(name = "fk_evento")
     private Event event;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_recorrencia")
+    private Recurrence recurrence;
 
     public Integer getId() {
         return id;
@@ -63,5 +68,13 @@ public class Schedule {
 
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    public Recurrence getRecurrence() {
+        return recurrence;
+    }
+
+    public void setRecurrence(Recurrence recurrence) {
+        this.recurrence = recurrence;
     }
 }

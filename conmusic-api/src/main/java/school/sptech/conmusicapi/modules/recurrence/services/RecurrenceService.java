@@ -10,10 +10,12 @@ import school.sptech.conmusicapi.modules.events.repositories.IEventRepository;
 import school.sptech.conmusicapi.modules.manager.repositories.IManagerRepository;
 import school.sptech.conmusicapi.modules.recurrence.dtos.CreateRecurrenceRulesDto;
 import school.sptech.conmusicapi.modules.recurrence.dtos.RecurrenceRuleDto;
+import school.sptech.conmusicapi.modules.recurrence.dtos.TimetableDto;
 import school.sptech.conmusicapi.modules.recurrence.entities.Recurrence;
 import school.sptech.conmusicapi.modules.recurrence.repositories.IRecurrenceRepository;
 import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
 import school.sptech.conmusicapi.modules.schedules.repositories.IScheduleRepository;
+import school.sptech.conmusicapi.modules.schedules.utils.ScheduleUtil;
 import school.sptech.conmusicapi.modules.user.dtos.UserDetailsDto;
 import school.sptech.conmusicapi.modules.user.entities.User;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
@@ -21,6 +23,7 @@ import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,13 +63,58 @@ public class RecurrenceService {
             throw new BusinessRuleException("No recurrence rules were given");
         }
 
-        List<Schedule> schedules = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+
+        List<Schedule> existingSchedules = scheduleRepository.findByEventIdAndStartDateTimeIsAfterOrEndDateTimeIsAfter(eventId, today, today);
         List<Recurrence> recurrences = new ArrayList<>();
 
-        LocalDate today = LocalDate.now();
         for (RecurrenceRuleDto rule : dto.getRules()) {
-            int days = (rule.getDayOfWeek().getValue() + 7 - today.getDayOfWeek().getValue()) % 7;
+            for (TimetableDto timetable : rule.getTimetables()) {
+                int days = (rule.getDayOfWeek().getValue() + 7 - today.getDayOfWeek().getValue()) % 7;
+                LocalDate scheduleDate = today.plusDays(days > 0 ? days : 7);
 
+                Recurrence recurrence = new Recurrence();
+                recurrence.setEvent(event);
+                recurrence.setDayOfWeek(rule.getDayOfWeek().getValue());
+                recurrence.setStartTime(timetable.getStartTime());
+                recurrence.setEndTime(timetable.getEndTime());
+                recurrence.setSchedules(new ArrayList<>());
+
+                while (
+                        scheduleDate.isBefore(dto.getEndRecurrence())
+                        || scheduleDate.equals(dto.getEndRecurrence())
+                ) {
+                    LocalDateTime startDateTime = LocalDateTime.of(scheduleDate, timetable.getStartTime());
+                    LocalDateTime endDateTime = LocalDateTime.of(scheduleDate, timetable.getStartTime());
+
+                    endDateTime = endDateTime.isBefore(startDateTime)
+                            ? endDateTime.plusDays(1)
+                            : endDateTime;
+
+                    Schedule schedule = new Schedule();
+                    schedule.setStartDateTime(startDateTime);
+                    schedule.setEndDateTime(endDateTime);
+                    schedule.setConfirmed(false);
+                    schedule.setEvent(event);
+
+                    if (ScheduleUtil.isDurationIntervalInvalid(schedule)) {
+                        throw new BusinessRuleException("Schedule with invalid dates. Start DateTime MUST be before End DateTime");
+                    }
+
+                    if (
+                            existingSchedules.stream()
+                                    .anyMatch(s -> ScheduleUtil.isScheduleOverlappingOtherSchedule(schedule, s))
+                    ) {
+                        throw new BusinessRuleException("Schedule is overlapping other schedule.");
+                    }
+
+                    existingSchedules.add(schedule);
+                    recurrence.getSchedules().add(schedule);
+                    scheduleDate = scheduleDate.plusWeeks(1);
+                }
+
+                recurrences.add(recurrence);
+            }
         }
     }
 }
