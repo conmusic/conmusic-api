@@ -12,8 +12,11 @@ import school.sptech.conmusicapi.modules.show.dtos.ShowDto;
 import school.sptech.conmusicapi.modules.show.dtos.ShowRecordDto;
 import school.sptech.conmusicapi.modules.show.dtos.UpdateShowDto;
 import school.sptech.conmusicapi.modules.show.services.ShowService;
+import school.sptech.conmusicapi.modules.show.services.ShowStatisticsService;
 import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupMonthCount;
 
+import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -24,6 +27,9 @@ import java.util.List;
 public class ShowController {
     @Autowired
     private ShowService showService;
+
+    @Autowired
+    private ShowStatisticsService showStatisticsService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
@@ -126,6 +132,18 @@ public class ShowController {
         return ResponseEntity.status(204).build();
     }
 
+    @GetMapping("/confirmed")
+    @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
+    public ResponseEntity<List<ShowDto>> listAllConfirmed() {
+        List<ShowDto> showDtos = showService.listByStatus(EnumSet.of(ShowStatusEnum.CONFIRMED));
+
+        if (showDtos.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(200).body(showDtos);
+    }
+
     @PatchMapping("/confirmed/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<ShowDto> concludeShow(@PathVariable Integer id) {
@@ -138,5 +156,20 @@ public class ShowController {
     public ResponseEntity<Void> cancel(@PathVariable Integer id) {
         showService.cancelShow(id);
         return ResponseEntity.status(204).build();
+    }
+
+    @GetMapping("/statistics/count-confirmed-by-month")
+    @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
+    public ResponseEntity<List<GroupMonthCount>> countConfirmedShowsByInDateIntervalGroupByMonth(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
+    ) {
+        List<GroupMonthCount> result = showStatisticsService.countConfirmedShowsByInDateIntervalGroupByMonth(startDate, endDate);
+
+        if (result.isEmpty()) {
+            ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(200).body(result);
     }
 }

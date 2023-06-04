@@ -17,7 +17,7 @@ import school.sptech.conmusicapi.modules.artist.services.ArtistService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/artist")
+@RequestMapping("/artists")
 @Tag(name = "Artists", description = "Responsible for managing all requests and operations related to artist users")
 public class ArtistController {
     @Autowired
