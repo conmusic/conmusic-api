@@ -3,6 +3,9 @@ package school.sptech.conmusicapi.shared.utils.collections;
 import school.sptech.conmusicapi.shared.utils.iterator.GenericObjectStackIterator;
 import school.sptech.conmusicapi.shared.utils.iterator.IGenericIterator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class GenericObjectStack<Obj> implements IGenericObjectCollection {
@@ -45,7 +48,9 @@ public class GenericObjectStack<Obj> implements IGenericObjectCollection {
 
     @Override
     public List<Obj> asList() {
-        return List.of(stack);
+        List<Obj> list = new ArrayList<>(Arrays.asList(stack));
+        Collections.reverse(list);
+        return list;
     }
 
     @Override
