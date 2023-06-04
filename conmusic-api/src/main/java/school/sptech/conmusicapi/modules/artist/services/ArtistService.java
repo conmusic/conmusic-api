@@ -129,7 +129,7 @@ public class ArtistService {
                 () -> new UserForbiddenActionException("The user does not have permission to register genre for this user.")
         );
 
-        Genre genre = genreRepository.findByName(nameGenre).orElseThrow(
+        Genre genre = genreRepository.findByNameIgnoreCase(nameGenre).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Gender with name %s was not found", nameGenre))
         );
 
@@ -151,7 +151,7 @@ public class ArtistService {
 //                () -> new UserForbiddenActionException("The user does not have permission to register genre for this user.")
 //        );
 
-        Genre genre = genreRepository.findByName(nameGenre).orElseThrow(
+        Genre genre = genreRepository.findByNameIgnoreCase(nameGenre).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Gender with name %s was not found", nameGenre))
         );
 

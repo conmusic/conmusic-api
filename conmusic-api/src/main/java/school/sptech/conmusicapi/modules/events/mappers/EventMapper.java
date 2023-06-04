@@ -29,7 +29,7 @@ public class EventMapper {
         dto.setDescription(entity.getDescription());
         dto.setValue(entity.getValue());
         dto.setCoverCharge(entity.getCoverCharge());
-        dto.setEstablishment(EstablishmentMapper.toDto(entity.getEstablishment()));
+        dto.setEstablishment(EstablishmentMapper.toDisplayScheduleEstablishmentDto(entity.getEstablishment()));
         dto.setGenre(GenreMapper.toDto(entity.getGenre()));
         dto.setSchedules(entity.getSchedules().stream().map(ScheduleMapper::toBasicDto).toList());
 
