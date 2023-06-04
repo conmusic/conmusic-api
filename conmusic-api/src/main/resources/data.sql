@@ -14,7 +14,7 @@ VALUES
 INSERT INTO estabelecimento
     (endereco, qtd_tomada_110, qtd_tomada_220, capacidade, cidade, cnpj, razao_social, nome_fantasia, telefone, uf, cep, fk_gerente)
 VALUES
-    ('Travessa Francisco Sá, 50 - Jacarecanga', 2, 1, 500, 'Fortaleza', '57362133000125', 'Bar do Chico - Jacarecanga', 'Bar do Chico', '11907090808', 'CE', '60010320', 2);
+    ('Travessa Francisco Sá, 50 - Jacarecanga', 2, 1, 500, 'Fortaleza', '57362133000125', 'Bar do Chico - Jacarecanga', 'Bar do Chico', '11907090808', 'CE', '60010320', 3);
 
 INSERT INTO evento
     (nome, descricao, valor, taxa_cover, fk_estabelecimento, fk_genero)
