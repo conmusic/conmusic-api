@@ -1,5 +1,6 @@
 package school.sptech.conmusicapi.modules.schedules.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,6 +22,7 @@ public class ScheduleController {
     @Autowired
     private ScheduleService scheduleService;
 
+    @Operation(summary = "Create a schedule", description = "Creates a new schedule for an event")
     @PostMapping("/{id}")
     @PreAuthorize("hasAuthority('Admin') or hasAuthority('Manager')")
     public ResponseEntity<ScheduleDto> create(
@@ -31,6 +33,7 @@ public class ScheduleController {
         return ResponseEntity.status(201).body(schedule);
     }
 
+    @Operation(summary = "List schedules by event", description = "Retrieves a list of schedules for a specific event")
     @GetMapping("/event/{id}")
     public ResponseEntity<List<ScheduleDto>> listByEvent(@PathVariable Integer id) {
         List<ScheduleDto> schedules = scheduleService.listByEventId(id);
@@ -42,6 +45,7 @@ public class ScheduleController {
         return ResponseEntity.status(200).body(schedules);
     }
 
+    @Operation(summary = "List schedules by establishment", description = "Retrieves a list of schedules for a specific establishment")
     @GetMapping("/establishment/{id}")
     public ResponseEntity<List<ScheduleDto>> listByEstablishment(@PathVariable Integer id) {
         List<ScheduleDto> schedules = scheduleService.listByEstablishmentId(id);

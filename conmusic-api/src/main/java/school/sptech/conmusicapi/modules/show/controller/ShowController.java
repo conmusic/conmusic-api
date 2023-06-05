@@ -1,5 +1,6 @@
 package school.sptech.conmusicapi.modules.show.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,6 +32,7 @@ public class ShowController {
     @Autowired
     private ShowStatisticsService showStatisticsService;
 
+    @Operation(summary = "Create a show", description = "Creates a new show")
     @PostMapping
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<ShowDto> create(@RequestBody @Valid CreateShowDto dto) {
@@ -38,6 +40,7 @@ public class ShowController {
         return ResponseEntity.status(201).body(show);
     }
 
+    @Operation(summary = "Update a show", description = "Updates an existing show")
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<ShowDto> update(
@@ -47,7 +50,7 @@ public class ShowController {
         ShowDto show = showService.update(id, dto);
         return ResponseEntity.status(200).body(show);
     }
-
+    @Operation(summary = "Get show by ID", description = "Retrieves a show by its ID")
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<ShowDto> getById(@PathVariable Integer id) {
@@ -55,6 +58,7 @@ public class ShowController {
         return ResponseEntity.status(200).body(show);
     }
 
+    @Operation(summary = "List show changes", description = "Retrieves a list of all changes for a show")
     @GetMapping("/history/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<List<ShowRecordDto>> listAllChangesByShowId(
@@ -69,6 +73,7 @@ public class ShowController {
         return ResponseEntity.status(200).body(history);
     }
 
+    @Operation(summary = "List all show proposals", description = "Retrieves a list of all show proposals")
     @GetMapping("/proposals")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<List<ShowDto>> listAllProposals() {
@@ -82,6 +87,7 @@ public class ShowController {
         return ResponseEntity.status(200).body(showDtos);
     }
 
+    @Operation(summary = "Start negotiation", description = "Starts a negotiation for a show proposal")
     @PatchMapping("/proposals/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<ShowDto> startNegotiation(@PathVariable Integer id) {
@@ -89,6 +95,7 @@ public class ShowController {
         return ResponseEntity.status(200).body(showDto);
     }
 
+    @Operation(summary = "Reject proposal", description = "Rejects a show proposal")
     @DeleteMapping("/proposals/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<Void> rejectProposal(@PathVariable Integer id) {
@@ -96,6 +103,7 @@ public class ShowController {
         return ResponseEntity.status(204).build();
     }
 
+    @Operation(summary = "List all negotiations", description = "Retrieves a list of all show negotiations")
     @GetMapping("/negotiations")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<List<ShowDto>> listAllNegotiations() {
@@ -118,6 +126,7 @@ public class ShowController {
         return ResponseEntity.status(200).body(showDtos);
     }
 
+    @Operation(summary = "Accept terms of negotiation", description = "Accepts the terms of a show negotiation")
     @PatchMapping("/negotiations/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<ShowDto> acceptTermsOfNegotiation(@PathVariable Integer id) {
@@ -125,6 +134,7 @@ public class ShowController {
         return ResponseEntity.status(200).body(showDto);
     }
 
+    @Operation(summary = "Withdraw from negotiation", description = "Withdraws from a show negotiation")
     @DeleteMapping("/negotiations/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<Void> withdrawFromNegotiation(@PathVariable Integer id) {
@@ -132,6 +142,7 @@ public class ShowController {
         return ResponseEntity.status(204).build();
     }
 
+    @Operation(summary = "List all confirmed shows", description = "Retrieves a list of all confirmed shows")
     @GetMapping("/confirmed")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<List<ShowDto>> listAllConfirmed() {
@@ -144,6 +155,7 @@ public class ShowController {
         return ResponseEntity.status(200).body(showDtos);
     }
 
+    @Operation(summary = "Conclude show", description = "Concludes a show")
     @PatchMapping("/confirmed/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<ShowDto> concludeShow(@PathVariable Integer id) {
@@ -151,6 +163,7 @@ public class ShowController {
         return ResponseEntity.status(200).body(showDto);
     }
 
+    @Operation(summary = "Cancel show", description = "Cancels a show")
     @DeleteMapping("/confirmed/{id}")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<Void> cancel(@PathVariable Integer id) {
@@ -158,6 +171,10 @@ public class ShowController {
         return ResponseEntity.status(204).build();
     }
 
+    @Operation(
+            summary = "Count confirmed shows by month",
+            description = "Retrieves the count of confirmed shows grouped by month in a specified date interval"
+    )
     @GetMapping("/statistics/count-confirmed-by-month")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<List<GroupMonthCount>> countConfirmedShowsByInDateIntervalGroupByMonth(
