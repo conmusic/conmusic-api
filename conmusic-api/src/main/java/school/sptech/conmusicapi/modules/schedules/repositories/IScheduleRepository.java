@@ -1,6 +1,7 @@
 package school.sptech.conmusicapi.modules.schedules.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
 
@@ -13,5 +14,13 @@ public interface IScheduleRepository extends JpaRepository<Schedule, Integer> {
 
     List<Schedule> findByEventEstablishmentId(Integer id);
 
-    List<Schedule> findByEventIdAndStartDateTimeIsAfterOrEndDateTimeIsAfter(Integer eventId, LocalDate today, LocalDate today1);
+    @Query("""
+        SELECT s
+        FROM Schedule s
+        WHERE
+            s.recurrence.id IS NULL
+            AND s.event.id = :eventId
+            AND (s.startDateTime >= :date OR s.endDateTime >= :date)
+    """)
+    List<Schedule> findDetachedByEventIdAndScheduleAfter(Integer eventId, LocalDate date);
 }
