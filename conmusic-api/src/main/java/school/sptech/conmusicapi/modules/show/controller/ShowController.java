@@ -18,6 +18,7 @@ import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupMonthCount;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -178,8 +179,8 @@ public class ShowController {
     @GetMapping("/statistics/count-confirmed-by-month")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
     public ResponseEntity<List<GroupMonthCount>> countConfirmedShowsByInDateIntervalGroupByMonth(
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate
+            @RequestParam LocalDateTime startDate,
+            @RequestParam LocalDateTime endDate
     ) {
         List<GroupMonthCount> result = showStatisticsService.countConfirmedShowsByInDateIntervalGroupByMonth(startDate, endDate);
 

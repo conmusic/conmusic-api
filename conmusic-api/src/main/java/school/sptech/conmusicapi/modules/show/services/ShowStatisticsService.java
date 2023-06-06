@@ -14,6 +14,7 @@ import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupMonthCount;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -26,8 +27,8 @@ public class ShowStatisticsService {
     private IUserRepository userRepository;
 
     public List<GroupMonthCount> countConfirmedShowsByInDateIntervalGroupByMonth(
-            LocalDate startDate,
-            LocalDate endDate
+            LocalDateTime startDate,
+            LocalDateTime endDate
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
