@@ -43,6 +43,12 @@ public class ShowStatisticsService {
                 user.getId()
         );
 
-        return result;
+        return List.of(
+                new GroupMonthCount("January", 5L),
+                new GroupMonthCount("February", 8L),
+                new GroupMonthCount("March", 12L),
+                new GroupMonthCount("April", 10L),
+                new GroupMonthCount("May", 16L)
+        );
     }
 }

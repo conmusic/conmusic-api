@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -178,10 +179,10 @@ public class ShowController {
     )
     @GetMapping("/statistics/count-confirmed-by-month")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
-    public ResponseEntity<List<GroupMonthCount>> countConfirmedShowsByInDateIntervalGroupByMonth(
-            @RequestParam LocalDateTime startDate,
-            @RequestParam LocalDateTime endDate
-    ) {
+    public ResponseEntity<List<GroupMonthCount>> countConfirmedShowsByInDateIntervalGroupByMonth() {
+        LocalDateTime startDate = LocalDateTime.of(LocalDateTime.now().getYear(), 1, 1, 0, 0, 0);
+        LocalDateTime endDate = LocalDateTime.now();
+
         List<GroupMonthCount> result = showStatisticsService.countConfirmedShowsByInDateIntervalGroupByMonth(startDate, endDate);
 
         if (result.isEmpty()) {
