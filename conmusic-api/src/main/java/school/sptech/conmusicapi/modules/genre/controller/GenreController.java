@@ -1,5 +1,6 @@
 package school.sptech.conmusicapi.modules.genre.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,11 +26,13 @@ public class GenreController {
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     @PreAuthorize("hasAuthority('Admin')")
+    @Operation(summary = "Register a new genre", description = "Registers a new music genre in the API")
     public ResponseEntity<DisplayingGenreDto> registerGender(@RequestBody @Valid RegisterGenreDto registerGenreDto){
         return ResponseEntity.created(null).body(genreService.register(registerGenreDto));
     }
 
     @GetMapping
+    @Operation(summary = "List all genres", description = "Retrieves a list of all music genres")
     public ResponseEntity<List<DisplayingGenreDto>> listAll() {
         List<DisplayingGenreDto> genres = genreService.list();
 

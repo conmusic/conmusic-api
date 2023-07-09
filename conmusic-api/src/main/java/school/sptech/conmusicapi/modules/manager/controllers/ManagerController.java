@@ -1,5 +1,6 @@
 package school.sptech.conmusicapi.modules.manager.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,12 +22,14 @@ public class ManagerController {
     @Autowired
     private ManagerService managerService;
 
+    @Operation(summary = "Create a manager", description = "Creates a new manager")
     @PostMapping
     public ResponseEntity<ManagerDto> create(@RequestBody @Valid CreateManagerDto dto) {
         ManagerDto createdHouse = managerService.create(dto);
         return ResponseEntity.status(201).body(createdHouse);
     }
 
+    @Operation(summary = "Update a manager", description = "Updates an existing manager")
     @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     @PreAuthorize("hasAuthority('Admin') or hasAuthority('Manager')")
@@ -38,6 +41,7 @@ public class ManagerController {
         return ResponseEntity.status(200).body(updatedHouse);
     }
 
+    @Operation(summary = "Get manager by ID", description = "Retrieves a manager by its ID")
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ManagerDto> getById(@PathVariable Integer id) {

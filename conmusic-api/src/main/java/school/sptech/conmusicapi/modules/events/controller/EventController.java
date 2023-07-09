@@ -1,5 +1,6 @@
 package school.sptech.conmusicapi.modules.events.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,6 +26,7 @@ public class EventController {
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     @PreAuthorize("hasAuthority('Manager')")
+    @Operation(summary = "Register a new event", description = "Registers a new music event in the API")
     public ResponseEntity<EventDto> create(@RequestBody @Valid CreateEventDto dto) {
         EventDto event = eventService.create(dto);
         return ResponseEntity.status(201).body(event);
@@ -32,6 +34,7 @@ public class EventController {
 
     @GetMapping
     @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "List all events", description = "Retrieves a list of all music events in the API")
     public ResponseEntity<List<EventDto>> listaAll() {
         List<EventDto> events = eventService.listAll();
 
@@ -44,6 +47,7 @@ public class EventController {
 
     @GetMapping("/establishment/{id}")
     @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "List events by establishment", description = "Retrieves a list of music events associated with a specific establishment")
     public ResponseEntity<List<EventDto>> listByEstablishment(@PathVariable Integer id) {
         List<EventDto> events = eventService.listAllByEstablishmentId(id);
 
@@ -56,6 +60,7 @@ public class EventController {
 
     @GetMapping("/available")
     @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "List available events", description = "Retrieves a list of available music events based on a specified date")
     public ResponseEntity<List<EventDto>> listAvailable(
             @RequestParam LocalDateTime date
     ) {
@@ -67,7 +72,7 @@ public class EventController {
 
         return ResponseEntity.status(200).body(events);
     }
-
+    @Operation(summary = "Get event by ID", description = "Retrieves a music event by its ID")
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<EventDto> getById(@PathVariable Integer id) {

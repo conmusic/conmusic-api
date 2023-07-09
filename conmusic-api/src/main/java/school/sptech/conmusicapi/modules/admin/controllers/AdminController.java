@@ -1,5 +1,6 @@
 package school.sptech.conmusicapi.modules.admin.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @Operation(summary = "Create admin", description = "Creates a new admin")
     @PostMapping
     @PreAuthorize("hasAuthority('Admin')")
     public ResponseEntity<AdminDto> create(@RequestBody @Valid CreateAdminDto dto) {
