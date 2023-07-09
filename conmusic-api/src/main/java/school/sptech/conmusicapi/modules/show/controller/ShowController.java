@@ -179,10 +179,10 @@ public class ShowController {
     )
     @GetMapping("/statistics/count-confirmed-by-month")
     @PreAuthorize("hasAuthority('Artist') or hasAuthority('Manager')")
-    public ResponseEntity<List<GroupMonthCount>> countConfirmedShowsByInDateIntervalGroupByMonth() {
-        LocalDateTime startDate = LocalDateTime.of(LocalDateTime.now().getYear(), 1, 1, 0, 0, 0);
-        LocalDateTime endDate = LocalDateTime.now();
-
+    public ResponseEntity<List<GroupMonthCount>> countConfirmedShowsByInDateIntervalGroupByMonth(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDate
+    ) {
         List<GroupMonthCount> result = showStatisticsService.countConfirmedShowsByInDateIntervalGroupByMonth(startDate, endDate);
 
         if (result.isEmpty()) {

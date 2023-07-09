@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupMonthCount;
 import school.sptech.conmusicapi.modules.show.entities.Show;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
@@ -30,13 +29,14 @@ public interface IShowRepository extends JpaRepository<Show, Integer> {
 
     @Query("""
         SELECT 
-            new school.sptech.conmusicapi.shared.utils.statistics.GroupMonthCount(FUNCTION('MONTHNAME', s.schedule.startDateTime), COUNT(s.id))            
+            new school.sptech.conmusicapi.shared.utils.statistics.GroupMonthCount(FUNCTION('MONTH', s.schedule.startDateTime), COUNT(s.id))            
         FROM Show s
         WHERE
             s.status IN :status
             AND (s.artist.id = :userId OR s.event.establishment.manager.id = :userId)
             AND s.schedule.startDateTime BETWEEN :startDate AND :endDate
-        GROUP BY FUNCTION('MONTHNAME', s.schedule.startDateTime)
+        GROUP BY FUNCTION('MONTH', s.schedule.startDateTime)
+        ORDER BY FUNCTION('MONTH', s.schedule.startDateTime)
     """)
     List<GroupMonthCount> countShowsByStatusInDateIntervalGroupByMonth(EnumSet status, LocalDateTime startDate, LocalDateTime endDate, Integer userId);
 }

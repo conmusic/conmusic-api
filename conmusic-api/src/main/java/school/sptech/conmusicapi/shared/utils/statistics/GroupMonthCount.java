@@ -1,23 +1,23 @@
 package school.sptech.conmusicapi.shared.utils.statistics;
 
 public class GroupMonthCount {
-    private String month;
+    private Integer month;
 
     private Long count;
 
     public GroupMonthCount() {
     }
 
-    public GroupMonthCount(String month, Long count) {
+    public GroupMonthCount(Integer month, Long count) {
         this.month = month;
         this.count = count;
     }
 
-    public String getMonth() {
+    public Integer getMonth() {
         return month;
     }
 
-    public void setMonth(String month) {
+    public void setMonth(Integer month) {
         this.month = month;
     }
 
