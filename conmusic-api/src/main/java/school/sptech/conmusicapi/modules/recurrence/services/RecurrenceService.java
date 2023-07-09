@@ -13,6 +13,7 @@ import school.sptech.conmusicapi.modules.recurrence.dtos.RecurrenceRuleDto;
 import school.sptech.conmusicapi.modules.recurrence.dtos.TimetableDto;
 import school.sptech.conmusicapi.modules.recurrence.entities.Recurrence;
 import school.sptech.conmusicapi.modules.recurrence.repositories.IRecurrenceRepository;
+import school.sptech.conmusicapi.modules.recurrence.util.RecurrenceUtil;
 import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
 import school.sptech.conmusicapi.modules.schedules.repositories.IScheduleRepository;
 import school.sptech.conmusicapi.modules.schedules.utils.ScheduleUtil;
@@ -65,9 +66,10 @@ public class RecurrenceService {
 
         LocalDate today = LocalDate.now();
 
-        List<Schedule> existingSchedules = scheduleRepository.findByEventIdAndStartDateTimeIsAfterOrEndDateTimeIsAfter(eventId, today, today);
-        List<Recurrence> recurrences = new ArrayList<>();
+        List<Schedule> existingSchedules = scheduleRepository.findDetachedByEventIdAndScheduleAfter(eventId, today);
+        List<Recurrence> existingRecurrences = recurrenceRepository.findByEventId(eventId);
 
+        List<Recurrence> recurrences = new ArrayList<>();
         for (RecurrenceRuleDto rule : dto.getRules()) {
             for (TimetableDto timetable : rule.getTimetables()) {
                 int days = (rule.getDayOfWeek().getValue() + 7 - today.getDayOfWeek().getValue()) % 7;
