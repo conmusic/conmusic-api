@@ -1,5 +1,6 @@
 package school.sptech.conmusicapi.modules.user.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Operation(summary = "Authenticate user", description = "Authenticates a user and returns a token")
     @PostMapping("/authentication")
     public ResponseEntity<UserTokenDto> authenticate(@RequestBody LoginDto dto) {
         UserTokenDto userTokenDto = userService.authenticate(dto);

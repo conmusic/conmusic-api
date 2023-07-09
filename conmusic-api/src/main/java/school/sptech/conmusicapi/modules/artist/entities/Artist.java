@@ -1,19 +1,34 @@
 package school.sptech.conmusicapi.modules.artist.entities;
 
 import jakarta.persistence.*;
+import school.sptech.conmusicapi.modules.genre.entities.Genre;
 import school.sptech.conmusicapi.modules.user.entities.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @DiscriminatorValue("artista")
 public class Artist extends User {
-    @Column(length = 11, unique = true)
-    private String cpf;
 
-    public String getCpf() {
-        return cpf;
+    @ManyToMany
+    @JoinTable(
+            name = "usuario_genero",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    private List<Genre> musicalGenres = new ArrayList<>();
+
+    public List<Genre> getMusicalGenres() {
+        return musicalGenres;
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
+    public void addGenders(Genre genre) {
+        this.musicalGenres.add(genre);
+    }
+
+    @Override
+    public String getUserType() {
+        return "Artist";
     }
 }

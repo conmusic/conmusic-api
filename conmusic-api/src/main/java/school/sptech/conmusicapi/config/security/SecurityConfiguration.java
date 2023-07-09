@@ -46,10 +46,11 @@ public class SecurityConfiguration {
             new AntPathRequestMatcher("/actuator/*"),
             new AntPathRequestMatcher("/swagger-ui/**"),
             new AntPathRequestMatcher("/users/authentication"),
-            new AntPathRequestMatcher("/artists", HttpMethod.POST.name()),
-            new AntPathRequestMatcher("/houses", HttpMethod.POST.name()),
+            new AntPathRequestMatcher("/artist", HttpMethod.POST.name()),
+            new AntPathRequestMatcher("/managers", HttpMethod.POST.name()),
             new AntPathRequestMatcher("/h2-console/**"),
-            new AntPathRequestMatcher("/error/**")
+            new AntPathRequestMatcher("/error/**"),
+            new AntPathRequestMatcher("/genre/**")
     };
 
     @Bean

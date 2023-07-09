@@ -1,6 +1,7 @@
 package school.sptech.conmusicapi.modules.artist.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
@@ -9,53 +10,78 @@ import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
 import school.sptech.conmusicapi.modules.artist.entities.Artist;
 import school.sptech.conmusicapi.modules.artist.mapper.ArtistMapper;
 import school.sptech.conmusicapi.modules.artist.repositories.IArtistRepository;
+import school.sptech.conmusicapi.modules.genre.entities.Genre;
+import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
-import school.sptech.conmusicapi.shared.utils.GenericObjectList;
+import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
+import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
+import school.sptech.conmusicapi.shared.exceptions.UserForbiddenActionException;
+import school.sptech.conmusicapi.shared.utils.collections.GenericObjectList;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ArtistService {
     @Autowired
     private IUserRepository userRepository;
+
     @Autowired
     private IArtistRepository artistRepository;
+
+    @Autowired
+    private IGenreRepository genreRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Optional<ArtistDto> create(CreateArtistDto dto) {
+    public ArtistDto create(CreateArtistDto dto) {
         Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
 
         if (isEmailAlreadyInUse) {
-            return Optional.empty();
+            throw new BusinessRuleException("Email is already in use.");
         }
 
-        Boolean isCpfAlreadyInUse = artistRepository.existsByCpf(dto.getCpf());
+        Boolean isCpfAlreadyInUse = userRepository.existsByCpf(dto.getCpf());
 
         if (isCpfAlreadyInUse) {
-            return Optional.empty();
+            throw new BusinessRuleException("CPF is already in use.");
         }
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
         dto.setPassword(hashedPassword);
 
         Artist createdArtist = artistRepository.save(ArtistMapper.fromDto(dto));
-        return Optional.of(ArtistMapper.toDto(createdArtist));
+        return ArtistMapper.toDto(createdArtist);
     }
 
-    public Optional<ArtistDto> updateArtistDto(UpdateArtistDto dto){
+    public ArtistDto updateArtistDto(UpdateArtistDto dto, Integer id){
+        Artist artistOpt = artistRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Artist with id %d was not found.", id))
+        );
 
-        if (userRepository.existsById(dto.getId())){
-            Artist artist = artistRepository.findById(dto.getId()).get();
-            Artist updatedArtist = ArtistMapper.fromDtoUpdate(dto, artist);
+        userRepository.findById(id).filter(artist ->
+           artist.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())
+        ).orElseThrow(
+                () -> new UserForbiddenActionException("User does not have permission to update this user.")
+        );
 
-            artistRepository.save(updatedArtist);
-            return Optional.of(ArtistMapper.toDto(updatedArtist));
+        Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
+
+        if (isEmailAlreadyInUse && !artistOpt.getEmail().equals(dto.getEmail())) {
+            throw new BusinessRuleException("Email is already in use.");
         }
 
-        return Optional.empty();
+        Boolean isCpfAlreadyInUse = userRepository.existsByCpf(dto.getCpf());
+
+        if (isCpfAlreadyInUse && !artistOpt.getCpf().equals(dto.getCpf())) {
+            throw new BusinessRuleException("CPF is already in use.");
+        }
+
+        Artist updatedArtist = ArtistMapper.fromDtoUpdate(dto, artistOpt);
+        updatedArtist.setId(id);
+        artistRepository.save(updatedArtist);
+        return ArtistMapper.toDto(updatedArtist);
     }
 
     public List<ArtistDto> findAll() {
@@ -71,9 +97,9 @@ public class ArtistService {
 
             for (int j = i + 1; j < auxOrdered.getSize(); j++) {
                 if (
-                    auxOrdered.getElement(j)
+                    auxOrdered.getByIndex(j)
                             .getBirthDate().isAfter(
-                                auxOrdered.getElement(oldestIndex).getBirthDate()
+                                auxOrdered.getByIndex(oldestIndex).getBirthDate()
                             )
                 ) {
                     oldestIndex = j;
@@ -82,6 +108,56 @@ public class ArtistService {
             auxOrdered.swap(i, oldestIndex);
         }
         
-        return auxOrdered.getElements();
+        return auxOrdered.asList();
     }
+
+    public ArtistDto getByArtistId(Integer id) {
+        Optional<Artist> artistOpt = artistRepository.findById(id);
+
+        if (artistOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Artist with id %d was not found.", id));
+        }
+
+        return ArtistMapper.toDto(artistOpt.get());
+    }
+
+    public ArtistDto registerGenreArtist(Integer id, String nameGenre){
+
+        userRepository.findById(id).filter(artist ->
+                artist.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())
+        ).orElseThrow(
+                () -> new UserForbiddenActionException("The user does not have permission to register genre for this user.")
+        );
+
+        Genre genre = genreRepository.findByNameIgnoreCase(nameGenre).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Gender with name %s was not found", nameGenre))
+        );
+
+        Artist artist = artistRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Artist with id %d was not found.", id))
+        );
+
+        artist.addGenders(genre);
+
+        return ArtistMapper.toDto(artistRepository.save(artist));
+    }
+
+    public int deleteGenreArtist(Integer id, String nameGenre){
+
+//        FIQUEI EM DÚVIDA SE ISSO VAI NO EM DELETE - ACREDITO QUE DEVERIA
+//        userRepository.findById(id).filter(artist ->
+//                artist.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())
+//        ).orElseThrow(
+//                () -> new UserForbiddenActionException("The user does not have permission to register genre for this user.")
+//        );
+
+        Genre genre = genreRepository.findByNameIgnoreCase(nameGenre).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Gender with name %s was not found", nameGenre))
+        );
+
+        Integer genreId = genre.getId();
+
+        return artistRepository.deleteGenreArtist(id, genreId);
+    }
+
 }
