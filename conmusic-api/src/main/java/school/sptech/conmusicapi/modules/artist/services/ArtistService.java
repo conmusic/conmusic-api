@@ -17,6 +17,7 @@ import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 import school.sptech.conmusicapi.shared.exceptions.UserForbiddenActionException;
 import school.sptech.conmusicapi.shared.utils.collections.GenericObjectList;
+import school.sptech.conmusicapi.shared.utils.collections.HashTable;
 
 import java.util.List;
 import java.util.Optional;
@@ -112,13 +113,16 @@ public class ArtistService {
     }
 
     public ArtistDto getByArtistId(Integer id) {
-        Optional<Artist> artistOpt = artistRepository.findById(id);
+        List<Artist> artistList = artistRepository.findAll();
 
-        if (artistOpt.isEmpty()) {
-            throw new EntityNotFoundException(String.format("Artist with id %d was not found.", id));
-        }
+        HashTable hashTable = new HashTable(artistList.size());
+        hashTable.insertList(artistList, 0);
 
-        return ArtistMapper.toDto(artistOpt.get());
+        Artist artist = hashTable.search(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Artist with id %d was not found.", id))
+        );
+
+        return ArtistMapper.toDto(artist);
     }
 
     public ArtistDto registerGenreArtist(Integer id, String nameGenre){
