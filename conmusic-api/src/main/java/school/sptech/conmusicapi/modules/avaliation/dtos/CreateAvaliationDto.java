@@ -1,9 +1,7 @@
 package school.sptech.conmusicapi.modules.avaliation.dtos;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.validation.constraints.*;
 
 public class CreateAvaliationDto {
     @Min(0)
@@ -13,6 +11,13 @@ public class CreateAvaliationDto {
     @NotBlank
     @Size(max = 45)
     private String comentary;
+
+    @NotBlank
+    @Positive
+    private Integer establishmentId;
+    @NotBlank
+    @Positive
+    private Integer showId;
 
     public Integer getRating() {
         return rating;
@@ -28,5 +33,21 @@ public class CreateAvaliationDto {
 
     public void setComentary(String comentary) {
         this.comentary = comentary;
+    }
+
+    public Integer getEstablishmentId() {
+        return establishmentId;
+    }
+
+    public void setEstablishmentId(Integer establishmentId) {
+        this.establishmentId = establishmentId;
+    }
+
+    public Integer getShowId() {
+        return showId;
+    }
+
+    public void setShowId(Integer showId) {
+        this.showId = showId;
     }
 }
