@@ -14,8 +14,6 @@ public class AvaliationDto {
 
     private EstablishmentDto establishment;
 
-    private ShowDto show;
-
     public Integer getId() {
         return id;
     }
@@ -46,13 +44,5 @@ public class AvaliationDto {
 
     public void setEstablishment(EstablishmentDto establishment) {
         this.establishment = establishment;
-    }
-
-    public ShowDto getShow() {
-        return show;
-    }
-
-    public void setShow(ShowDto show) {
-        this.show = show;
     }
 }

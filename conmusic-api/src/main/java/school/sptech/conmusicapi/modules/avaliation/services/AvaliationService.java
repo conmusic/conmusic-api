@@ -19,11 +19,7 @@ public class AvaliationService {
     @Autowired
     private IEstablishmentRepository establishmentRepository;
     @Autowired
-    private IShowRepository showRepository;
-    @Autowired
     private IAvaliationRepository avaliationRepository;
-
-    private AvaliationMapper aval;
 
     public AvaliationDto create(CreateAvaliationDto dto){
         Optional<Establishment> establishment = establishmentRepository.findById(dto.getEstablishmentId());
@@ -32,23 +28,16 @@ public class AvaliationService {
             throw new EntityNotFoundException(String.format("Establishment with id %d was not found", dto.getEstablishmentId()));
         }
 
-        Optional<Show> show = showRepository.findById(dto.getShowId());
-
-        if (show.isEmpty()){
-            throw new EntityNotFoundException(String.format("Show with id %d was not found", dto.getShowId()));
-        }
-
-        Avaliation avaliation= aval.fromDto(dto);
+        Avaliation avaliation= AvaliationMapper.fromDto(dto);
         avaliation.setEstablishment(establishment.get());
-        avaliation.setShow(show.get());
         Avaliation createdAvaliation = avaliationRepository.save(avaliation);
-        return aval.toDto(createdAvaliation);
+        return AvaliationMapper.toDto(createdAvaliation);
     }
     public List<AvaliationDto> listAll(){
-        return avaliationRepository.findAll().stream().map(aval::toDto).toList();
+        return avaliationRepository.findAll().stream().map(AvaliationMapper::toDto).toList();
     }
 
     public List<AvaliationDto> listByEstablshmentId(Integer id){
-        return avaliationRepository.findByEstablishmentId(id).stream().map(aval::toDto).toList();
+        return avaliationRepository.findByEstablishmentId(id).stream().map(AvaliationMapper::toDto).toList();
     }
 }

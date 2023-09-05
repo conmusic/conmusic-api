@@ -15,9 +15,6 @@ public class CreateAvaliationDto {
     @NotBlank
     @Positive
     private Integer establishmentId;
-    @NotBlank
-    @Positive
-    private Integer showId;
 
     public Integer getRating() {
         return rating;
@@ -43,11 +40,4 @@ public class CreateAvaliationDto {
         this.establishmentId = establishmentId;
     }
 
-    public Integer getShowId() {
-        return showId;
-    }
-
-    public void setShowId(Integer showId) {
-        this.showId = showId;
-    }
 }

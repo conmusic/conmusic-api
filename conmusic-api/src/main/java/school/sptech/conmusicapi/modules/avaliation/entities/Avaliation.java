@@ -22,9 +22,6 @@ public class Avaliation {
     @JoinColumn(name = "fk_usuario")
     private Establishment establishment;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_show")
-    private Show show;
 
     public Integer getId() {
         return id;
@@ -58,11 +55,4 @@ public class Avaliation {
         this.establishment = establishment;
     }
 
-    public Show getShow() {
-        return show;
-    }
-
-    public void setShow(Show show) {
-        this.show = show;
-    }
 }
