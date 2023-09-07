@@ -4,6 +4,8 @@ import school.sptech.conmusicapi.modules.artist.entities.Artist;
 import school.sptech.conmusicapi.modules.manager.entities.Manager;
 import school.sptech.conmusicapi.modules.user.entities.User;
 
+import java.util.Objects;
+
 public class LoginUserDTO extends UserDto {
     private String userType;
     private boolean needCompletion;
@@ -32,10 +34,10 @@ public class LoginUserDTO extends UserDto {
 
     private boolean doesArtistNeedCompletion(Artist artist) {
         return artist.getMusicalGenres().isEmpty()
-                && (artist.getAddress().isEmpty()
-                || artist.getCity().isEmpty()
-                || artist.getState().isEmpty()
-                || artist.getZipCode().isEmpty());
+                && (Objects.isNull(artist.getAddress())
+                || Objects.isNull(artist.getCity())
+                || Objects.isNull(artist.getState())
+                || Objects.isNull(artist.getZipCode()));
     }
 
     private boolean doesManagerNeedCompletion(Manager manager) {

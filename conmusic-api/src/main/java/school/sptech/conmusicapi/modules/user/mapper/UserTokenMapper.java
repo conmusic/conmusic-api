@@ -6,8 +6,7 @@ import school.sptech.conmusicapi.modules.user.entities.User;
 public class UserTokenMapper {
     public static UserTokenDto toDto(User user, String token) {
         UserTokenDto dto = new UserTokenDto();
-
-        dto.setId(user.getId());
+        
         dto.setUser(UserMapper.toLoginDto(user));
         dto.setToken(token);
 

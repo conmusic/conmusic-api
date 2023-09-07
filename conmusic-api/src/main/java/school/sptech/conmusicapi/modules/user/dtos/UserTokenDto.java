@@ -1,17 +1,8 @@
 package school.sptech.conmusicapi.modules.user.dtos;
 
 public class UserTokenDto {
-    private Integer id;
     private LoginUserDTO user;
     private String token;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public LoginUserDTO getUser() {
         return user;
