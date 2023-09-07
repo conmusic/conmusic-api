@@ -31,14 +31,14 @@ public class LoginUserDTO extends UserDto {
     }
 
     private boolean doesArtistNeedCompletion(Artist artist) {
-        return !artist.getMusicalGenres().isEmpty()
-                && !artist.getAddress().isEmpty()
-                && !artist.getCity().isEmpty()
-                && !artist.getState().isEmpty()
-                && !artist.getZipCode().isEmpty();
+        return artist.getMusicalGenres().isEmpty()
+                && (artist.getAddress().isEmpty()
+                || artist.getCity().isEmpty()
+                || artist.getState().isEmpty()
+                || artist.getZipCode().isEmpty());
     }
 
     private boolean doesManagerNeedCompletion(Manager manager) {
-        return !manager.getEstablishments().isEmpty();
+        return manager.getEstablishments().isEmpty();
     }
 }
