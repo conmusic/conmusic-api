@@ -40,7 +40,7 @@ public class UserMapper {
         LoginUserDTO dto = new LoginUserDTO();
 
         UserMapper.toDto(user, dto);
-        dto.setUserType(dto.getUserType());
+        dto.setUserType(user.getUserType());
         dto.setNeedCompletion(user);
 
         return dto;
