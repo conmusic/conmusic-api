@@ -8,8 +8,7 @@ public class UserTokenMapper {
         UserTokenDto dto = new UserTokenDto();
 
         dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
+        dto.setUser(UserMapper.toLoginDto(user));
         dto.setToken(token);
 
         return dto;
