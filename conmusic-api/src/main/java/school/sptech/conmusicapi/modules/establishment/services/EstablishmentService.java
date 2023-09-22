@@ -1,5 +1,8 @@
 package school.sptech.conmusicapi.modules.establishment.services;
 
+import jakarta.persistence.EntityManager;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import school.sptech.conmusicapi.modules.establishment.dtos.CreateEstablishmentDto;
@@ -23,6 +26,9 @@ public class EstablishmentService {
 
     @Autowired
     private IManagerRepository managerRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     public EstablishmentDto create(CreateEstablishmentDto dto) {
         Optional<Manager> managerOpt = managerRepository.findById(dto.getManagerId());
@@ -83,4 +89,15 @@ public class EstablishmentService {
         List<Establishment> establishments = establishmentRepository.findByManagerId(id);
         return establishments.stream().map(EstablishmentMapper::toDto).toList();
     }
+
+    public Iterable<EstablishmentDto> findAllInactive(){
+        boolean isDeleted = true;
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedProductFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        List<Establishment> establishments =  establishmentRepository.findAll();
+        session.disableFilter("deletedProductFilter");
+        return (establishments.stream().map(EstablishmentMapper::toDto).toList());
+    }
+
 }

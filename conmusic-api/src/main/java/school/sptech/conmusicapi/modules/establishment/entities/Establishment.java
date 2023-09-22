@@ -1,6 +1,9 @@
 package school.sptech.conmusicapi.modules.establishment.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.manager.entities.Manager;
 
@@ -10,6 +13,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "estabelecimento")
+@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type =boolean.class))
+@Filter(name = "deletedProductFilter", condition = "deleted = :isDeleted")
 public class Establishment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,6 +52,8 @@ public class Establishment {
 
     @Column(name = "cep", length = 8)
     private String zipCode;
+
+    private boolean deleted = Boolean.FALSE;
 
     @ManyToOne
     @JoinColumn(name = "fk_gerente")
@@ -165,5 +172,13 @@ public class Establishment {
 
     public void setEvents(List<Event> events) {
         this.events = events;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

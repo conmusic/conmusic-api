@@ -49,6 +49,13 @@ public class EstablishmentController {
         return ResponseEntity.status(200).body(establishment);
     }
 
+    @GetMapping("/inactive")
+    @Operation(summary = "Get establishment by ID", description = "Retrieves an establishment by its ID")
+    public ResponseEntity<Iterable<EstablishmentDto>> inactiveEstablishment(){
+        Iterable<EstablishmentDto> establishment = establishmentService.findAllInactive();
+        return ResponseEntity.status(200).body(establishment);
+    }
+
     @Operation(summary = "List establishments by manager ID", description = "Retrieves a list of establishments associated with a manager ID")
     @GetMapping("/manager/{id}")
     public ResponseEntity<List<EstablishmentDto>> listByManagerId(@PathVariable Integer id) {
