@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.establishment.dtos.CreateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
+import school.sptech.conmusicapi.modules.establishment.dtos.InactiveEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.UpdateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.services.EstablishmentService;
 
@@ -55,9 +56,16 @@ public class EstablishmentController {
         EstablishmentDto establishmentDto = establishmentService.inactivateEstablishment(id);
         return ResponseEntity.status(200).body(establishmentDto);
     }
+    @PatchMapping("/activate/{id}")
+    @Operation(summary = "Activate an establishment", description = "Activate an existing establishment in the API")
+    @PreAuthorize("hasAuthority('Admin') or hasAuthority('Manager')")
+    public ResponseEntity<EstablishmentDto> activate(@PathVariable Integer id) {
+        EstablishmentDto activateEstablishment = establishmentService.activateEstablishment(id);
+        return ResponseEntity.status(200).body(activateEstablishment);
+    }
 
     @GetMapping("/inactive")
-    @Operation(summary = "Get establishment by ID", description = "Retrieves an establishment by its ID")
+    @Operation(summary = "Get inactived establishments", description = "Retrieves an inactivad establishment")
     public ResponseEntity<Iterable<EstablishmentDto>> inactiveEstablishment(){
         Iterable<EstablishmentDto> establishment = establishmentService.findAllInactive();
         return ResponseEntity.status(200).body(establishment);

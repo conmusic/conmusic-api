@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import school.sptech.conmusicapi.modules.establishment.dtos.CreateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
+import school.sptech.conmusicapi.modules.establishment.dtos.InactiveEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.UpdateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
 import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
@@ -30,6 +31,12 @@ public class EstablishmentService {
     @Autowired
     private EntityManager entityManager;
 
+    public void filterForInactive(boolean isDeleted){
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedEstablishmentFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        session.disableFilter("deletedProductFilter");
+    }
     public EstablishmentDto create(CreateEstablishmentDto dto) {
         Optional<Manager> managerOpt = managerRepository.findById(dto.getManagerId());
 
@@ -70,8 +77,8 @@ public class EstablishmentService {
     }
 
     public EstablishmentDto getById(Integer id) {
+        filterForInactive(false);
         Optional<Establishment> establishmentOpt = establishmentRepository.findById(id);
-
         if (establishmentOpt.isEmpty()) {
             throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
         }
@@ -80,6 +87,7 @@ public class EstablishmentService {
     }
 
     public List<EstablishmentDto> getByManagerId(Integer id) {
+        filterForInactive(false);
         Boolean managerExists = managerRepository.existsById(id);
 
         if (!managerExists) {
@@ -91,13 +99,9 @@ public class EstablishmentService {
     }
 
     public Iterable<EstablishmentDto> findAllInactive(){
-        boolean isDeleted = true;
-        Session session = entityManager.unwrap(Session.class);
-        Filter filter = session.enableFilter("deletedProductFilter");
-        filter.setParameter("isDeleted", isDeleted);
-        List<Establishment> establishments =  establishmentRepository.findAll();
-        session.disableFilter("deletedProductFilter");
-        return (establishments.stream().map(EstablishmentMapper::toDto).toList());
+        filterForInactive(true);
+        List<EstablishmentDto> establishments =  establishmentRepository.findAll().stream().map(EstablishmentMapper :: toDto).toList();
+        return (establishments);
     }
     public EstablishmentDto inactivateEstablishment(Integer id){
         Optional<Establishment> establishmentOpt = establishmentRepository.findById(id);
@@ -106,6 +110,18 @@ public class EstablishmentService {
             throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
         }
         Establishment establishmentInactive = EstablishmentMapper.fromInactive(establishmentOpt.get(), true);
+        establishmentRepository.save(establishmentInactive);
+
+        return EstablishmentMapper.toDto(establishmentInactive);
+    }
+
+    public EstablishmentDto activateEstablishment(Integer id){
+        Optional<Establishment> establishmentOpt = establishmentRepository.findById(id);
+
+        if (establishmentOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
+        }
+        Establishment establishmentInactive = EstablishmentMapper.fromInactive(establishmentOpt.get(), false);
         establishmentRepository.save(establishmentInactive);
 
         return EstablishmentMapper.toDto(establishmentInactive);

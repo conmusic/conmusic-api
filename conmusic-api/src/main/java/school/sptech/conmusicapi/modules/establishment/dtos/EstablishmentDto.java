@@ -20,7 +20,7 @@ public class EstablishmentDto {
     private String state;
     private String zipCode;
     private Integer managerId;
-    private boolean deleted;
+
     private List<DisplayEstablishmentEventDto> events;
 
     public Integer getId() {
@@ -125,14 +125,6 @@ public class EstablishmentDto {
 
     public void setManagerId(Integer managerId) {
         this.managerId = managerId;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
     public List<DisplayEstablishmentEventDto> getEvents() {

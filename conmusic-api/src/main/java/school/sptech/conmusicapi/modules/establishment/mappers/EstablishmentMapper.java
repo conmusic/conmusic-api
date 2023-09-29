@@ -42,7 +42,6 @@ public class EstablishmentMapper {
         dto.setState(establishment.getState());
         dto.setZipCode(establishment.getZipCode());
         dto.setManagerId(establishment.getManager().getId());
-        dto.setDeleted(establishment.isDeleted());
         dto.setEvents(establishment.getEvents().stream().map(EventMapper::toDisplayEstablishmentEventDto).toList());
 
         return dto;

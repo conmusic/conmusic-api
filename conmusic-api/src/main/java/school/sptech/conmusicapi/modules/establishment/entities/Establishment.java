@@ -1,10 +1,8 @@
 package school.sptech.conmusicapi.modules.establishment.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
-import org.hibernate.annotations.SQLDelete;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.manager.entities.Manager;
 
@@ -14,9 +12,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "estabelecimento")
-@SQLDelete(sql = "UPDATE estabelecimento SET deleted = true WHERE id=?")
-@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type =boolean.class))
-@Filter(name = "deletedProductFilter", condition = "deleted = :isDeleted")
+@FilterDef(name = "deletedEstablishmentFilter", parameters = @ParamDef(name = "isDeleted", type =boolean.class))
+@Filter(name = "deletedEstablishmentFilter", condition = "deleted = :isDeleted")
 public class Establishment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

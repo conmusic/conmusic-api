@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.schedules.dtos.CreateScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.dtos.ScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.services.ScheduleService;
@@ -55,5 +56,26 @@ public class ScheduleController {
         }
 
         return ResponseEntity.status(200).body(schedules);
+    }
+
+    @DeleteMapping("/inctivate/{id}")
+    @Operation(summary = "inactive schedule by ID", description = "inactive an schedule by its ID")
+    public ResponseEntity<ScheduleDto> inactivateById(@PathVariable Integer id){
+        ScheduleDto scheduleDto = scheduleService.inactivateSchedule(id);
+        return ResponseEntity.status(200).body(scheduleDto);
+    }
+    @PatchMapping("/activate/{id}")
+    @Operation(summary = "Activate an schedule", description = "Activate an existing schedule in the API")
+    @PreAuthorize("hasAuthority('Admin') or hasAuthority('Manager')")
+    public ResponseEntity<ScheduleDto> activate(@PathVariable Integer id) {
+        ScheduleDto activateSchedule = scheduleService.activateSchedule(id);
+        return ResponseEntity.status(200).body(activateSchedule);
+    }
+
+    @GetMapping("/inactive")
+    @Operation(summary = "Get inactived schedule", description = "Retrieves an inactivad schedule")
+    public ResponseEntity<Iterable<ScheduleDto>> inactiveEstablishment(){
+        Iterable<ScheduleDto> establishment = scheduleService.findAllInactive();
+        return ResponseEntity.status(200).body(establishment);
     }
 }
