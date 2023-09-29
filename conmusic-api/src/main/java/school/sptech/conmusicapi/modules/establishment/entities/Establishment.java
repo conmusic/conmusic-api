@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.manager.entities.Manager;
 
@@ -13,6 +14,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "estabelecimento")
+@SQLDelete(sql = "UPDATE estabelecimento SET deleted = true WHERE id=?")
 @FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type =boolean.class))
 @Filter(name = "deletedProductFilter", condition = "deleted = :isDeleted")
 public class Establishment {

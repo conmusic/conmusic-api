@@ -99,5 +99,16 @@ public class EstablishmentService {
         session.disableFilter("deletedProductFilter");
         return (establishments.stream().map(EstablishmentMapper::toDto).toList());
     }
+    public EstablishmentDto inactivateEstablishment(Integer id){
+        Optional<Establishment> establishmentOpt = establishmentRepository.findById(id);
+
+        if (establishmentOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
+        }
+        Establishment establishmentInactive = EstablishmentMapper.fromInactive(establishmentOpt.get(), true);
+        establishmentRepository.save(establishmentInactive);
+
+        return EstablishmentMapper.toDto(establishmentInactive);
+    }
 
 }

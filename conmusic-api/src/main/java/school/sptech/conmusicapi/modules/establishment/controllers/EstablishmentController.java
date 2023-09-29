@@ -49,6 +49,13 @@ public class EstablishmentController {
         return ResponseEntity.status(200).body(establishment);
     }
 
+    @DeleteMapping("/inctivate/{id}")
+    @Operation(summary = "inactive establishment by ID", description = "inactive an establishment by its ID")
+    public ResponseEntity<EstablishmentDto> inactivateById(@PathVariable Integer id){
+        EstablishmentDto establishmentDto = establishmentService.inactivateEstablishment(id);
+        return ResponseEntity.status(200).body(establishmentDto);
+    }
+
     @GetMapping("/inactive")
     @Operation(summary = "Get establishment by ID", description = "Retrieves an establishment by its ID")
     public ResponseEntity<Iterable<EstablishmentDto>> inactiveEstablishment(){

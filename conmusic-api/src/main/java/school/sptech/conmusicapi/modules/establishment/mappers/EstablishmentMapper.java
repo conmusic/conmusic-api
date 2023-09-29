@@ -83,4 +83,8 @@ public class EstablishmentMapper {
 
         return dto;
     }
+    public static Establishment fromInactive(Establishment e, Boolean deleted){
+        e.setDeleted(deleted);
+        return e;
+    }
 }

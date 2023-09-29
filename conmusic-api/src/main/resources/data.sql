@@ -16,12 +16,12 @@ VALUES
     ('Jazz'),('Eletrônica'),('MPB'),('Indie'),('Clássica');
 
 INSERT INTO estabelecimento
-    (endereco, qtd_tomada_110, qtd_tomada_220, capacidade, cidade, cnpj, razao_social, nome_fantasia, telefone, uf, cep, fk_gerente)
+    (endereco, qtd_tomada_110, qtd_tomada_220, capacidade, cidade, cnpj, razao_social, nome_fantasia, telefone, uf, cep, deleted, fk_gerente)
 VALUES
-    ('Travessa Francisco Sá, 50 - Jacarecanga', 2, 1, 500, 'Fortaleza', '57362133000125', 'Bar do Chico - Jacarecanga', 'Bar do Chico', '11907090808', 'CE', '60010320', 3),
-    ('Avenida Paulista, 1000 - Bela Vista', 3, 2, 1000, 'São Paulo', '12345678000123', 'Restaurante Central', 'Central Restaurante', '11987654321', 'SP', '01310000', 5),
-    ('Rua da Praia, 123 - Centro', 1, 0, 200, 'Rio de Janeiro', '98765432000198', 'Pizzaria Bella Napoli', 'Bella Napoli', '2199998888', 'RJ', '20010000', 7),
-    ('Rua das Flores, 789 - Jardins', 4, 2, 300, 'São Paulo', '56789012000134', 'Café Charmoso', 'Charmoso Café', '11912345678', 'SP', '01435000', 3);
+    ('Travessa Francisco Sá, 50 - Jacarecanga', 2, 1, 500, 'Fortaleza', '57362133000125', 'Bar do Chico - Jacarecanga', 'Bar do Chico', '11907090808', 'CE', '60010320', true ,3),
+    ('Avenida Paulista, 1000 - Bela Vista', 3, 2, 1000, 'São Paulo', '12345678000123', 'Restaurante Central', 'Central Restaurante', '11987654321', 'SP', '01310000', true,5),
+    ('Rua da Praia, 123 - Centro', 1, 0, 200, 'Rio de Janeiro', '98765432000198', 'Pizzaria Bella Napoli', 'Bella Napoli', '2199998888', 'RJ', '20010000', false,7),
+    ('Rua das Flores, 789 - Jardins', 4, 2, 300, 'São Paulo', '56789012000134', 'Café Charmoso', 'Charmoso Café', '11912345678', 'SP', '01435000', false,3);
 
 INSERT INTO evento
     (nome, descricao, valor, taxa_cover, fk_estabelecimento, fk_genero)
