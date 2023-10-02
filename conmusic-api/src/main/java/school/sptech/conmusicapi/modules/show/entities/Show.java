@@ -7,7 +7,7 @@ import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
 import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 
 @Entity
-@Table(name = "show")
+@Table(name = "show_table")
 public class Show {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
