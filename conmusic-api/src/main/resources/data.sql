@@ -51,7 +51,7 @@ VALUES
     (FALSE, '2023-04-21 20:05:36', '2023-04-21 22:05:36', 1),
     (FALSE, '2023-05-21 20:05:36', '2023-05-21 22:05:36', 1);
 
-INSERT INTO show
+INSERT INTO show_table
     (status, valor, taxa_cover, fk_evento, fk_artista, fk_agenda)
 VALUES
     (6, 100.0, 50.0, 1, 2, 1),
