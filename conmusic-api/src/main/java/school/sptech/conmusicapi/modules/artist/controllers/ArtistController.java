@@ -95,4 +95,7 @@ public class ArtistController {
 
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping
+    public ResponseEntity
 }
