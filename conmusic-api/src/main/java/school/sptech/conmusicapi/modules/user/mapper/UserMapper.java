@@ -1,10 +1,7 @@
 package school.sptech.conmusicapi.modules.user.mapper;
 
 import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
-import school.sptech.conmusicapi.modules.user.dtos.CreateUserDto;
-import school.sptech.conmusicapi.modules.user.dtos.UpdateUserDto;
-import school.sptech.conmusicapi.modules.user.dtos.UserDto;
-import school.sptech.conmusicapi.modules.user.dtos.UserTokenDto;
+import school.sptech.conmusicapi.modules.user.dtos.*;
 import school.sptech.conmusicapi.modules.user.entities.User;
 
 public class UserMapper {
@@ -37,5 +34,15 @@ public class UserMapper {
         dto.setBirthDate(user.getBirthDate());
         dto.setAbout(user.getAbout());
         dto.setInstagram(user.getInstagram());
+    }
+
+    public static LoginUserDTO toLoginDto(User user) {
+        LoginUserDTO dto = new LoginUserDTO();
+
+        UserMapper.toDto(user, dto);
+        dto.setUserType(user.getUserType());
+        dto.setNeedCompletion(user);
+
+        return dto;
     }
 }

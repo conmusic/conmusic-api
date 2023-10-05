@@ -10,6 +10,7 @@ public class ShowDto {
     private ShowStatusEnum status;
     private Double value;
     private Double coverCharge;
+    private String managerName;
     private DisplayScheduleEventDto event;
     private ShowArtistDto artist;
     private BasicScheduleDto schedule;
@@ -44,6 +45,14 @@ public class ShowDto {
 
     public void setCoverCharge(Double coverCharge) {
         this.coverCharge = coverCharge;
+    }
+
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
     }
 
     public DisplayScheduleEventDto getEvent() {

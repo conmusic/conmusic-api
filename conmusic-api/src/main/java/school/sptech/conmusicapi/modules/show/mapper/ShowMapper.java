@@ -26,6 +26,7 @@ public class ShowMapper {
         dto.setCoverCharge(entity.getCoverCharge());
         dto.setStatus(entity.getStatus());
         dto.setArtist(ArtistMapper.toShowArtistDto(entity.getArtist()));
+        dto.setManagerName(entity.getEvent().getEstablishment().getManager().getName());
         dto.setEvent(EventMapper.toDisplayScheduleDto(entity.getEvent()));
         dto.setSchedule(ScheduleMapper.toBasicDto(entity.getSchedule()));
 
