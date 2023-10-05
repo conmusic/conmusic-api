@@ -13,8 +13,8 @@ public abstract class CreateUserDto {
 
     @NotBlank
     @Pattern(
-        regexp = "^[-A-Za-z0-9!#$%&'*+\\/=?^_`{|}~]+(?:\\.[-A-Za-z0-9!#$%&'*+\\/=?^_`{|}~]+)*@(?:[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?$",
-        message = "Email must be in RFC2822 e-mail"
+            regexp = "^[-A-Za-z0-9!#$%&'*+\\/=?^_`{|}~]+(?:\\.[-A-Za-z0-9!#$%&'*+\\/=?^_`{|}~]+)*@(?:[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?$",
+            message = "Email must be in RFC2822 e-mail"
     )
     @Size(min = 5, max = 45)
     @Schema(example = "email@email.com")
@@ -23,8 +23,8 @@ public abstract class CreateUserDto {
     @NotBlank
     @Size(min = 8)
     @Pattern(
-        regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",
-        message = "Password must have at least one lowercase letter, one uppercase letter, one digit, one special character and 8 characters length"
+            regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",
+            message = "Password must have at least one lowercase letter, one uppercase letter, one digit, one special character and 8 characters length"
     )
     @Schema(example = "@L34st8Ch4rC4s3S3ns!t!v3W!thSpec!4ls")
     private String password;
@@ -35,8 +35,8 @@ public abstract class CreateUserDto {
 
     @NotBlank
     @Pattern(
-        regexp = "^\\s*(\\d{2}|\\d{0})[-. ]?(\\d{5}|\\d{4})[-. ]?(\\d{4})[-. ]?\\s*$",
-        message = "Phone Number must be only digits"
+            regexp = "^\\s*(\\d{2}|\\d{0})[-. ]?(\\d{5}|\\d{4})[-. ]?(\\d{4})[-. ]?\\s*$",
+            message = "Phone Number must be only digits"
     )
     @Size(max = 11)
     @Schema(example = "11909090808")
