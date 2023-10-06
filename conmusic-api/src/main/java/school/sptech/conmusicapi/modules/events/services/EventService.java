@@ -1,8 +1,13 @@
 package school.sptech.conmusicapi.modules.events.services;
 
+import jakarta.persistence.EntityManager;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
+import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
 import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishmentRepository;
 import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
@@ -27,6 +32,15 @@ public class EventService {
     private IEstablishmentRepository establishmentRepository;
     @Autowired
     private IGenreRepository genreRepository;
+    @Autowired
+    private EntityManager entityManager;
+
+    public void filterForInactive(boolean isDeleted){
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedEstablishmentFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        session.disableFilter("deletedProductFilter");
+    }
 
     public EventDto create(CreateEventDto dto) {
         Optional<Establishment> establishment = establishmentRepository.findById(dto.getEstablishmentId());
@@ -80,5 +94,33 @@ public class EventService {
                 ));
 
         return EventMapper.toDto(event);
+    }
+    public Iterable<EventDto> findAllInactive(){
+        filterForInactive(true);
+        List<EventDto> events =  eventRepository.findAll().stream().map(EventMapper:: toDto).toList();
+        return (events);
+    }
+    public EventDto inactivateEstablishment(Integer id){
+        Optional<Event> eventOpt = eventRepository.findById(id);
+
+        if (eventOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
+        }
+        Event eventInactive = EventMapper.fromInactive(eventOpt.get(), true);
+        eventRepository.save(eventInactive);
+
+        return EventMapper.toDto(eventInactive);
+    }
+
+    public EventDto activateEstablishment(Integer id){
+        Optional<Event> eventOpt = eventRepository.findById(id);
+
+        if (eventOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
+        }
+        Event eventInactive = EventMapper.fromInactive(eventOpt.get(), false);
+        eventRepository.save(eventInactive);
+
+        return EventMapper.toDto(eventInactive);
     }
 }

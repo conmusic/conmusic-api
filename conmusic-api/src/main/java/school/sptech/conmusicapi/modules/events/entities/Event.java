@@ -1,6 +1,9 @@
 package school.sptech.conmusicapi.modules.events.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
 import school.sptech.conmusicapi.modules.genre.entities.Genre;
 import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
@@ -12,6 +15,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "evento")
+@FilterDef(name = "deletedEventFilter", parameters = @ParamDef(name = "isDeleted", type =boolean.class))
+@Filter(name = "deletedEventFilter", condition = "deleted = :isDeleted")
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +34,7 @@ public class Event {
     @Column(name = "taxa_cover")
     private Double coverCharge;
 
+    private boolean deleted = Boolean.FALSE;
     @ManyToOne
     @JoinColumn(name = "fk_estabelecimento")
     private Establishment establishment;
@@ -78,6 +84,13 @@ public class Event {
 
     public void setCoverCharge(Double coverCharge) {
         this.coverCharge = coverCharge;
+    }
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Establishment getEstablishment() {

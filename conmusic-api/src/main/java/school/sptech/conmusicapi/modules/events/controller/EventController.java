@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
 import school.sptech.conmusicapi.modules.events.services.EventService;
@@ -78,5 +79,25 @@ public class EventController {
     public ResponseEntity<EventDto> getById(@PathVariable Integer id) {
         EventDto event = eventService.getById(id);
         return ResponseEntity.status(200).body(event);
+    }
+    @DeleteMapping("/inctivate/{id}")
+    @Operation(summary = "inactive establishment by ID", description = "inactive an establishment by its ID")
+    public ResponseEntity<EventDto> inactivateById(@PathVariable Integer id){
+        EventDto eventDto = eventService.inactivateEstablishment(id);
+        return ResponseEntity.status(200).body(eventDto);
+    }
+    @PatchMapping("/activate/{id}")
+    @Operation(summary = "Activate an establishment", description = "Activate an existing establishment in the API")
+    @PreAuthorize("hasAuthority('Admin') or hasAuthority('Manager')")
+    public ResponseEntity<EventDto> activate(@PathVariable Integer id) {
+        EventDto activateEvent = eventService.activateEstablishment(id);
+        return ResponseEntity.status(200).body(activateEvent);
+    }
+
+    @GetMapping("/inactive")
+    @Operation(summary = "Get inactived establishments", description = "Retrieves an inactivad establishment")
+    public ResponseEntity<Iterable<EventDto>> inactiveEstablishment(){
+        Iterable<EventDto> eventDtos = eventService.findAllInactive();
+        return ResponseEntity.status(200).body(eventDtos);
     }
 }
