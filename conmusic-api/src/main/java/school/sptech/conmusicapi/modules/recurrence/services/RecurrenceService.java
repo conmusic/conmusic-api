@@ -2,18 +2,16 @@ package school.sptech.conmusicapi.modules.recurrence.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.events.repositories.IEventRepository;
-import school.sptech.conmusicapi.modules.manager.repositories.IManagerRepository;
 import school.sptech.conmusicapi.modules.recurrence.dtos.CreateRecurrenceRulesDto;
 import school.sptech.conmusicapi.modules.recurrence.dtos.RecurrenceRuleDto;
 import school.sptech.conmusicapi.modules.recurrence.dtos.TimetableDto;
 import school.sptech.conmusicapi.modules.recurrence.entities.Recurrence;
 import school.sptech.conmusicapi.modules.recurrence.repositories.IRecurrenceRepository;
-import school.sptech.conmusicapi.modules.recurrence.util.RecurrenceUtil;
+import school.sptech.conmusicapi.modules.recurrence.util.DayOfWeek;
 import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
 import school.sptech.conmusicapi.modules.schedules.repositories.IScheduleRepository;
 import school.sptech.conmusicapi.modules.schedules.utils.ScheduleUtil;
@@ -25,6 +23,7 @@ import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,22 +71,24 @@ public class RecurrenceService {
         List<Recurrence> recurrences = new ArrayList<>();
         for (RecurrenceRuleDto rule : dto.getRules()) {
             for (TimetableDto timetable : rule.getTimetables()) {
-                int days = (rule.getDayOfWeek().getValue() + 7 - today.getDayOfWeek().getValue()) % 7;
-                LocalDate scheduleDate = today.plusDays(days > 0 ? days : 7);
+                DayOfWeek targetDayOfWeek = rule.getDayOfWeek();
+
+                int daysUntilTarget = (targetDayOfWeek.ordinal() - today.getDayOfWeek().ordinal() + 7) % 7;
+                LocalDate scheduleDate = today.plusDays(daysUntilTarget > 0 ? daysUntilTarget : 7);
 
                 Recurrence recurrence = new Recurrence();
                 recurrence.setEvent(event);
-                recurrence.setDayOfWeek(rule.getDayOfWeek().getValue());
+                recurrence.setDayOfWeek(targetDayOfWeek);
                 recurrence.setStartTime(timetable.getStartTime());
                 recurrence.setEndTime(timetable.getEndTime());
                 recurrence.setSchedules(new ArrayList<>());
 
                 while (
-                        scheduleDate.isBefore(dto.getEndRecurrence())
-                        || scheduleDate.equals(dto.getEndRecurrence())
+                        !scheduleDate.isAfter(dto.getEndRecurrence())
                 ) {
-                    LocalDateTime startDateTime = LocalDateTime.of(scheduleDate, timetable.getStartTime());
-                    LocalDateTime endDateTime = LocalDateTime.of(scheduleDate, timetable.getStartTime());
+                    LocalDateTime startDateTime = scheduleDate.atTime(LocalTime.from(timetable.getStartTime()));
+                    LocalDateTime endDateTime = scheduleDate.atTime(LocalTime.from(timetable.getEndTime()));
+
 
                     endDateTime = endDateTime.isBefore(startDateTime)
                             ? endDateTime.plusDays(1)
@@ -118,5 +119,6 @@ public class RecurrenceService {
                 recurrences.add(recurrence);
             }
         }
+        recurrenceRepository.saveAll(recurrences);
     }
 }
