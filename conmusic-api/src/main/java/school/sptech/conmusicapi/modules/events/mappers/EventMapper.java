@@ -1,5 +1,6 @@
 package school.sptech.conmusicapi.modules.events.mappers;
 
+import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
 import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
 import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.DisplayEstablishmentEventDto;
@@ -61,5 +62,10 @@ public class EventMapper {
         dto.setGenre(GenreMapper.toDto(entity.getGenre()));
 
         return dto;
+    }
+
+    public static Event fromInactive(Event e, Boolean deleted){
+        e. setDeleted(deleted);
+        return e;
     }
 }

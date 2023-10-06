@@ -26,16 +26,16 @@ VALUES
     ('Rua do Sertanejo, 123 - Centro', 1, 1, 300, 'Salvador', '34567890123456', 'Bar do Sertanejo', 'Sertanejo Bar', '71999998888', 'BA', '40020000', true, 7);
 
 INSERT INTO evento
-    (nome, descricao, valor, taxa_cover, fk_estabelecimento, fk_genero)
+    (nome, descricao, valor, taxa_cover, deleted, fk_estabelecimento, fk_genero)
 VALUES
-    ('Almocinho com Pagode', 'Bastante animação em Fortaleza!', 1750, 4, 1, 5),
-    ('Festival de Jazz', 'Uma noite de jazz e improvisação', 2500, 8, 2, 7),
-    ('Festa do Rock', 'Uma celebração do melhor do rock', 1200, 5, 3, 1),
-    ('Noite de Samba', 'Samba de raiz para animar a todos', 1500, 3, 1, 4),
-    ('Festa de Verão', 'Celebre o verão com música e diversão!', 1500, 3, 2, 4),
-    ('Rave eletronica', 'Curta o ritmo contagiante', 1200, 5, 3, 8),
-    ('Festival de Eletrônica', 'Uma experiência única de música eletrônica', 2000, 6, 4, 8),
-    ('Noite de MPB', 'Encante-se com a música popular brasileira', 1300, 3, 1, 9);
+    ('Almocinho com Pagode', 'Bastante animação em Fortaleza!', 1750, true, 4, 1, 5),
+    ('Festival de Jazz', 'Uma noite de jazz e improvisação', 2500, true, 8, 2, 7),
+    ('Festa do Rock', 'Uma celebração do melhor do rock', 1200, false, 5, 3, 1),
+    ('Noite de Samba', 'Samba de raiz para animar a todos', 1500, false, 3, 1, 4),
+    ('Festa de Verão', 'Celebre o verão com música e diversão!', 1500, false, 3, 2, 4),
+    ('Rave eletronica', 'Curta o ritmo contagiante', 1200, false, 5, 3, 8),
+    ('Festival de Eletrônica', 'Uma experiência única de música eletrônica', 2000, false, 6, 4, 8),
+    ('Noite de MPB', 'Encante-se com a música popular brasileira', 1300, false, 3, 1, 9);
 
 INSERT INTO agenda
     (confirmado, data_inicio, data_termino, deleted, fk_evento)
