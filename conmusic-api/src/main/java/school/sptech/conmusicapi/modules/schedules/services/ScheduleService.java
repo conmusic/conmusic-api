@@ -2,6 +2,7 @@ package school.sptech.conmusicapi.modules.schedules.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishmentRepository;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.events.repositories.IEventRepository;
@@ -73,5 +74,9 @@ public class ScheduleService {
                 .stream()
                 .map(ScheduleMapper::toDto)
                 .toList();
+    }
+
+    public void importSchedules(MultipartFile file) {
+
     }
 }

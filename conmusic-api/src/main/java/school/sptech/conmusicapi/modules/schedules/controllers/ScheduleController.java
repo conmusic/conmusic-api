@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import school.sptech.conmusicapi.modules.schedules.dtos.CreateScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.dtos.ScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.services.ScheduleService;
+import school.sptech.conmusicapi.shared.exceptions.UnexpectedException;
 
 import java.util.List;
 
@@ -55,5 +57,23 @@ public class ScheduleController {
         }
 
         return ResponseEntity.status(200).body(schedules);
+    }
+
+    @Operation(
+            summary = "Import schedules",
+            description = "Read a csv or txt file and import its data as schedules for events"
+    )
+    @PostMapping("/import")
+    public ResponseEntity<Void> importSchedules(@RequestParam("file") MultipartFile file) throws RuntimeException {
+        try {
+            scheduleService.importSchedules(file);
+            return ResponseEntity.status(200).build();
+        }
+        catch (RuntimeException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new UnexpectedException("Unexpected exception: (" + e.getClass().getSimpleName() + ") " + e.getMessage());
+        }
     }
 }
