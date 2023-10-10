@@ -30,10 +30,7 @@ public class ScheduleCsvDataExporter extends CsvDataExporter<Schedule> {
         }
 
         try {
-            System.out.println(reader.readLine());
-        }
-        catch (IOException e) {
-            throw new FailedImportException("Exception while reading file");
+            reader.lines().forEach(System.out::println);
         }
         catch (Exception e) {
             throw new RuntimeException("Unexpected exception: (" + e.getClass().getSimpleName() + ") " + e.getMessage());

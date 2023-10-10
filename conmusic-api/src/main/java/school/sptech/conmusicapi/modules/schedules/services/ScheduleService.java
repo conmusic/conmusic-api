@@ -12,8 +12,10 @@ import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
 import school.sptech.conmusicapi.modules.schedules.mappers.ScheduleMapper;
 import school.sptech.conmusicapi.modules.schedules.repositories.IScheduleRepository;
 import school.sptech.conmusicapi.modules.schedules.utils.ScheduleUtil;
+import school.sptech.conmusicapi.modules.schedules.utils.dataexporter.ScheduleCsvDataExporter;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
+import school.sptech.conmusicapi.shared.exceptions.FailedImportException;
 
 import java.util.List;
 
@@ -76,7 +78,13 @@ public class ScheduleService {
                 .toList();
     }
 
-    public void importSchedules(MultipartFile file) {
-
+    public void importSchedules(MultipartFile file) throws RuntimeException {
+        try {
+            ScheduleCsvDataExporter importer = new ScheduleCsvDataExporter();
+            importer.read(file.getInputStream());
+        }
+        catch (Exception e) {
+            throw new FailedImportException(e.getMessage());
+        }
     }
 }
