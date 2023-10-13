@@ -7,24 +7,24 @@ import java.time.LocalTime;
 
 public class TimetableDto {
     @NotNull
-    private LocalDateTime startTime;
+    private LocalTime  startTime;
 
     @NotNull
-    private LocalDateTime endTime;
+    private LocalTime endTime;
 
-    public LocalDateTime getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 }

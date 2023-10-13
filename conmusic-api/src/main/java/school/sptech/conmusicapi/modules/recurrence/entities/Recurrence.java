@@ -23,10 +23,10 @@
         private DayOfWeek dayOfWeek;
 
         @Column(name = "horario_inicio")
-        private LocalDateTime startTime;
+        private LocalTime startTime;
 
         @Column(name = "horario_termino")
-        private LocalDateTime endTime;
+        private LocalTime endTime;
 
         @ManyToOne
         @JoinColumn(name = "fk_evento")
@@ -51,19 +51,19 @@
             this.dayOfWeek = dayOfWeek;
         }
 
-        public LocalDateTime getStartTime() {
+        public LocalTime getStartTime() {
             return startTime;
         }
 
-        public void setStartTime(LocalDateTime startTime) {
+        public void setStartTime(LocalTime startTime) {
             this.startTime = startTime;
         }
 
-        public LocalDateTime getEndTime() {
+        public LocalTime getEndTime() {
             return endTime;
         }
 
-        public void setEndTime(LocalDateTime endTime) {
+        public void setEndTime(LocalTime endTime) {
             this.endTime = endTime;
         }
 
