@@ -18,15 +18,13 @@ VALUES
 INSERT INTO estabelecimento
     (endereco, qtd_tomada_110, qtd_tomada_220, capacidade, cidade, cnpj, razao_social, nome_fantasia, telefone, uf, cep, deleted, fk_gerente)
 VALUES
-    ('Travessa Francisco Sá, 50 - Jacarecanga', 2, 1, 500, 'Fortaleza', '57362133000125', 'Bar do Chico - Jacarecanga', 'Bar do Chico', '11907090808', 'CE', '60010320',true, 3), 
-    ('Avenida Paulista, 1000 - Bela Vista', 3, 2, 1000, 'São Paulo', '12345678000123', 'Restaurante Central', 'Central Restaurante', '11987654321', 'SP', '01310000', false, 5),
-    ('Rua da Praia, 123 - Centro', 1, 0, 200, 'Rio de Janeiro', '98765432000198', 'Pizzaria Bella Napoli', 'Bella Napoli', '2199998888', 'RJ', '20010000', false, 7),
-    ('Rua das Flores, 789 - Jardins', 4, 2, 300, 'São Paulo', '56789012000134', 'Café Charmoso', 'Charmoso Café', '11912345678', 'SP', '01435000', false, 3),
-    ('Avenida das Palmeiras, 789 - Jardim', 2, 1, 400, 'São Paulo', '87654321000109', 'Restaurante Saboroso', 'Saboroso Restaurante', '11955557777', 'SP', '04567000',false, 5),
-    ('Rua do Sertanejo, 123 - Centro', 1, 1, 300, 'Salvador', '34567890123456', 'Bar do Sertanejo', 'Sertanejo Bar', '71999998888', 'BA', '40020000', true, 7);
+    ('Travessa Francisco Sá, 50 - Jacarecanga', 2, 1, 500, 'Fortaleza', '57362133000125', 'Bar do Chico - Jacarecanga', 'Bar do Chico', '11907090808', 'CE', '60010320', true ,3),
+    ('Avenida Paulista, 1000 - Bela Vista', 3, 2, 1000, 'São Paulo', '12345678000123', 'Restaurante Central', 'Central Restaurante', '11987654321', 'SP', '01310000', true,5),
+    ('Rua da Praia, 123 - Centro', 1, 0, 200, 'Rio de Janeiro', '98765432000198', 'Pizzaria Bella Napoli', 'Bella Napoli', '2199998888', 'RJ', '20010000', false,7),
+    ('Rua das Flores, 789 - Jardins', 4, 2, 300, 'São Paulo', '56789012000134', 'Café Charmoso', 'Charmoso Café', '11912345678', 'SP', '01435000', false,3);
 
 INSERT INTO evento
-    (nome, descricao, valor, taxa_cover, deleted, fk_estabelecimento, fk_genero)
+    (nome, descricao, valor, deleted, taxa_cover, fk_estabelecimento, fk_genero)
 VALUES
     ('Almocinho com Pagode', 'Bastante animação em Fortaleza!', 1750, true, 4, 1, 5),
     ('Festival de Jazz', 'Uma noite de jazz e improvisação', 2500, true, 8, 2, 7),
@@ -34,23 +32,24 @@ VALUES
     ('Noite de Samba', 'Samba de raiz para animar a todos', 1500, false, 3, 1, 4),
     ('Festa de Verão', 'Celebre o verão com música e diversão!', 1500, false, 3, 2, 4),
     ('Rave eletronica', 'Curta o ritmo contagiante', 1200, false, 5, 3, 8),
-    ('Festival de Eletrônica', 'Uma experiência única de música eletrônica', 2000, false, 6, 4, 8),
+    ('Festival de Eletrônica', 'Uma experiência única de música eletrônica', false, 2000, 6, 4, 8),
     ('Noite de MPB', 'Encante-se com a música popular brasileira', 1300, false, 3, 1, 9);
 
 INSERT INTO agenda
     (confirmado, data_inicio, data_termino, deleted, fk_evento)
 VALUES
-    (FALSE, '2023-06-21 20:05:36.904', '2023-06-21 22:05:36.904',false, 1),
-    (TRUE, '2023-07-15 18:30:00', '2023-07-15 23:00:00', false,2),
+    (FALSE, '2023-06-21 20:05:36.904', '2023-06-21 22:05:36.904', false,1),
+    (TRUE, '2023-07-15 18:30:00', '2023-07-15 23:00:00', false, 2),
     (FALSE, '2023-08-05 19:00:00', '2023-08-05 22:00:00', false, 3),
-    (TRUE, '2023-09-10 21:30:00', '2023-09-10 23:30:00',false, 4),
-    (TRUE, '2023-07-30 20:00:00', '2023-07-30 23:00:00',false, 2),
-    (FALSE, '2023-08-18 19:30:00', '2023-08-18 22:30:00',false, 3),
-    (TRUE, '2023-09-25 18:00:00', '2023-09-25 21:00:00', false,4),
+    (TRUE, '2023-09-10 21:30:00', '2023-09-10 23:30:00', false, 4),
+    (TRUE, '2023-07-30 20:00:00', '2023-07-30 23:00:00', false, 2),
+    (FALSE, '2023-08-18 19:30:00', '2023-08-18 22:30:00', false, 3),
+    (TRUE, '2023-09-25 18:00:00', '2023-09-25 21:00:00', false, 4),
     (FALSE, '2023-01-21 20:05:36', '2023-01-21 22:05:36', false, 1),
-    (FALSE, '2023-02-21 20:05:36', '2023-02-21 22:05:36', false,1),
-    (FALSE, '2023-03-21 20:05:36', '2023-03-21 22:05:36',false, 1),
-    (FALSE, '2023-04-21 20:05:36', '2023-04-21 22:05:36', false,1),
+    (FALSE, '2023-02-21 20:05:36', '2023-02-21 22:05:36', false, 1),
+    (FALSE, '2023-03-21 20:05:36', '2023-03-21 22:05:36', false, 1),
+    (FALSE, '2023-04-21 20:05:36', '2023-04-21 22:05:36', false, 1),
+    (FALSE, '2023-05-21 20:05:36', '2023-05-21 22:05:36', false, 1);
 
 INSERT INTO show
     (status, valor, taxa_cover, fk_evento, fk_artista, fk_agenda)

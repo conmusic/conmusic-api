@@ -65,7 +65,7 @@ public class ScheduleService {
     }
 
     public List<ScheduleDto> listByEventId(Integer id) {
-        filterForInactive(true);
+        filterForInactive(false);
         if (!eventRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format("Event with id %d was not found", id));
         }
@@ -79,7 +79,7 @@ public class ScheduleService {
     }
 
     public List<ScheduleDto> listByEstablishmentId(Integer id) {
-        filterForInactive(true);
+        filterForInactive(false);
         if (!establishmentRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format("Establishment with id %d was not found", id));
         }

@@ -2,10 +2,7 @@ package school.sptech.conmusicapi.modules.events.mappers;
 
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
 import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
-import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
-import school.sptech.conmusicapi.modules.events.dtos.DisplayEstablishmentEventDto;
-import school.sptech.conmusicapi.modules.events.dtos.DisplayScheduleEventDto;
-import school.sptech.conmusicapi.modules.events.dtos.EventDto;
+import school.sptech.conmusicapi.modules.events.dtos.*;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.genre.mapper.GenreMapper;
 import school.sptech.conmusicapi.modules.schedules.mappers.ScheduleMapper;
@@ -35,6 +32,14 @@ public class EventMapper {
         dto.setSchedules(entity.getSchedules().stream().map(ScheduleMapper::toBasicDto).toList());
 
         return dto;
+    }
+    public static Event fromUpdateDto(UpdateEventDto eventDto, Event e){
+        e.setName(eventDto.getName());
+        e.setDescription(eventDto.getDescription());
+        e.setValue(eventDto.getValue());
+        e.setCoverCharge(eventDto.getCoverCharge());
+        e.setGenre(eventDto.getGenre());
+        e.setSchedules(eventDto.getSchedules());
     }
 
     public static DisplayScheduleEventDto toDisplayScheduleDto(Event entity) {

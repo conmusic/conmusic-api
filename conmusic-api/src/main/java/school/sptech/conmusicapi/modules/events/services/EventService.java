@@ -11,6 +11,7 @@ import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapp
 import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishmentRepository;
 import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
+import school.sptech.conmusicapi.modules.events.dtos.UpdateEventDto;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.events.mappers.EventMapper;
 import school.sptech.conmusicapi.modules.events.repositories.IEventRepository;
@@ -37,7 +38,7 @@ public class EventService {
 
     public void filterForInactive(boolean isDeleted){
         Session session = entityManager.unwrap(Session.class);
-        Filter filter = session.enableFilter("deletedEstablishmentFilter");
+        Filter filter = session.enableFilter("deletedEventFilter");
         filter.setParameter("isDeleted", isDeleted);
         session.disableFilter("deletedProductFilter");
     }
@@ -65,8 +66,21 @@ public class EventService {
         Event createdEvent = eventRepository.save(event);
         return EventMapper.toDto(createdEvent);
     }
+    public EventDto updateEvent(UpdateEventDto dto, Integer id){
+        Optional<Event> eventOpt = eventRepository.findById(id);
+
+        if (eventOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Event with id %d was not found.", id));
+        }
+
+        Event updatedEstablishment = EventMapper.fromUpdateDto(dto, eventOpt.get());
+        updatedEstablishment.setId(id);
+        eventRepository.save(updatedEstablishment);
+        return EventMapper.toDto(updatedEstablishment);
+    }
 
     public List<EventDto> listAll() {
+        filterForInactive(false);
         return eventRepository.findAll()
                 .stream()
                 .map(EventMapper::toDto)
@@ -74,6 +88,7 @@ public class EventService {
     }
 
     public List<EventDto> listAllByEstablishmentId(Integer id) {
+        filterForInactive(false);
         return eventRepository.findByEstablishmentId(id)
                 .stream()
                 .map(EventMapper::toDto)
@@ -81,6 +96,7 @@ public class EventService {
     }
 
     public List<EventDto> listAllAvailable(LocalDateTime date) {
+        filterForInactive(false);
         return eventRepository.findBySchedulesStartDateTimeIsAfterAndSchedulesConfirmedFalse(date)
                 .stream()
                 .map(EventMapper::toDto)
@@ -88,6 +104,7 @@ public class EventService {
     }
 
     public EventDto getById(Integer id) {
+        filterForInactive(false);
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                     String.format("Event with id %d was not found", id)

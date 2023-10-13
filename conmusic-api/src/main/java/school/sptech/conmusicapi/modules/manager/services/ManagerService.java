@@ -1,5 +1,9 @@
 package school.sptech.conmusicapi.modules.manager.services;
 
+import com.zaxxer.hikari.HikariDataSource;
+import jakarta.persistence.EntityManager;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +29,14 @@ public class ManagerService {
     private IManagerRepository managerRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    private EntityManager entityManager;
 
+    public void filterForInactive(boolean isDeleted){
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedEstablishmentFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        session.disableFilter("deletedProductFilter");
+    }
     public ManagerDto create(CreateManagerDto dto) {
         Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
 
@@ -78,6 +89,7 @@ public class ManagerService {
     }
 
     public ManagerDto getById(Integer id) {
+        filterForInactive(false);
         Optional<Manager> managerOpt = managerRepository.findById(id);
 
         if (managerOpt.isEmpty()) {
