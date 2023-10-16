@@ -64,10 +64,15 @@ public class ScheduleController {
             description = "Read a csv or txt file and import its data as schedules for events"
     )
     @PostMapping("/import")
-    public ResponseEntity<Void> importSchedules(@RequestParam("file") MultipartFile file) throws RuntimeException {
+    public ResponseEntity<List<ScheduleDto>> importSchedules(@RequestParam("file") MultipartFile file) throws RuntimeException {
         try {
-            scheduleService.importSchedules(file);
-            return ResponseEntity.status(200).build();
+            List<ScheduleDto> scheduleDtos = scheduleService.importSchedules(file);
+
+            if (scheduleDtos.isEmpty()) {
+                return ResponseEntity.status(204).build();
+            }
+
+            return ResponseEntity.status(201).body(scheduleDtos);
         }
         catch (RuntimeException e) {
             throw e;
