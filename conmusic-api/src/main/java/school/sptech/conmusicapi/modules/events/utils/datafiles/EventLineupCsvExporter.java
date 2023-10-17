@@ -25,6 +25,6 @@ public class EventLineupCsvExporter extends CsvExporter<EventLineupExportDto> {
                 ';' + dto.getStartDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:00")) +
                 ';' + dto.getEndDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:00")) +
                 ';' + dto.getArtistName() +
-                ';' + dto.getArtistInstagram();
+                ';' + (dto.getArtistInstagram() != null ? dto.getArtistInstagram() : "");
     }
 }

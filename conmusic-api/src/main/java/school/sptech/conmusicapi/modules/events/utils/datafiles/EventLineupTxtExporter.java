@@ -36,7 +36,7 @@ public class EventLineupTxtExporter extends TxtExporter<EventLineupExportDto> {
         line += dto.getStartDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:00"));
         line += dto.getEndDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:00"));
         line += String.format("%-45.45s", dto.getArtistName());
-        line += String.format("%-45.45s", dto.getArtistInstagram());
+        line += String.format("%-45.45s", dto.getArtistInstagram() != null ? dto.getArtistInstagram() : "");
 
         return line;
     }

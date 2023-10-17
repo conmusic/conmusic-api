@@ -5,13 +5,17 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
 import school.sptech.conmusicapi.modules.events.services.EventService;
+import school.sptech.conmusicapi.shared.utils.datafiles.DataFilesEnum;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -78,5 +82,26 @@ public class EventController {
     public ResponseEntity<EventDto> getById(@PathVariable Integer id) {
         EventDto event = eventService.getById(id);
         return ResponseEntity.status(200).body(event);
+    }
+
+    @GetMapping("/export/lineup/{id}")
+    public ResponseEntity<byte[]> exportEventLineup(
+            @PathVariable Integer id,
+            @RequestParam String fileFormat
+    ) throws IOException {
+        DataFilesEnum selectedFormat = DataFilesEnum.getByName(fileFormat.toUpperCase());
+
+        String content = eventService.exportEventLineup(id, selectedFormat);
+        byte[] fileContent = content.getBytes();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentLength(fileContent.length);
+        headers.setContentType(selectedFormat.getContentType());
+        headers.setContentDispositionFormData("attachment", String.format("EVENTLINEUP_%d%s", id, selectedFormat.getExtension()));
+
+        return ResponseEntity
+                .status(200)
+                .headers(headers)
+                .body(fileContent);
     }
 }
