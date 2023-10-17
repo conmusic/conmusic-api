@@ -3,6 +3,7 @@ package school.sptech.conmusicapi.modules.show.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupMonthCount;
 import school.sptech.conmusicapi.modules.show.entities.Show;
 
@@ -39,4 +40,6 @@ public interface IShowRepository extends JpaRepository<Show, Integer> {
         ORDER BY FUNCTION('MONTH', s.schedule.startDateTime)
     """)
     List<GroupMonthCount> countShowsByStatusInDateIntervalGroupByMonth(EnumSet status, LocalDateTime startDate, LocalDateTime endDate, Integer userId);
+
+    List<Show> findAllByStatusAndScheduleEventId(ShowStatusEnum status, Integer id);
 }
