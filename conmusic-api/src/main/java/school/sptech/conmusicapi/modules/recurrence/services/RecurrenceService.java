@@ -12,6 +12,7 @@ import school.sptech.conmusicapi.modules.recurrence.dtos.TimetableDto;
 import school.sptech.conmusicapi.modules.recurrence.entities.Recurrence;
 import school.sptech.conmusicapi.modules.recurrence.repositories.IRecurrenceRepository;
 import school.sptech.conmusicapi.modules.recurrence.util.DayOfWeek;
+import school.sptech.conmusicapi.modules.recurrence.util.RecurrenceUtil;
 import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
 import school.sptech.conmusicapi.modules.schedules.repositories.IScheduleRepository;
 import school.sptech.conmusicapi.modules.schedules.utils.ScheduleUtil;
@@ -41,10 +42,13 @@ public class RecurrenceService {
     @Autowired
     private IUserRepository userRepository;
 
+    @Autowired
+    private RecurrenceUtil recurrenceUtil; // Injete o RecurrenceUtil
+
     public void create(CreateRecurrenceRulesDto dto, Integer eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("Event with id %d not found", eventId)
+                        String.format("Evento com ID %d não encontrado", eventId)
                 ));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -52,15 +56,15 @@ public class RecurrenceService {
 
         User user = userRepository.findByEmail(details.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("User with email %s not found", details.getUsername())
+                        String.format("Usuário com email %s não encontrado", details.getUsername())
                 ));
 
         if (!event.getEstablishment().getManager().getId().equals(user.getId())) {
-            throw new BusinessRuleException("This user is not allowed to update this event");
+            throw new BusinessRuleException("Este usuário não está autorizado a atualizar este evento");
         }
 
         if (dto.getRules().isEmpty()) {
-            throw new BusinessRuleException("No recurrence rules were given");
+            throw new BusinessRuleException("Nenhuma regra de recorrência foi fornecida");
         }
 
         LocalDate today = LocalDate.now();
@@ -83,16 +87,15 @@ public class RecurrenceService {
                 recurrence.setEndTime(timetable.getEndTime());
                 recurrence.setSchedules(new ArrayList<>());
 
-                while (
-                        !scheduleDate.isAfter(dto.getEndRecurrence())
-                ) {
+                while (!scheduleDate.isAfter(dto.getEndRecurrence())) {
                     LocalDateTime startDateTime = scheduleDate.atTime(LocalTime.from(timetable.getStartTime()));
                     LocalDateTime endDateTime = scheduleDate.atTime(LocalTime.from(timetable.getEndTime()));
-
 
                     endDateTime = endDateTime.isBefore(startDateTime)
                             ? endDateTime.plusDays(1)
                             : endDateTime;
+
+
 
                     Schedule schedule = new Schedule();
                     schedule.setStartDateTime(startDateTime);
@@ -101,14 +104,11 @@ public class RecurrenceService {
                     schedule.setEvent(event);
 
                     if (ScheduleUtil.isDurationIntervalInvalid(schedule)) {
-                        throw new BusinessRuleException("Schedule with invalid dates. Start DateTime MUST be before End DateTime");
+                        throw new BusinessRuleException("Agendamento com datas inválidas. O horário de início DEVE ser antes do horário de término");
                     }
 
-                    if (
-                            existingSchedules.stream()
-                                    .anyMatch(s -> ScheduleUtil.isScheduleOverlappingOtherSchedule(schedule, s))
-                    ) {
-                        throw new BusinessRuleException("Schedule is overlapping other schedule.");
+                    if (existingRecurrences.stream().anyMatch(r -> recurrenceUtil.isRecurrenceOverlappingOtherRecurrence(r, recurrence))) {
+                        throw new BusinessRuleException("O agendamento está se sobrepondo a outro agendamento.");
                     }
 
                     existingSchedules.add(schedule);
@@ -122,3 +122,4 @@ public class RecurrenceService {
         recurrenceRepository.saveAll(recurrences);
     }
 }
+
