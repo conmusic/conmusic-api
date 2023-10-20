@@ -3,8 +3,11 @@ package school.sptech.conmusicapi.modules.schedules.mappers;
 import school.sptech.conmusicapi.modules.events.mappers.EventMapper;
 import school.sptech.conmusicapi.modules.schedules.dtos.BasicScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.dtos.CreateScheduleDto;
+import school.sptech.conmusicapi.modules.schedules.dtos.ReadScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.dtos.ScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
+
+import java.time.LocalDateTime;
 
 public class ScheduleMapper {
     public static Schedule fromDto(CreateScheduleDto dto) {
@@ -36,6 +39,25 @@ public class ScheduleMapper {
         dto.setStartDateTime(entity.getStartDateTime());
         dto.setEndDateTime(entity.getEndDateTime());
         dto.setConfirmed(entity.getConfirmed());
+
+        return dto;
+    }
+
+    public static ReadScheduleDto toReadScheduleDto(Integer eventId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        ReadScheduleDto imported = new ReadScheduleDto();
+
+        imported.setEventId(eventId);
+        imported.setStartDateTime(startDateTime.withSecond(0));
+        imported.setEndDateTime(endDateTime.withSecond(0));
+
+        return imported;
+    }
+
+    public static CreateScheduleDto toCreateDto(ReadScheduleDto imported) {
+        CreateScheduleDto dto = new CreateScheduleDto();
+
+        dto.setStartDateTime(imported.getStartDateTime());
+        dto.setEndDateTime(imported.getEndDateTime());
 
         return dto;
     }

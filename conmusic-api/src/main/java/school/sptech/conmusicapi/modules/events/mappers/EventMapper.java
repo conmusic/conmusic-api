@@ -1,13 +1,11 @@
 package school.sptech.conmusicapi.modules.events.mappers;
 
 import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
-import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
-import school.sptech.conmusicapi.modules.events.dtos.DisplayEstablishmentEventDto;
-import school.sptech.conmusicapi.modules.events.dtos.DisplayScheduleEventDto;
-import school.sptech.conmusicapi.modules.events.dtos.EventDto;
+import school.sptech.conmusicapi.modules.events.dtos.*;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.genre.mapper.GenreMapper;
 import school.sptech.conmusicapi.modules.schedules.mappers.ScheduleMapper;
+import school.sptech.conmusicapi.modules.show.entities.Show;
 
 public class EventMapper {
     public static Event fromDto(CreateEventDto dto) {
@@ -59,6 +57,23 @@ public class EventMapper {
         dto.setValue(entity.getValue());
         dto.setCoverCharge(entity.getCoverCharge());
         dto.setGenre(GenreMapper.toDto(entity.getGenre()));
+
+        return dto;
+    }
+
+    public static EventLineupExportDto toEventLineupExport(Show show) {
+        EventLineupExportDto dto = new EventLineupExportDto();
+
+        dto.setEventName(show.getEvent().getName());
+        dto.setGenre(show.getEvent().getGenre().getName());
+        dto.setEstablishmentName(show.getEvent().getEstablishment().getEstablishmentName());
+        dto.setEstablishmentAddress(show.getEvent().getEstablishment().getAddress());
+        dto.setEstablishmentCity(show.getEvent().getEstablishment().getCity());
+        dto.setEstablishmentState(show.getEvent().getEstablishment().getState());
+        dto.setStartDateTime(show.getSchedule().getStartDateTime());
+        dto.setEndDateTime(show.getSchedule().getEndDateTime());
+        dto.setArtistName(show.getArtist().getName());
+        dto.setArtistInstagram(show.getArtist().getInstagram());
 
         return dto;
     }
