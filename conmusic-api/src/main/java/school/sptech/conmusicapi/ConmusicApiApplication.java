@@ -9,5 +9,4 @@ public class ConmusicApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ConmusicApiApplication.class, args);
 	}
-
 }

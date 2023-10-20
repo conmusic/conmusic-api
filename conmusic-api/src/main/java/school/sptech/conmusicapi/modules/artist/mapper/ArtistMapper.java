@@ -34,7 +34,10 @@ public class ArtistMapper {
 
     public static ShowArtistDto toShowArtistDto(Artist entity) {
         ShowArtistDto dto = new ShowArtistDto();
+
         UserMapper.toDto(entity, dto);
+        dto.setMusicalGenres(entity.getMusicalGenres());
+
         return dto;
     }
 }

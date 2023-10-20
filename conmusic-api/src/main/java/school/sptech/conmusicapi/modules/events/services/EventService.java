@@ -6,13 +6,20 @@ import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
 import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishmentRepository;
 import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
+import school.sptech.conmusicapi.modules.events.dtos.EventLineupExportDto;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.events.mappers.EventMapper;
 import school.sptech.conmusicapi.modules.events.repositories.IEventRepository;
+import school.sptech.conmusicapi.modules.events.utils.datafiles.EventLineupResolver;
 import school.sptech.conmusicapi.modules.genre.entities.Genre;
 import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
+import school.sptech.conmusicapi.modules.show.entities.Show;
+import school.sptech.conmusicapi.modules.show.repositories.IShowRepository;
+import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
+import school.sptech.conmusicapi.shared.utils.datafiles.DataFilesEnum;
+import school.sptech.conmusicapi.shared.utils.datafiles.exporters.DataExporter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +34,9 @@ public class EventService {
     private IEstablishmentRepository establishmentRepository;
     @Autowired
     private IGenreRepository genreRepository;
+
+    @Autowired
+    private IShowRepository showRepository;
 
     public EventDto create(CreateEventDto dto) {
         Optional<Establishment> establishment = establishmentRepository.findById(dto.getEstablishmentId());
@@ -80,5 +90,18 @@ public class EventService {
                 ));
 
         return EventMapper.toDto(event);
+    }
+
+    public String exportEventLineup(Integer id, DataFilesEnum fileFormat) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Event with id %d was not found", id)
+                ));
+
+        List<Show> shows = showRepository.findAllByStatusAndScheduleEventId(ShowStatusEnum.CONFIRMED, event.getId());
+
+        DataExporter<EventLineupExportDto> exporter = EventLineupResolver.resolve(fileFormat);
+
+        return exporter.write(shows.stream().map(EventMapper::toEventLineupExport).toList());
     }
 }

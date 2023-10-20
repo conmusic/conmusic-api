@@ -10,6 +10,10 @@ import school.sptech.conmusicapi.modules.admin.mappers.AdminMapper;
 import school.sptech.conmusicapi.modules.admin.repositories.IAdminRepository;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
+import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -40,5 +44,32 @@ public class AdminService {
 
         Admin createdArtist = adminRepository.save(AdminMapper.fromDto(dto));
         return AdminMapper.toDto(createdArtist);
+    }
+
+    public AdminDto getAdminById(Integer adminId) {
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new EntityNotFoundException("Admin not found with ID: " + adminId));
+
+        return AdminMapper.toDto(admin);
+    }
+
+    public List<AdminDto> getAllAdmins() {
+        List<Admin> admins = adminRepository.findAll();
+        return admins.stream()
+                .map(AdminMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public AdminDto updateAdmin(Integer adminId, AdminDto adminDto) {
+        Admin existingAdmin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new EntityNotFoundException("Admin not found with ID: " + adminId));
+
+        existingAdmin.setName(adminDto.getName());
+        existingAdmin.setEmail(adminDto.getEmail());
+
+
+        Admin updatedAdmin = adminRepository.save(existingAdmin);
+
+        return AdminMapper.toDto(updatedAdmin);
     }
 }
