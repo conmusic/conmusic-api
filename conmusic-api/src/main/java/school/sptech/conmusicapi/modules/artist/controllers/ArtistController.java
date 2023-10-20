@@ -5,16 +5,20 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
 import school.sptech.conmusicapi.modules.artist.services.ArtistService;
+import school.sptech.conmusicapi.modules.media.services.StorageService;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -96,6 +100,31 @@ public class ArtistController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping
-    public ResponseEntity
+
+    @PostMapping("/upload/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<String> uploadFile(
+            @PathVariable Integer id,
+            @RequestParam("file") MultipartFile file) throws IOException {
+
+        String uploadFile = artistService.uploadFile(file, id);
+
+        return ResponseEntity.ok(uploadFile);
+    }
+
+    @GetMapping("/media/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<ByteArrayResource>> getFiles(@PathVariable Integer id){
+
+        List<ByteArrayResource> files = artistService.getFiles(id);
+
+        return ResponseEntity.ok(files);
+    }
+
+    @DeleteMapping("/media")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<String> deleteFile(@RequestParam String fileName) {
+        String deletedFile = artistService.deleteFile(fileName);
+        return ResponseEntity.ok(deletedFile);
+    }
 }

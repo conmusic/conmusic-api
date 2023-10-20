@@ -1,9 +1,11 @@
 package school.sptech.conmusicapi.modules.artist.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
@@ -12,6 +14,9 @@ import school.sptech.conmusicapi.modules.artist.mapper.ArtistMapper;
 import school.sptech.conmusicapi.modules.artist.repositories.IArtistRepository;
 import school.sptech.conmusicapi.modules.genre.entities.Genre;
 import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
+import school.sptech.conmusicapi.modules.media.entities.Media;
+import school.sptech.conmusicapi.modules.media.repositories.IMediaRepository;
+import school.sptech.conmusicapi.modules.media.services.StorageService;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
@@ -19,6 +24,8 @@ import school.sptech.conmusicapi.shared.exceptions.UserForbiddenActionException;
 import school.sptech.conmusicapi.shared.utils.collections.GenericObjectList;
 import school.sptech.conmusicapi.shared.utils.collections.HashTable;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +42,12 @@ public class ArtistService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private StorageService storageService;
+
+    @Autowired
+    private IMediaRepository mediaRepository;
 
     public ArtistDto create(CreateArtistDto dto) {
         Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
@@ -164,4 +177,37 @@ public class ArtistService {
         return artistRepository.deleteGenreArtist(id, genreId);
     }
 
+    public String uploadFile(MultipartFile file, int id) throws IOException {
+
+        Artist artist = artistRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Artist with id %d was not found.", id))
+        );
+
+        String fileName = storageService.uploadFileArtist(file, artist);
+
+        return fileName;
+    }
+
+    public List<ByteArrayResource> getFiles(Integer id) {
+
+        List<Media> medias = mediaRepository.findByUserId(id);
+
+        List<ByteArrayResource> files = new ArrayList<>();
+
+        medias.forEach(media -> {
+            byte[] data = storageService.downloadFile(media.getUrl());
+            ByteArrayResource resource = new ByteArrayResource(data);
+            files.add(resource);
+        });
+
+        if (files.isEmpty()){
+            throw new EntityNotFoundException(String.format("Artist with id %d was not found.", id));
+        }
+
+        return files;
+    }
+
+    public String deleteFile(String fileName) {
+        return storageService.deleteFile(fileName);
+    }
 }

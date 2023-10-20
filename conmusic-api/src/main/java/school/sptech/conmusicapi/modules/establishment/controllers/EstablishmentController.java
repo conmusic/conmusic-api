@@ -5,14 +5,17 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import school.sptech.conmusicapi.modules.establishment.dtos.CreateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.UpdateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.services.EstablishmentService;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -59,5 +62,29 @@ public class EstablishmentController {
         }
 
         return ResponseEntity.status(200).body(establishments);
+    }
+
+    @PostMapping("/upload/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @PathVariable Integer id) throws IOException {
+        String uploadFile = establishmentService.uploadFile(file, id);
+
+        return ResponseEntity.ok(uploadFile);
+    }
+
+    @GetMapping("/media/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<ByteArrayResource>> getMedia(@PathVariable Integer id){
+        List<ByteArrayResource> media = establishmentService.getMedia(id);
+
+        return ResponseEntity.ok(media);
+    }
+
+    @DeleteMapping("/media")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<String> deleteMedia(@RequestParam String fileName){
+        String deletedMedia = establishmentService.deleteMedia(fileName);
+
+        return ResponseEntity.ok(deletedMedia);
     }
 }

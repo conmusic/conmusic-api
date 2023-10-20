@@ -6,7 +6,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import school.sptech.conmusicapi.modules.artist.entities.Artist;
-import school.sptech.conmusicapi.modules.user.entities.User;
 import school.sptech.conmusicapi.shared.utils.specifications.SearchOperation;
 import school.sptech.conmusicapi.shared.utils.specifications.SpecSearchCriteria;
 
@@ -30,7 +29,8 @@ public class ArtistSpecification implements Specification<Artist> {
             return builder.lessThanOrEqualTo(
                     root.<String> get(criteria.getKey()), criteria.getValue().toString());
         }
-        else if (criteria.getOperation() == SearchOperation.EQUAL) {
+        else if (criteria.getOperation() == SearchOperation.EQUAL
+                || criteria.getOperation() == SearchOperation.CONTAINS) {
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
                 return builder.like(
                         root.<String>get(criteria.getKey()), "%" + criteria.getValue() + "%");
