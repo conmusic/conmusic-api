@@ -40,6 +40,7 @@ public class EventMapper {
         e.setCoverCharge(eventDto.getCoverCharge());
         e.setGenre(eventDto.getGenre());
         e.setSchedules(eventDto.getSchedules());
+        return e;
     }
 
     public static DisplayScheduleEventDto toDisplayScheduleDto(Event entity) {

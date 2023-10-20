@@ -13,6 +13,10 @@ import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.InactiveEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.UpdateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.services.EstablishmentService;
+import school.sptech.conmusicapi.modules.events.dtos.EventDto;
+import school.sptech.conmusicapi.modules.events.entities.Event;
+import school.sptech.conmusicapi.shared.utils.collections.DeletionTree;
+import school.sptech.conmusicapi.shared.utils.collections.TypeForDeletionEnum;
 
 import java.util.List;
 
@@ -23,6 +27,8 @@ import java.util.List;
 public class EstablishmentController {
     @Autowired
     private EstablishmentService establishmentService;
+    @Autowired
+    private DeletionTree deletionTree;
 
     @PostMapping
     @Operation(summary = "Create a new establishment", description = "Registers a new establishment in the API")
@@ -82,4 +88,12 @@ public class EstablishmentController {
 
         return ResponseEntity.status(200).body(establishments);
     }
+
+    @GetMapping("/teste")
+    public ResponseEntity<EventDto> teste(){
+        deletionTree.createRoot(establishmentService.getById(3), TypeForDeletionEnum.ESTABLISHMENT);
+        deletionTree.insert(deletionTree.getRoot());
+        return  ResponseEntity.status(200).body(deletionTree.serch(deletionTree.getRoot(), 3));
+    }
+
 }

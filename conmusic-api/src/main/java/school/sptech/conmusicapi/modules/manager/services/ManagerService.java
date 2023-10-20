@@ -31,12 +31,6 @@ public class ManagerService {
     private PasswordEncoder passwordEncoder;
     private EntityManager entityManager;
 
-    public void filterForInactive(boolean isDeleted){
-        Session session = entityManager.unwrap(Session.class);
-        Filter filter = session.enableFilter("deletedEstablishmentFilter");
-        filter.setParameter("isDeleted", isDeleted);
-        session.disableFilter("deletedProductFilter");
-    }
     public ManagerDto create(CreateManagerDto dto) {
         Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
 
@@ -89,7 +83,6 @@ public class ManagerService {
     }
 
     public ManagerDto getById(Integer id) {
-        filterForInactive(false);
         Optional<Manager> managerOpt = managerRepository.findById(id);
 
         if (managerOpt.isEmpty()) {
