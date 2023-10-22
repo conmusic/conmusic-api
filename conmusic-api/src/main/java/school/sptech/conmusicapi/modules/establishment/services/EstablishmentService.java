@@ -7,18 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import school.sptech.conmusicapi.modules.establishment.dtos.CreateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
-import school.sptech.conmusicapi.modules.establishment.dtos.InactiveEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.UpdateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
 import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
 import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishmentRepository;
-import school.sptech.conmusicapi.modules.events.dtos.EventDto;
 import school.sptech.conmusicapi.modules.manager.entities.Manager;
 import school.sptech.conmusicapi.modules.manager.repositories.IManagerRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
-import school.sptech.conmusicapi.shared.utils.collections.DeletionTree;
-import school.sptech.conmusicapi.shared.utils.collections.TypeForDeletionEnum;
+
 
 import java.util.List;
 import java.util.Optional;

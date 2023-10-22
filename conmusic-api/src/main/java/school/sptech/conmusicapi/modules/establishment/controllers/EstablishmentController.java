@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.establishment.dtos.CreateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
@@ -89,11 +90,11 @@ public class EstablishmentController {
         return ResponseEntity.status(200).body(establishments);
     }
 
-    @GetMapping("/teste")
-    public ResponseEntity<EventDto> teste(){
-        deletionTree.createRoot(establishmentService.getById(3), TypeForDeletionEnum.ESTABLISHMENT);
+    @GetMapping("/teste/{id}")
+    public ResponseEntity<EventDto> teste(@PathVariable Integer id){
+        deletionTree.createRoot(establishmentService.getById(id), TypeForDeletionEnum.ESTABLISHMENT);
         deletionTree.insert(deletionTree.getRoot());
-        return  ResponseEntity.status(200).body(deletionTree.serch(deletionTree.getRoot(), 3));
+        return ResponseEntity.status(200).body(deletionTree.search(deletionTree.getRoot(), 3));
     }
 
 }

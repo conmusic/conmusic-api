@@ -3,14 +3,12 @@ package school.sptech.conmusicapi.shared.utils.collections;
 public class NodeGen {
     private TypeForDeletionEnum type;
     private Object info;
-    private NodeGen next;
-    private NodeGen prev;
+    private GenericObjectList<Object> list;
 
-    public NodeGen(Object arg, TypeForDeletionEnum typeForDeletionEnum) {
+    public NodeGen(Object arg, TypeForDeletionEnum typeForDeletionEnum, int size) {
         this.type = typeForDeletionEnum;
         this.info = arg;
-        this.next = null;
-        this.prev = null;
+        this.list = new GenericObjectList<>(size);
     }
 
     public TypeForDeletionEnum getType() {
@@ -29,19 +27,11 @@ public class NodeGen {
         this.info = info;
     }
 
-    public NodeGen getnext() {
-        return next;
+    public GenericObjectList getList() {
+        return list;
     }
 
-    public void setnext(NodeGen next) {
-        this.next = next;
-    }
-
-    public NodeGen getprev() {
-        return prev;
-    }
-
-    public void setprev(NodeGen prev) {
-        this.prev = prev;
+    public void setList(GenericObjectList list) {
+        this.list = list;
     }
 }
