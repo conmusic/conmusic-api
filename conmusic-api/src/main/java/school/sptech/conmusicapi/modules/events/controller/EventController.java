@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -76,6 +75,22 @@ public class EventController {
 
         return ResponseEntity.status(200).body(events);
     }
+
+    @GetMapping("/manager/{id}")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "List events by manager", description = "Retrieves a list of music events associated with a specific manager")
+    public ResponseEntity<List<EventDto>> listByManager(
+            @RequestParam Integer managerId
+    ) {
+        List<EventDto> events = eventService.listAllByManagerId(managerId);
+
+        if (events.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(200).body(events);
+    }
+
     @Operation(summary = "Get event by ID", description = "Retrieves a music event by its ID")
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
@@ -84,7 +99,9 @@ public class EventController {
         return ResponseEntity.status(200).body(event);
     }
 
+    @Operation(summary = "Export event lineup", description = "Retrieves a document in the specified format that has information about a specific event lineup")
     @GetMapping("/export/lineup/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<byte[]> exportEventLineup(
             @PathVariable Integer id,
             @RequestParam String fileFormat
