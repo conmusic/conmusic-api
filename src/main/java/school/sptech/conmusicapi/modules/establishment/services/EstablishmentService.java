@@ -101,7 +101,7 @@ public class EstablishmentService {
     public String uploadFile(MultipartFile file, Integer id) throws IOException {
 
         Establishment establishment = establishmentRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Artist with id %d was not found.", id))
+                () -> new EntityNotFoundException(String.format("Establishment with id %d was not found.", id))
         );
 
         return storageService.uploadFileEstablishment(file, establishment);
@@ -120,7 +120,7 @@ public class EstablishmentService {
         });
 
         if (files.isEmpty()){
-            throw new EntityNotFoundException(String.format("Artist with id %d was not found.", id));
+            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
         }
 
         return files;

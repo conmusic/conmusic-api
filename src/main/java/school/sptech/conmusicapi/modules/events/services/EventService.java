@@ -83,13 +83,6 @@ public class EventService {
                 .toList();
     }
 
-    public List<EventDto> listAllByManagerId(Integer id) {
-        return eventRepository.findByEstablishmentManagerId(id)
-                .stream()
-                .map(EventMapper::toDto)
-                .toList();
-    }
-
     public EventDto getById(Integer id) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
