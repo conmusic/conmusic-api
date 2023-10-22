@@ -53,7 +53,7 @@ public class EventController {
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "List events by manager", description = "Retrieves a list of music events associated with a specific manager")
     public ResponseEntity<List<EventDto>> listByManager(
-            @RequestParam Integer managerId
+            @PathVariable Integer managerId
     ) {
         List<EventDto> events = eventService.listAllByManagerId(managerId);
 
