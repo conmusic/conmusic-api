@@ -64,6 +64,7 @@ public class ScheduleController {
             description = "Read a csv or txt file and import its data as schedules for events"
     )
     @PostMapping("/import")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ScheduleDto>> importSchedules(@RequestParam("file") MultipartFile file) throws RuntimeException {
         try {
             List<ScheduleDto> scheduleDtos = scheduleService.importSchedules(file);
