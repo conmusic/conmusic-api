@@ -33,7 +33,7 @@ public enum SearchOperation {
     }
 
     public static SearchOperation getOperation(String operation) {
-        return Arrays.stream(SearchOperation.values()).filter(ope -> ope.getOperation().equals(operation))
+        return Arrays.stream(SearchOperation.values()).filter(op -> op.getOperation().equals(operation))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Operação de pesquisa não suportada: " + operation));
     }
