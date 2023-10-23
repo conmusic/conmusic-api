@@ -12,6 +12,7 @@ import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.schedules.dtos.CreateScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.dtos.ScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.services.ScheduleService;
+import school.sptech.conmusicapi.shared.utils.collections.DeletionTree;
 
 import java.util.List;
 
@@ -22,6 +23,8 @@ import java.util.List;
 public class ScheduleController {
     @Autowired
     private ScheduleService scheduleService;
+    @Autowired
+    private DeletionTree deletionTree;
 
     @Operation(summary = "Create a schedule", description = "Creates a new schedule for an event")
     @PostMapping("/{id}")
@@ -61,7 +64,7 @@ public class ScheduleController {
     @DeleteMapping("/inctivate/{id}")
     @Operation(summary = "inactive schedule by ID", description = "inactive an schedule by its ID")
     public ResponseEntity<ScheduleDto> inactivateById(@PathVariable Integer id){
-        ScheduleDto scheduleDto = scheduleService.inactivateSchedule(id);
+        ScheduleDto scheduleDto = deletionTree.inactivateSchedule(id);
         return ResponseEntity.status(200).body(scheduleDto);
     }
     @PatchMapping("/activate/{id}")

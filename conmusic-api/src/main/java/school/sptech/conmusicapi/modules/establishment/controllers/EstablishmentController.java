@@ -17,6 +17,7 @@ import school.sptech.conmusicapi.modules.establishment.services.EstablishmentSer
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.shared.utils.collections.DeletionTree;
+import school.sptech.conmusicapi.shared.utils.collections.NodeGen;
 import school.sptech.conmusicapi.shared.utils.collections.TypeForDeletionEnum;
 
 import java.util.List;
@@ -60,7 +61,7 @@ public class EstablishmentController {
     @DeleteMapping("/inctivate/{id}")
     @Operation(summary = "inactive establishment by ID", description = "inactive an establishment by its ID")
     public ResponseEntity<EstablishmentDto> inactivateById(@PathVariable Integer id){
-        EstablishmentDto establishmentDto = establishmentService.inactivateEstablishment(id);
+        EstablishmentDto establishmentDto = deletionTree.inactivateEstablishment(id);
         return ResponseEntity.status(200).body(establishmentDto);
     }
     @PatchMapping("/activate/{id}")
@@ -91,10 +92,11 @@ public class EstablishmentController {
     }
 
     @GetMapping("/teste/{id}")
-    public ResponseEntity<EventDto> teste(@PathVariable Integer id){
+    public ResponseEntity<NodeGen> inactivateEverthing(@PathVariable Integer id){
         deletionTree.createRoot(establishmentService.getById(id), TypeForDeletionEnum.ESTABLISHMENT);
         deletionTree.insert(deletionTree.getRoot());
-        return ResponseEntity.status(200).body(deletionTree.search(deletionTree.getRoot(), 3));
+        deletionTree.deletionSequenceOnTree(deletionTree.getRoot());
+        return ResponseEntity.status(200).body(deletionTree.search(deletionTree.getRoot(), id));
     }
 
 }

@@ -12,6 +12,7 @@ import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
 import school.sptech.conmusicapi.modules.events.services.EventService;
+import school.sptech.conmusicapi.shared.utils.collections.DeletionTree;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +24,8 @@ import java.util.List;
 public class EventController {
     @Autowired
     private EventService eventService;
-
+    @Autowired
+    private DeletionTree deletionTree;
     @PostMapping
     @SecurityRequirement(name = "Bearer")
     @PreAuthorize("hasAuthority('Manager')")
@@ -81,21 +83,20 @@ public class EventController {
         return ResponseEntity.status(200).body(event);
     }
     @DeleteMapping("/inctivate/{id}")
-    @Operation(summary = "inactive establishment by ID", description = "inactive an establishment by its ID")
+    @Operation(summary = "inactive event by ID", description = "inactive an event by its ID")
     public ResponseEntity<EventDto> inactivateById(@PathVariable Integer id){
-        EventDto eventDto = eventService.inactivateEstablishment(id);
+        EventDto eventDto = deletionTree.inactivateEvent(id);
         return ResponseEntity.status(200).body(eventDto);
     }
     @PatchMapping("/activate/{id}")
-    @Operation(summary = "Activate an establishment", description = "Activate an existing establishment in the API")
+    @Operation(summary = "Activate an event", description = "Activate an existing event in the API")
     @PreAuthorize("hasAuthority('Admin') or hasAuthority('Manager')")
     public ResponseEntity<EventDto> activate(@PathVariable Integer id) {
-        EventDto activateEvent = eventService.activateEstablishment(id);
+        EventDto activateEvent = eventService.activateEvent(id);
         return ResponseEntity.status(200).body(activateEvent);
     }
-
     @GetMapping("/inactive")
-    @Operation(summary = "Get inactived establishments", description = "Retrieves an inactivad establishment")
+    @Operation(summary = "Get inactived event", description = "Retrieves an inactivad event")
     public ResponseEntity<Iterable<EventDto>> inactiveEstablishment(){
         Iterable<EventDto> eventDtos = eventService.findAllInactive();
         return ResponseEntity.status(200).body(eventDtos);

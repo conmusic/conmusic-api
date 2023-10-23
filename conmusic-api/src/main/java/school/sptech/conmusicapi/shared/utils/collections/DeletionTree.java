@@ -1,20 +1,27 @@
 package school.sptech.conmusicapi.shared.utils.collections;
 
+import jakarta.persistence.EntityManager;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
+import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
 import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishmentRepository;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.events.mappers.EventMapper;
 import school.sptech.conmusicapi.modules.events.repositories.IEventRepository;
 import school.sptech.conmusicapi.modules.schedules.dtos.ScheduleDto;
+import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
 import school.sptech.conmusicapi.modules.schedules.mappers.ScheduleMapper;
 import school.sptech.conmusicapi.modules.schedules.repositories.IScheduleRepository;
+import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 import school.sptech.conmusicapi.shared.utils.iterator.IGenericIterator;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DeletionTree {
@@ -52,26 +59,77 @@ public class DeletionTree {
         }
     }
 
-    public EventDto search(NodeGen dad, int id) {
-        if (dad.getInfo() instanceof EventDto && dad.getList().createIterator().getNext() instanceof NodeGen) {
-            IGenericIterator<NodeGen> iterator = dad.getList().createIterator();
-                while (iterator.hasMore()) {
-                    if (((EventDto) iterator.getNext().getInfo()).getId() == id) {
-                        return ((EventDto) iterator.getNext().getInfo());
-                    }
+    public NodeGen search(NodeGen dad, int id) {
+        for (int i = 0; i < dad.getList().asList().size(); i++) {
+            if (dad.getList().asList().get(i) instanceof NodeGen) {
+                List<NodeGen> iterator = dad.getList().asList();
+                if (((EventDto) iterator.get(i).getInfo()).getId() == id) {
+                    return iterator.get(i);
                 }
             }
+        }
         return null;
     }
 
+    public void deletionSequenceOnTree(NodeGen dad) {
+        if (dad.getType() == TypeForDeletionEnum.ESTABLISHMENT || dad.getInfo() instanceof EstablishmentDto) {
+            inactivateEstablishment(((EstablishmentDto) dad.getInfo()).getId());
+            for (int i = 0; i < dad.getList().getSize(); i++) {
+                if (dad.getList().getByIndex(i) instanceof NodeGen) {
+                    NodeGen event = ((NodeGen) dad.getList().getByIndex(i));
+                    if (event.getInfo() instanceof EventDto) {
+                        inactivateEvent(((EventDto) event.getInfo()).getId());
+                        deletionSequenceOnTree(event);
+                    }
+                }
+            }
+        } else if (dad.getType() == TypeForDeletionEnum.EVENT) {
+            for (int i = 0; i < dad.getList().getSize(); i++) {
+                if (dad.getList().getByIndex(i) instanceof NodeGen) {
+                    NodeGen schedule = ((NodeGen) dad.getList().getByIndex(i));
+                    if (schedule.getInfo() instanceof ScheduleDto) {
+                        inactivateSchedule(((ScheduleDto) schedule.getInfo()).getId());
+                    }
+                }
+            }
+        }
+    }
 
-//    public void exibeArvore(NodeGen noDaVez) {
-//        if (noDaVez != null && noDaVez.getnext() != null) {
-//            System.out.printf("Valor do nó: " + noDaVez.getInfo() + "  ");
-//            System.out.println("Valor seguinte do nó: " + noDaVez.getnext().getInfo() + ";");
-//            exibeArvore(noDaVez.getnext());
-//        }
-//    }
+    public ScheduleDto inactivateSchedule(Integer id) {
+        Optional<Schedule> schedule = scheduleRepository.findById(id);
+
+        if (schedule.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
+        }
+        Schedule scheduleInactive = ScheduleMapper.fromInactive(schedule.get(), true);
+        scheduleRepository.save(scheduleInactive);
+
+        return ScheduleMapper.toDto(scheduleInactive);
+    }
+
+    public EventDto inactivateEvent(Integer id) {
+        Optional<Event> eventOpt = eventRepository.findById(id);
+
+        if (eventOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
+        }
+        Event eventInactive = EventMapper.fromInactive(eventOpt.get(), true);
+        eventRepository.save(eventInactive);
+
+        return EventMapper.toDto(eventInactive);
+    }
+
+    public EstablishmentDto inactivateEstablishment(Integer id) {
+        Optional<Establishment> establishmentOpt = establishmentRepository.findById(id);
+
+        if (establishmentOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
+        }
+        Establishment establishmentInactive = EstablishmentMapper.fromInactive(establishmentOpt.get(), true);
+        establishmentRepository.save(establishmentInactive);
+
+        return EstablishmentMapper.toDto(establishmentInactive);
+    }
 
     public NodeGen getRoot() {
         return root;
@@ -81,4 +139,6 @@ public class DeletionTree {
         this.root = root;
     }
 
+
 }
+

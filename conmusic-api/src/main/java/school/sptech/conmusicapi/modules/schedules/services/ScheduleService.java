@@ -96,17 +96,6 @@ public class ScheduleService {
         List<ScheduleDto> schedules =  scheduleRepository.findAll().stream().map(ScheduleMapper :: toDto).toList();
         return (schedules);
     }
-    public ScheduleDto inactivateSchedule(Integer id){
-        Optional<Schedule> schedule = scheduleRepository.findById(id);
-
-        if (schedule.isEmpty()) {
-            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
-        }
-        Schedule scheduleInactive = ScheduleMapper.fromInactive(schedule.get(), true);
-        scheduleRepository.save(scheduleInactive);
-
-        return ScheduleMapper.toDto(scheduleInactive);
-    }
 
     public ScheduleDto activateSchedule(Integer id){
         Optional<Schedule> schedule = scheduleRepository.findById(id);

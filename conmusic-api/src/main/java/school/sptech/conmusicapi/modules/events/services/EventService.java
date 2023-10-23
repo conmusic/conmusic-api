@@ -19,6 +19,7 @@ import school.sptech.conmusicapi.modules.genre.entities.Genre;
 import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
+import school.sptech.conmusicapi.shared.utils.collections.DeletionTree;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +36,6 @@ public class EventService {
     private IGenreRepository genreRepository;
     @Autowired
     private EntityManager entityManager;
-
     public void filterForInactive(boolean isDeleted){
         Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("deletedEventFilter");
@@ -117,19 +117,8 @@ public class EventService {
         List<EventDto> events =  eventRepository.findAll().stream().map(EventMapper:: toDto).toList();
         return (events);
     }
-    public EventDto inactivateEstablishment(Integer id){
-        Optional<Event> eventOpt = eventRepository.findById(id);
 
-        if (eventOpt.isEmpty()) {
-            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
-        }
-        Event eventInactive = EventMapper.fromInactive(eventOpt.get(), true);
-        eventRepository.save(eventInactive);
-
-        return EventMapper.toDto(eventInactive);
-    }
-
-    public EventDto activateEstablishment(Integer id){
+    public EventDto activateEvent(Integer id){
         Optional<Event> eventOpt = eventRepository.findById(id);
 
         if (eventOpt.isEmpty()) {
