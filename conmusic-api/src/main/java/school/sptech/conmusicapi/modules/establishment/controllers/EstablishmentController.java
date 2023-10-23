@@ -61,7 +61,10 @@ public class EstablishmentController {
     @DeleteMapping("/inctivate/{id}")
     @Operation(summary = "inactive establishment by ID", description = "inactive an establishment by its ID")
     public ResponseEntity<EstablishmentDto> inactivateById(@PathVariable Integer id){
-        EstablishmentDto establishmentDto = deletionTree.inactivateEstablishment(id);
+        EstablishmentDto establishmentDto = establishmentService.getById(id);
+        deletionTree.createRoot(establishmentService.getById(id), TypeForDeletionEnum.ESTABLISHMENT);
+        deletionTree.insert(deletionTree.getRoot());
+        deletionTree.deletionSequenceOnTree(deletionTree.getRoot());
         return ResponseEntity.status(200).body(establishmentDto);
     }
     @PatchMapping("/activate/{id}")
@@ -91,7 +94,7 @@ public class EstablishmentController {
         return ResponseEntity.status(200).body(establishments);
     }
 
-    @GetMapping("/teste/{id}")
+    @GetMapping("/tree/search/{id}")
     public ResponseEntity<NodeGen> inactivateEverthing(@PathVariable Integer id){
         deletionTree.createRoot(establishmentService.getById(id), TypeForDeletionEnum.ESTABLISHMENT);
         deletionTree.insert(deletionTree.getRoot());

@@ -13,6 +13,7 @@ import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
 import school.sptech.conmusicapi.modules.events.services.EventService;
 import school.sptech.conmusicapi.shared.utils.collections.DeletionTree;
+import school.sptech.conmusicapi.shared.utils.collections.TypeForDeletionEnum;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -85,7 +86,10 @@ public class EventController {
     @DeleteMapping("/inctivate/{id}")
     @Operation(summary = "inactive event by ID", description = "inactive an event by its ID")
     public ResponseEntity<EventDto> inactivateById(@PathVariable Integer id){
-        EventDto eventDto = deletionTree.inactivateEvent(id);
+        deletionTree.createRoot(eventService.getById(id), TypeForDeletionEnum.EVENT);
+        deletionTree.insert(deletionTree.getRoot());
+        deletionTree.deletionSequenceOnTree(deletionTree.getRoot());
+        EventDto eventDto = eventService.getById(id);
         return ResponseEntity.status(200).body(eventDto);
     }
     @PatchMapping("/activate/{id}")

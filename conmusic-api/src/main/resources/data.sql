@@ -34,7 +34,7 @@ VALUES
     ('Festa de Verão', 'Celebre o verão com música e diversão!', 1500, false, 3, 2, 4),
     ('Rave eletronica', 'Curta o ritmo contagiante', 1200, false, 5, 3, 8),
     ('Festival de Eletrônica', 'Uma experiência única de música eletrônica', false, 2000, 6, 4, 8),
-    ('Noite de MPB', 'Encante-se com a música popular brasileira', 1300, false, 3, 1, 9);
+    ('Noite de MPB', 'Encante-se com a música popular brasileira', 1300, false, 3, 3, 9);
 
 INSERT INTO agenda
     (confirmado, data_inicio, data_termino, deleted, fk_evento)
@@ -50,7 +50,7 @@ VALUES
     (FALSE, '2023-02-21 20:05:36', '2023-02-21 22:05:36', false, 1),
     (FALSE, '2023-03-21 20:05:36', '2023-03-21 22:05:36', false, 1),
     (FALSE, '2023-04-21 20:05:36', '2023-04-21 22:05:36', false, 1),
-    (FALSE, '2023-05-21 20:05:36', '2023-05-21 22:05:36', false, 1);
+    (FALSE, '2023-05-21 20:05:36', '2023-05-21 22:05:36', false, 8);
 
 INSERT INTO show
     (status, valor, taxa_cover, fk_evento, fk_artista, fk_agenda)
