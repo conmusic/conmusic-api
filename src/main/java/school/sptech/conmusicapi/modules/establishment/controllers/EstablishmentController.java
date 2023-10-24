@@ -97,12 +97,13 @@ public class EstablishmentController {
         return ResponseEntity.status(200).body(establishments);
     }
 
-    @GetMapping("/tree/search/{id}")
-    public ResponseEntity<NodeGen> inactivateEverthing(@PathVariable Integer id){
-        deletionTree.createRoot(establishmentService.getById(id), TypeForDeletionEnum.ESTABLISHMENT);
+    @GetMapping("/inactivate/{id}")
+    public ResponseEntity<EstablishmentDto> inactivateEverthing(@PathVariable Integer id){
+        EstablishmentDto establishment = establishmentService.getById(id);
+        deletionTree.createRoot(establishment, TypeForDeletionEnum.ESTABLISHMENT);
         deletionTree.insert(deletionTree.getRoot());
         deletionTree.deletionSequenceOnTree(deletionTree.getRoot());
-        return ResponseEntity.status(200).body(deletionTree.search(deletionTree.getRoot(), id));
+        return ResponseEntity.status(200).body(establishment);
     }
 
     @PostMapping("/upload/{id}")

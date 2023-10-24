@@ -136,7 +136,7 @@ public class EventService {
         return (events);
     }
 
-    public EventDto activateEvent(Integer id){
+    public EventDto activateEvent(Integer id) {
         Optional<Event> eventOpt = eventRepository.findById(id);
 
         if (eventOpt.isEmpty()) {
@@ -146,6 +146,7 @@ public class EventService {
         eventRepository.save(eventInactive);
 
         return EventMapper.toDto(eventInactive);
+    }
 
     public String exportEventLineup(Integer id, DataFilesEnum fileFormat) {
         Event event = eventRepository.findById(id)

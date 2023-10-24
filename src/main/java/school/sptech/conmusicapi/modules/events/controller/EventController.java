@@ -120,9 +120,11 @@ public class EventController {
     }
     @GetMapping("/inactive")
     @Operation(summary = "Get inactived event", description = "Retrieves an inactivad event")
-    public ResponseEntity<Iterable<EventDto>> inactiveEstablishment(){
+    public ResponseEntity<Iterable<EventDto>> getInactiveEvents() {
         Iterable<EventDto> eventDtos = eventService.findAllInactive();
         return ResponseEntity.status(200).body(eventDtos);
+    }
+
     @Operation(summary = "Export event lineup", description = "Retrieves a document in the specified format that has information about a specific event lineup")
     @GetMapping("/export/lineup/{id}")
     @SecurityRequirement(name = "Bearer")

@@ -5,6 +5,7 @@ public class UserTokenDto {
     private String name;
     private String email;
     private String token;
+    private LoginUserDTO user;
 
     public Integer getId() {
         return id;
@@ -28,8 +29,7 @@ public class UserTokenDto {
 
     public void setEmail(String email) {
         this.email = email;
-    private LoginUserDTO user;
-    private String token;
+    }
 
     public LoginUserDTO getUser() {
         return user;

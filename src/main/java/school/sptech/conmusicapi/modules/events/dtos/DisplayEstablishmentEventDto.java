@@ -1,7 +1,12 @@
 package school.sptech.conmusicapi.modules.events.dtos;
 
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 import school.sptech.conmusicapi.modules.genre.dto.DisplayingGenreDto;
 
+@FilterDef(name = "deletedEventsDtoFilter", parameters = @ParamDef(name = "isDeleted", type =boolean.class))
+@Filter(name = "deletedEventsDtoFilter", condition = "deleted = :isDeleted")
 public class DisplayEstablishmentEventDto {
     private Integer id;
     private String name;
@@ -9,6 +14,8 @@ public class DisplayEstablishmentEventDto {
     private Double value;
     private Double coverCharge;
     private DisplayingGenreDto genre;
+    private boolean deleted = Boolean.FALSE;
+
 
     public Integer getId() {
         return id;
@@ -16,6 +23,14 @@ public class DisplayEstablishmentEventDto {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public String getName() {
