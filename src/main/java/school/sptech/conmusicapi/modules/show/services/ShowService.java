@@ -492,7 +492,7 @@ public class ShowService {
         }
 
         ShowStatusEnum status = ShowStatusEnum.getStatusByName(String.format("%S_CANCELED", details.getUserType()));
-        if (show.getStatus().isStatusChangeValid(status)) {
+        if (!show.getStatus().isStatusChangeValid(status)) {
             throw new BusinessRuleException(String.format(
                     "It is forbidden to change status from %s to %s",
                     show.getStatus().name(),

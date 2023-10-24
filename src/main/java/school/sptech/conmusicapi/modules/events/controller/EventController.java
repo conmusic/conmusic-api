@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +16,9 @@ import school.sptech.conmusicapi.modules.events.dtos.EventDto;
 import school.sptech.conmusicapi.modules.events.services.EventService;
 import school.sptech.conmusicapi.shared.utils.collections.DeletionTree;
 import school.sptech.conmusicapi.shared.utils.collections.TypeForDeletionEnum;
+import school.sptech.conmusicapi.shared.utils.datafiles.DataFilesEnum;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,6 +45,21 @@ public class EventController {
     @Operation(summary = "List all events", description = "Retrieves a list of all music events in the API")
     public ResponseEntity<List<EventDto>> listaAll() {
         List<EventDto> events = eventService.listAll();
+
+        if (events.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(200).body(events);
+    }
+
+    @GetMapping("/manager/{managerId}")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "List events by manager", description = "Retrieves a list of music events associated with a specific manager")
+    public ResponseEntity<List<EventDto>> listByManager(
+            @PathVariable Integer managerId
+    ) {
+        List<EventDto> events = eventService.listAllByManagerId(managerId);
 
         if (events.isEmpty()) {
             return ResponseEntity.status(204).build();
@@ -104,5 +123,26 @@ public class EventController {
     public ResponseEntity<Iterable<EventDto>> inactiveEstablishment(){
         Iterable<EventDto> eventDtos = eventService.findAllInactive();
         return ResponseEntity.status(200).body(eventDtos);
+    @Operation(summary = "Export event lineup", description = "Retrieves a document in the specified format that has information about a specific event lineup")
+    @GetMapping("/export/lineup/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<byte[]> exportEventLineup(
+            @PathVariable Integer id,
+            @RequestParam String fileFormat
+    ) throws IOException {
+        DataFilesEnum selectedFormat = DataFilesEnum.getByName(fileFormat.toUpperCase());
+
+        String content = eventService.exportEventLineup(id, selectedFormat);
+        byte[] fileContent = content.getBytes();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentLength(fileContent.length);
+        headers.setContentType(selectedFormat.getContentType());
+        headers.setContentDispositionFormData("attachment", String.format("EVENTLINEUP_%d%s", id, selectedFormat.getExtension()));
+
+        return ResponseEntity
+                .status(200)
+                .headers(headers)
+                .body(fileContent);
     }
 }

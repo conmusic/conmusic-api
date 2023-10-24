@@ -12,14 +12,21 @@ import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishme
 import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
 import school.sptech.conmusicapi.modules.events.dtos.UpdateEventDto;
+import school.sptech.conmusicapi.modules.events.dtos.EventLineupExportDto;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.events.mappers.EventMapper;
 import school.sptech.conmusicapi.modules.events.repositories.IEventRepository;
+import school.sptech.conmusicapi.modules.events.utils.datafiles.EventLineupResolver;
 import school.sptech.conmusicapi.modules.genre.entities.Genre;
 import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
+import school.sptech.conmusicapi.modules.show.entities.Show;
+import school.sptech.conmusicapi.modules.show.repositories.IShowRepository;
+import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 import school.sptech.conmusicapi.shared.utils.collections.DeletionTree;
+import school.sptech.conmusicapi.shared.utils.datafiles.DataFilesEnum;
+import school.sptech.conmusicapi.shared.utils.datafiles.exporters.DataExporter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,6 +49,9 @@ public class EventService {
         filter.setParameter("isDeleted", isDeleted);
         session.disableFilter("deletedProductFilter");
     }
+
+    @Autowired
+    private IShowRepository showRepository;
 
     public EventDto create(CreateEventDto dto) {
         Optional<Establishment> establishment = establishmentRepository.findById(dto.getEstablishmentId());
@@ -103,6 +113,13 @@ public class EventService {
                 .toList();
     }
 
+    public List<EventDto> listAllByManagerId(Integer id) {
+        return eventRepository.findByEstablishmentManagerId(id)
+                .stream()
+                .map(EventMapper::toDto)
+                .toList();
+    }
+
     public EventDto getById(Integer id) {
         filterForInactive(false);
         Event event = eventRepository.findById(id)
@@ -112,6 +129,7 @@ public class EventService {
 
         return EventMapper.toDto(event);
     }
+    
     public Iterable<EventDto> findAllInactive(){
         filterForInactive(true);
         List<EventDto> events =  eventRepository.findAll().stream().map(EventMapper:: toDto).toList();
@@ -128,5 +146,17 @@ public class EventService {
         eventRepository.save(eventInactive);
 
         return EventMapper.toDto(eventInactive);
+
+    public String exportEventLineup(Integer id, DataFilesEnum fileFormat) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Event with id %d was not found", id)
+                ));
+
+        List<Show> shows = showRepository.findAllByStatusAndScheduleEventId(ShowStatusEnum.CONFIRMED, event.getId());
+
+        DataExporter<EventLineupExportDto> exporter = EventLineupResolver.resolve(fileFormat);
+
+        return exporter.write(shows.stream().map(EventMapper::toEventLineupExport).toList());
     }
 }

@@ -28,6 +28,15 @@ public class UserTokenDto {
 
     public void setEmail(String email) {
         this.email = email;
+    private LoginUserDTO user;
+    private String token;
+
+    public LoginUserDTO getUser() {
+        return user;
+    }
+
+    public void setUser(LoginUserDTO user) {
+        this.user = user;
     }
 
     public String getToken() {
