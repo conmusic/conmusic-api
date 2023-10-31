@@ -36,12 +36,12 @@ public class DeletionTree {
     public NodeGen createRoot(Object info, TypeForDeletionEnum type) {
         if (info instanceof EstablishmentDto) {
             List<Event> eventList = eventRepository.findByEstablishmentId(((EstablishmentDto) info).getId());
-            NodeGen newRoot = new NodeGen(info, type, eventList.size());
+            NodeGen newRoot = new NodeGen(info, type);
             root = newRoot;
             return newRoot;
         } else if(info instanceof EventDto){
             List<Schedule> scheduleList = scheduleRepository.findByEventId(((EventDto) info).getId());
-            NodeGen newRoot = new NodeGen(info, type, scheduleList.size());
+            NodeGen newRoot = new NodeGen(info, type);
             root = newRoot;
             return newRoot;
         }
@@ -53,14 +53,14 @@ public class DeletionTree {
             if (dad.getType() == TypeForDeletionEnum.ESTABLISHMENT && dad.getInfo() instanceof EstablishmentDto) {
                 List<EventDto> eventlist = (eventRepository.findByEstablishmentId(((EstablishmentDto) dad.getInfo()).getId())).stream().map(EventMapper::toDto).toList();
                 for (int i = 0; i < eventlist.size(); i++) {
-                    NodeGen novo = new NodeGen(eventlist.get(i), TypeForDeletionEnum.EVENT, eventlist.size());
+                    NodeGen novo = new NodeGen(eventlist.get(i), TypeForDeletionEnum.EVENT);
                     dad.getList().add(novo);
                     insert(novo);
                 }
             } else if (dad.getType() == TypeForDeletionEnum.EVENT && dad.getInfo() instanceof EventDto) {
                 List<ScheduleDto> scheduleList = scheduleRepository.findByEventId(((EventDto) dad.getInfo()).getId()).stream().map(ScheduleMapper::toDto).toList();
                 for (int i = 0; i < scheduleList.size(); i++) {
-                    NodeGen novo = new NodeGen(scheduleList.get(i), TypeForDeletionEnum.SCHEDULE, scheduleList.size());
+                    NodeGen novo = new NodeGen(scheduleList.get(i), TypeForDeletionEnum.SCHEDULE);
                     dad.getList().add(novo);
                 }
             }
@@ -68,9 +68,9 @@ public class DeletionTree {
     }
 
     public NodeGen search(NodeGen dad, int id) {
-        for (int i = 0; i < dad.getList().asList().size(); i++) {
-            if (dad.getList().asList().get(i) instanceof NodeGen) {
-                List<NodeGen> iterator = dad.getList().asList();
+        for (int i = 0; i < dad.getList().size(); i++) {
+            if (dad.getList().get(i) instanceof NodeGen) {
+                List<NodeGen> iterator = dad.getList();
                 if (((EventDto) iterator.get(i).getInfo()).getId() == id) {
                     return iterator.get(i);
                 }
@@ -83,9 +83,9 @@ public class DeletionTree {
         Boolean eventDeleted = false;
         if (dad.getType() == TypeForDeletionEnum.ESTABLISHMENT && dad.getInfo() instanceof EstablishmentDto) {
             inactivateEstablishment(((EstablishmentDto) dad.getInfo()).getId());
-            for (int i = 0; i < dad.getList().getSize(); i++) {
-                if (dad.getList().getByIndex(i) instanceof NodeGen) {
-                    NodeGen event = ((NodeGen) dad.getList().getByIndex(i));
+            for (int i = 0; i < dad.getList().size(); i++) {
+                if (dad.getList().get(i) instanceof NodeGen) {
+                    NodeGen event = ((NodeGen) dad.getList().get(i));
                     if (event.getInfo() instanceof EventDto) {
                         inactivateEvent(((EventDto) event.getInfo()).getId());
                         eventDeleted = true;
@@ -97,9 +97,9 @@ public class DeletionTree {
             if (!eventDeleted && dad.getInfo() instanceof EventDto){
                 inactivateEvent(((EventDto) dad.getInfo()).getId());
             }
-            for (int i = 0; i < dad.getList().getSize(); i++) {
-                if (dad.getList().getByIndex(i) instanceof NodeGen) {
-                    NodeGen schedule = ((NodeGen) dad.getList().getByIndex(i));
+            for (int i = 0; i < dad.getList().size(); i++) {
+                if (dad.getList().get(i) instanceof NodeGen) {
+                    NodeGen schedule = ((NodeGen) dad.getList().get(i));
                     if (schedule.getInfo() instanceof ScheduleDto) {
                         inactivateSchedule(((ScheduleDto) schedule.getInfo()).getId());
                     }

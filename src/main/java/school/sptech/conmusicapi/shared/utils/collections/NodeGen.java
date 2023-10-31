@@ -1,14 +1,17 @@
 package school.sptech.conmusicapi.shared.utils.collections;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NodeGen {
     private TypeForDeletionEnum type;
     private Object info;
-    private GenericObjectList<Object> list;
+    private List list;
 
-    public NodeGen(Object arg, TypeForDeletionEnum typeForDeletionEnum, int size) {
+    public NodeGen(Object arg, TypeForDeletionEnum typeForDeletionEnum) {
         this.type = typeForDeletionEnum;
         this.info = arg;
-        this.list = new GenericObjectList<>(size);
+        this.list = new ArrayList<>();
     }
 
     public TypeForDeletionEnum getType() {
@@ -27,11 +30,11 @@ public class NodeGen {
         this.info = info;
     }
 
-    public GenericObjectList getList() {
+    public List getList() {
         return list;
     }
 
-    public void setList(GenericObjectList list) {
+    public void setList(List list) {
         this.list = list;
     }
 }
