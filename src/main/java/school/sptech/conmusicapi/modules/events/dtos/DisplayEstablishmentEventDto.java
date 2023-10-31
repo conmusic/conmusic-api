@@ -14,7 +14,6 @@ public class DisplayEstablishmentEventDto {
     private Double value;
     private Double coverCharge;
     private DisplayingGenreDto genre;
-    private boolean deleted = Boolean.FALSE;
 
 
     public Integer getId() {
@@ -23,14 +22,6 @@ public class DisplayEstablishmentEventDto {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
     public String getName() {
