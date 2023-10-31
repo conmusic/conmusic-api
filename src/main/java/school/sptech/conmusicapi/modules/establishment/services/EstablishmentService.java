@@ -47,9 +47,7 @@ public class EstablishmentService {
     public void filterForInactive(boolean isDeleted){
         Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("deletedEstablishmentFilter");
-        Filter filterEvent = session.enableFilter("deletedEventsDtoFilter");
         filter.setParameter("isDeleted", isDeleted);
-        filterEvent.setParameter("isDeleted", isDeleted);
         session.disableFilter("deletedProductFilter");
     }
 

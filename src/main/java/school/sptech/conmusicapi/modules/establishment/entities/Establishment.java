@@ -52,7 +52,8 @@ public class Establishment {
     @Column(name = "cep", length = 8)
     private String zipCode;
 
-    private boolean deleted = Boolean.FALSE;
+    @Column(name = "deleted", columnDefinition = "boolean default false")
+    private boolean deleted = false;
 
     @ManyToOne
     @JoinColumn(name = "fk_gerente")

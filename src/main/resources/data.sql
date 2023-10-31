@@ -1,8 +1,11 @@
+CREATE DATABASE db_conmusic;
+
+USE db_conmusic;
+
 INSERT INTO usuario
     (nome, email, senha, data_nascimento, cpf, telefone, tipo_usuario)
 VALUES
     ('Admin 2', 'admin2@conmusic.com', '$2a$10$2wuzXIpSCm36VhgGEREUfuNxWvZ4fZJ1QglrFOXqVoGfj/znqh3Q2', '2023-03-11', '33318190004', '11996489985', 'admin'),
-    ('Admin conmusic', 'admin@conmusic.com', '$2a$10$5yMt9HBEz.b/onB8TSrppO3kn2vTVz3BPPH25uJV5zn9s5nUJ9Xl.', '2023-03-11', '52702055052', '11996489985', 'admin'),
     ('Leonardo Silva', 'leo.silva@email.com', '$2a$10$KZFxc7X3zu9ZuhIyVZPTS.pSczaLDkcQ7MgqAxcxbEKZ7GZV1xHYm', '2003-08-13', '76089439045', '11992489985', 'artista'),
     ('Chico Menezes', 'chico.menezes@email.com', '$2a$10$114OtetHCIqAzfSaQrL28uc3VVGqfxGTvksBvd9mjyfyMwTsRruRq', '1976-10-03', '80466979070', '11997889923', 'gerente'),
     ('João Silva', 'joao.silva@example.com', '@Aa12345678', '1990-01-01', '12345678901', '987654321', 'artista'),
@@ -22,7 +25,7 @@ VALUES
 ;
 
 INSERT INTO estabelecimento
-    (endereco, qtd_tomada_110, qtd_tomada_220, capacidade, cidade, cnpj, razao_social, nome_fantasia, telefone, uf, cep, deleted, fk_gerente)
+    (endereco, qtd_tomada_110, qtd_tomada_220, capacidade, cidade, cnpj, razao_social, nome_fantasia, telefone, uf, cep, fk_gerente)
 VALUES
     ('Travessa Francisco Sá, 50 - Jacarecanga', 2, 1, 500, 'Fortaleza', '57362133000125', 'Bar do Chico - Jacarecanga', 'Bar do Chico', '11907090808', 'CE', '60010320', 3),
     ('Avenida Paulista, 1000 - Bela Vista', 3, 2, 1000, 'São Paulo', '12345678000123', 'Restaurante Central', 'Central Restaurante', '11987654321', 'SP', '01310000', 5),
@@ -30,8 +33,9 @@ VALUES
     ('Rua das Flores, 789 - Jardins', 4, 2, 300, 'São Paulo', '56789012000134', 'Café Charmoso', 'Charmoso Café', '11912345678', 'SP', '01435000', 3),
     ('Avenida das Palmeiras, 789 - Jardim', 2, 1, 400, 'São Paulo', '87654321000109', 'Restaurante Saboroso', 'Saboroso Restaurante', '11955557777', 'SP', '04567000', 5),
     ('Rua do Sertanejo, 123 - Centro', 1, 1, 300, 'Salvador', '34567890123456', 'Bar do Sertanejo', 'Sertanejo Bar', '71999998888', 'BA', '40020000', 7);
+
 INSERT INTO evento
-    (nome, descricao, valor, deleted, taxa_cover, fk_estabelecimento, fk_genero)
+    (nome, descricao, valor, taxa_cover, fk_estabelecimento, fk_genero)
 VALUES
     ('Almocinho com Pagode', 'Bastante animação em Fortaleza!', 1750, 4, 1, 5),
     ('Festival de Jazz', 'Uma noite de jazz e improvisação', 2500, 8, 2, 7),
@@ -46,7 +50,7 @@ VALUES
     ('Noite do Forró', 'Forró pé de serra', 600, 12, 5, 12);
 
 INSERT INTO agenda
-    (confirmado, data_inicio, data_termino, deleted, fk_evento)
+    (confirmado, data_inicio, data_termino, fk_evento)
 VALUES
     (FALSE, '2023-06-21 20:05:36.904', '2023-06-21 22:05:36.904', 1),
     (TRUE, '2023-07-15 18:30:00', '2023-07-15 23:00:00', 2),
@@ -88,3 +92,4 @@ VALUES
     (4, 300.0, 50.0, 9, 2, 13),
     (6, 400.0, 70.0, 10, 2, 14),
     (4, 200.0, 40.0, 11, 4, 15);
+

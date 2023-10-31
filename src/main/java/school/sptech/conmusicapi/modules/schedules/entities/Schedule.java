@@ -26,8 +26,8 @@ public class Schedule {
 
     @Column(name = "confirmado")
     private Boolean confirmed;
-
-    private Boolean deleted  = Boolean.FALSE;
+    @Column(name = "deleted", columnDefinition = "boolean default false")
+    private Boolean deleted  = false;
 
     @ManyToOne
     @JoinColumn(name = "fk_evento")
