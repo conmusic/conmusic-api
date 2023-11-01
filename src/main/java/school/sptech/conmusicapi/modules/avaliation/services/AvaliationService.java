@@ -31,7 +31,7 @@ public class AvaliationService {
         Artist artist = artistRepository.findById(dto.getArtistId()).orElseThrow(() -> new
                 EntityNotFoundException(String.format("Artist with id %d was not found", dto.getArtistId())));
         Show show = showRepository.findById(dto.getShowId()).orElseThrow(() -> new
-                EntityNotFoundException(String.format("Artist with id %d was not found", dto.getShowId()))) ;
+                EntityNotFoundException(String.format("Show with id %d was not found", dto.getShowId()))) ;
 
         Avaliation avaliation= AvaliationMapper.fromDto(dto);
         avaliation.setArtist(artist);
@@ -43,7 +43,11 @@ public class AvaliationService {
         return avaliationRepository.findAll().stream().map(AvaliationMapper::toDto).toList();
     }
 
-    public List<AvaliationDto> listByEstablshmentId(Integer id){
-        return avaliationRepository.findByEstablishmentId(id).stream().map(AvaliationMapper::toDto).toList();
+    public List<AvaliationDto> listByShowId(Integer id){
+        return avaliationRepository.findByShowId(id).stream().map(AvaliationMapper::toDto).toList();
+    }
+
+    public List<AvaliationDto> listByArtistId(Integer id){
+        return avaliationRepository.findByArtistId(id).stream().map(AvaliationMapper::toDto).toList();
     }
 }

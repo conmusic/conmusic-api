@@ -1,5 +1,6 @@
 package school.sptech.conmusicapi.modules.avaliation.mapper;
 
+import school.sptech.conmusicapi.modules.artist.mapper.ArtistMapper;
 import school.sptech.conmusicapi.modules.avaliation.dtos.AvaliationDto;
 import school.sptech.conmusicapi.modules.avaliation.dtos.CreateAvaliationDto;
 import school.sptech.conmusicapi.modules.avaliation.entities.Avaliation;
@@ -24,7 +25,8 @@ public class AvaliationMapper {
         dto.setId(entity.getId());
         dto.setComentary(entity.getComentary());
         dto.setRating(entity.getRating());
-        dto.setEstablishment(EstablishmentMapper.toDto(entity.getEstablishment()));
+        dto.setArtistDto(ArtistMapper.toDto(entity.getArtist()));
+        dto.setShowDto(ShowMapper.toDto(entity.getShow()));
 
         return dto;
     }

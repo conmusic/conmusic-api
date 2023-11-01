@@ -16,15 +16,15 @@ public class Avaliation {
     @Column(name = "nota")
     private Integer rating;
 
-    @Column(name = "comentario", length = 45)
+    @Column(name = "comentario")
     private String comentary;
 
     @ManyToOne
-    @JoinColumn(name = "fk_usuario")
+    @JoinColumn(name = "fk_artista")
     private Artist artist;
 
     @ManyToOne
-    @JoinColumn(name = "fk_usuario")
+    @JoinColumn(name = "fk_show")
     private Show show;
 
 

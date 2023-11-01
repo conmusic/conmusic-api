@@ -48,17 +48,28 @@ private AvaliationService avaliationService;
         return ResponseEntity.status(200).body(avaliations);
     }
 
-    @GetMapping("/avaliations/{id}")
+    @GetMapping("/show/{id}")
     @SecurityRequirement(name = "Bearer")
-    @Operation(summary = "List avaliations by establishment", description = "Retrieves a rating of specific establishment")
+    @Operation(summary = "List avaliations by shows", description = "Retrieves a rating of specific show")
     @PreAuthorize("hasAuthority('Admin') or hasAuthority('Artist')")
-    public ResponseEntity<List<AvaliationDto>> listByEstablishment(@PathVariable Integer id) {
-        List<AvaliationDto> aval = avaliationService.listByEstablshmentId(id);
+    public ResponseEntity<List<AvaliationDto>> listByShow(@PathVariable Integer id) {
+        List<AvaliationDto> aval = avaliationService.listByShowId(id);
         if (aval.isEmpty()) {
             return ResponseEntity.status(204).build();
         }
 
         return ResponseEntity.status(200).body(aval);
     }
+    @GetMapping("/artist/{id}")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "List avaliations by artist", description = "Retrieves a rating that a specific artist gave")
+    @PreAuthorize("hasAuthority('Admin') or hasAuthority('Artist')")
+    public ResponseEntity<List<AvaliationDto>> listByArtist(@PathVariable Integer id) {
+        List<AvaliationDto> aval = avaliationService.listByArtistId(id);
+        if (aval.isEmpty()) {
+            return ResponseEntity.status(204).build();
+        }
 
+        return ResponseEntity.status(200).body(aval);
+    }
 }
