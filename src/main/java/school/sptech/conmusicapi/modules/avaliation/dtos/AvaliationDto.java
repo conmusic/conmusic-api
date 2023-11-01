@@ -1,6 +1,7 @@
 package school.sptech.conmusicapi.modules.avaliation.dtos;
 
 import jakarta.validation.constraints.*;
+import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.show.dtos.ShowDto;
 
@@ -12,7 +13,9 @@ public class AvaliationDto {
 
     private String comentary;
 
-    private EstablishmentDto establishment;
+    private ArtistDto artistDto;
+
+    private  ShowDto showDto;
 
     public Integer getId() {
         return id;
@@ -38,11 +41,19 @@ public class AvaliationDto {
         this.comentary = comentary;
     }
 
-    public EstablishmentDto getEstablishment() {
-        return establishment;
+    public ArtistDto getArtistDto() {
+        return artistDto;
     }
 
-    public void setEstablishment(EstablishmentDto establishment) {
-        this.establishment = establishment;
+    public void setArtistDto(ArtistDto artistDto) {
+        this.artistDto = artistDto;
+    }
+
+    public ShowDto getShowDto() {
+        return showDto;
+    }
+
+    public void setShowDto(ShowDto showDto) {
+        this.showDto = showDto;
     }
 }

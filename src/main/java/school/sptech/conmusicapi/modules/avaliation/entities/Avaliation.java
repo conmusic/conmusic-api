@@ -1,6 +1,7 @@
 package school.sptech.conmusicapi.modules.avaliation.entities;
 
 import jakarta.persistence.*;
+import school.sptech.conmusicapi.modules.artist.entities.Artist;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
 import school.sptech.conmusicapi.modules.show.entities.Show;
 import school.sptech.conmusicapi.modules.user.entities.User;
@@ -20,7 +21,11 @@ public class Avaliation {
 
     @ManyToOne
     @JoinColumn(name = "fk_usuario")
-    private Establishment establishment;
+    private Artist artist;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_usuario")
+    private Show show;
 
 
     public Integer getId() {
@@ -47,12 +52,19 @@ public class Avaliation {
         this.comentary = comentary;
     }
 
-    public Establishment getEstablishment() {
-        return establishment;
+    public Artist getArtist() {
+        return artist;
     }
 
-    public void setEstablishment(Establishment establishment) {
-        this.establishment = establishment;
+    public void setArtist(Artist artist) {
+        this.artist = artist;
     }
 
+    public Show getShow() {
+        return show;
+    }
+
+    public void setShow(Show show) {
+        this.show = show;
+    }
 }

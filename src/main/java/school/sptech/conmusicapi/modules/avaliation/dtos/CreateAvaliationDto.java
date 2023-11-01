@@ -12,9 +12,13 @@ public class CreateAvaliationDto {
     @Size(max = 45)
     private String comentary;
 
-    @NotBlank
+    @NotNull
     @Positive
-    private Integer establishmentId;
+    private Integer artistId;
+
+    @NotNull
+    @Positive
+    private Integer showId;
 
     public Integer getRating() {
         return rating;
@@ -32,12 +36,19 @@ public class CreateAvaliationDto {
         this.comentary = comentary;
     }
 
-    public Integer getEstablishmentId() {
-        return establishmentId;
+    public Integer getArtistId() {
+        return artistId;
     }
 
-    public void setEstablishmentId(Integer establishmentId) {
-        this.establishmentId = establishmentId;
+    public void setArtistId(Integer artistId) {
+        this.artistId = artistId;
     }
 
+    public Integer getShowId() {
+        return showId;
+    }
+
+    public void setShowId(Integer showId) {
+        this.showId = showId;
+    }
 }

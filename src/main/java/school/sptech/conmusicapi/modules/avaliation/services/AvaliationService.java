@@ -1,6 +1,9 @@
 package school.sptech.conmusicapi.modules.avaliation.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import school.sptech.conmusicapi.modules.artist.entities.Artist;
+import school.sptech.conmusicapi.modules.artist.repositories.IArtistRepository;
 import school.sptech.conmusicapi.modules.avaliation.dtos.AvaliationDto;
 import school.sptech.conmusicapi.modules.avaliation.dtos.CreateAvaliationDto;
 import school.sptech.conmusicapi.modules.avaliation.entities.Avaliation;
@@ -15,21 +18,24 @@ import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class AvaliationService {
     @Autowired
-    private IEstablishmentRepository establishmentRepository;
+    private IArtistRepository artistRepository;
+    @Autowired
+    private IShowRepository showRepository;
     @Autowired
     private IAvaliationRepository avaliationRepository;
 
     public AvaliationDto create(CreateAvaliationDto dto){
-        Optional<Establishment> establishment = establishmentRepository.findById(dto.getEstablishmentId());
-
-        if (establishment.isEmpty()){
-            throw new EntityNotFoundException(String.format("Establishment with id %d was not found", dto.getEstablishmentId()));
-        }
+        Artist artist = artistRepository.findById(dto.getArtistId()).orElseThrow(() -> new
+                EntityNotFoundException(String.format("Artist with id %d was not found", dto.getArtistId())));
+        Show show = showRepository.findById(dto.getShowId()).orElseThrow(() -> new
+                EntityNotFoundException(String.format("Artist with id %d was not found", dto.getShowId()))) ;
 
         Avaliation avaliation= AvaliationMapper.fromDto(dto);
-        avaliation.setEstablishment(establishment.get());
+        avaliation.setArtist(artist);
+        avaliation.setShow(show);
         Avaliation createdAvaliation = avaliationRepository.save(avaliation);
         return AvaliationMapper.toDto(createdAvaliation);
     }
