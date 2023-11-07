@@ -14,7 +14,7 @@ public class Avaliation {
     private Integer id;
 
     @Column(name = "nota")
-    private Integer rating;
+    private Double rating;
 
     @Column(name = "comentario")
     private String comentary;
@@ -24,8 +24,8 @@ public class Avaliation {
     private Artist artist;
 
     @ManyToOne
-    @JoinColumn(name = "fk_show")
-    private Show show;
+    @JoinColumn(name = "fk_establishment")
+    private Establishment establishment;
 
 
     public Integer getId() {
@@ -36,11 +36,11 @@ public class Avaliation {
         this.id = id;
     }
 
-    public Integer getRating() {
+    public Double getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public void setRating(Double rating) {
         this.rating = rating;
     }
 
@@ -60,11 +60,11 @@ public class Avaliation {
         this.artist = artist;
     }
 
-    public Show getShow() {
-        return show;
+    public Establishment getEstablishment() {
+        return establishment;
     }
 
-    public void setShow(Show show) {
-        this.show = show;
+    public void setEstablishment(Establishment establishment) {
+        this.establishment = establishment;
     }
 }

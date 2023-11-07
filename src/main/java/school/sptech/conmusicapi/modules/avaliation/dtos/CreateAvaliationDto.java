@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 public class CreateAvaliationDto {
     @Min(0)
     @Max(5)
-    private Integer rating;
+    private Double rating;
 
     @NotBlank
     @Size(max = 45)
@@ -18,13 +18,13 @@ public class CreateAvaliationDto {
 
     @NotNull
     @Positive
-    private Integer showId;
+    private Integer establishmentId;
 
-    public Integer getRating() {
+    public Double getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public void setRating(Double rating) {
         this.rating = rating;
     }
 
@@ -44,11 +44,11 @@ public class CreateAvaliationDto {
         this.artistId = artistId;
     }
 
-    public Integer getShowId() {
-        return showId;
+    public Integer getEstablishmentId() {
+        return establishmentId;
     }
 
-    public void setShowId(Integer showId) {
-        this.showId = showId;
+    public void setEstablishmentId(Integer establishmentId) {
+        this.establishmentId = establishmentId;
     }
 }

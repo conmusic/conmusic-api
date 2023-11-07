@@ -26,7 +26,7 @@ public class AvaliationMapper {
         dto.setComentary(entity.getComentary());
         dto.setRating(entity.getRating());
         dto.setArtistDto(ArtistMapper.toDto(entity.getArtist()));
-        dto.setShowDto(ShowMapper.toDto(entity.getShow()));
+        dto.setEstablishmentDto(EstablishmentMapper.toDto(entity.getEstablishment()));
 
         return dto;
     }

@@ -9,13 +9,13 @@ public class AvaliationDto {
 
     private Integer id;
 
-    private Integer rating;
+    private Double rating;
 
     private String comentary;
 
     private ArtistDto artistDto;
 
-    private  ShowDto showDto;
+    private EstablishmentDto establishmentDto;
 
     public Integer getId() {
         return id;
@@ -25,11 +25,11 @@ public class AvaliationDto {
         this.id = id;
     }
 
-    public Integer getRating() {
+    public Double getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public void setRating(Double rating) {
         this.rating = rating;
     }
 
@@ -49,11 +49,11 @@ public class AvaliationDto {
         this.artistDto = artistDto;
     }
 
-    public ShowDto getShowDto() {
-        return showDto;
+    public EstablishmentDto getEstablishmentDto() {
+        return establishmentDto;
     }
 
-    public void setShowDto(ShowDto showDto) {
-        this.showDto = showDto;
+    public void setEstablishmentDto(EstablishmentDto establishmentDto) {
+        this.establishmentDto = establishmentDto;
     }
 }

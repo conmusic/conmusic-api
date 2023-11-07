@@ -47,13 +47,20 @@ private AvaliationService avaliationService;
 
         return ResponseEntity.status(200).body(avaliations);
     }
-
-    @GetMapping("/show/{id}")
+    @GetMapping("/establishment/avarege/{id}")
     @SecurityRequirement(name = "Bearer")
-    @Operation(summary = "List avaliations by shows", description = "Retrieves a rating of specific show")
+    @Operation(summary = "Give avarege of establishment", description = "Retrieves a avarege of avaliations")
     @PreAuthorize("hasAuthority('Admin') or hasAuthority('Artist')")
-    public ResponseEntity<List<AvaliationDto>> listByShow(@PathVariable Integer id) {
-        List<AvaliationDto> aval = avaliationService.listByShowId(id);
+    public ResponseEntity<Double> getMedia(Integer id) {
+        return ResponseEntity.status(200).body(avaliationService.establishmentMedia(id));
+    }
+
+    @GetMapping("/establishment/{id}")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "List avaliations by Establishment", description = "Retrieves a rating of specific establishment")
+    @PreAuthorize("hasAuthority('Admin') or hasAuthority('Artist')")
+    public ResponseEntity<List<AvaliationDto>> listByEstablishment(@PathVariable Integer id) {
+        List<AvaliationDto> aval = avaliationService.listByEstablishmentId(id);
         if (aval.isEmpty()) {
             return ResponseEntity.status(204).build();
         }
