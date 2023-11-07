@@ -30,5 +30,13 @@ public class AvaliationMapper {
 
         return dto;
     }
+    public static AvaliationDto AvaliationToEstablishmentDto(Avaliation entity){
+        AvaliationDto dto = new AvaliationDto();
+        dto.setId(entity.getId());
+        dto.setComentary(entity.getComentary());
+        dto.setRating(entity.getRating());
+        dto.setArtistDto(ArtistMapper.toDto(entity.getArtist()));
+        return dto;
+    }
 
 }

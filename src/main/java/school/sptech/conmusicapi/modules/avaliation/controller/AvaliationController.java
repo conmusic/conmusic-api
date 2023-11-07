@@ -54,7 +54,6 @@ private AvaliationService avaliationService;
     public ResponseEntity<Double> getMedia(Integer id) {
         return ResponseEntity.status(200).body(avaliationService.establishmentMedia(id));
     }
-
     @GetMapping("/establishment/{id}")
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "List avaliations by Establishment", description = "Retrieves a rating of specific establishment")

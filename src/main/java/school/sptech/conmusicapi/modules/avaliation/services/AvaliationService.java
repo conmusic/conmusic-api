@@ -48,14 +48,12 @@ public class AvaliationService {
 
     public Double establishmentMedia(Integer id) {
         List<Avaliation> avaliation= avaliationRepository.findByEstablishmentId(id);
-        Double rating =0.0;
-        for (int i = 0; i < avaliation.size(); i++) {
-            rating += avaliation.get(i).getRating();
-        }
-        Double avarege = rating/avaliation.size();
-        return RoundAvaliation.round(avarege);
+        return RoundAvaliation.round(avaliation.stream().mapToDouble(Avaliation::getRating).average().orElse(0));
     }
+    public List<String> establishmentComments(Integer id){
+        return avaliationRepository.findByEstablishmentId(id).stream().map(Avaliation::getComentary).toList();
 
+    }
     public List<AvaliationDto> listAll() {
         return avaliationRepository.findAll().stream().map(AvaliationMapper::toDto).toList();
     }
