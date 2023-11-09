@@ -14,6 +14,7 @@ public class DisplayScheduleEstablishmentDto {
     private String state;
     private String zipCode;
     private Integer managerId;
+    private Double avaregeRating;
 
     public Integer getId() {
         return id;
@@ -117,5 +118,13 @@ public class DisplayScheduleEstablishmentDto {
 
     public void setManagerId(Integer managerId) {
         this.managerId = managerId;
+    }
+
+    public Double getAvaregeRating() {
+        return avaregeRating;
+    }
+
+    public void setAvaregeRating(Double avaregeRating) {
+        this.avaregeRating = avaregeRating;
     }
 }

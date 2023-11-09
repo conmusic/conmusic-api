@@ -67,7 +67,6 @@ public class EventMapper {
         dto.setValue(entity.getValue());
         dto.setCoverCharge(entity.getCoverCharge());
         dto.setGenre(GenreMapper.toDto(entity.getGenre()));
-        dto.setDeleted(entity.isDeleted());
 
         return dto;
     }

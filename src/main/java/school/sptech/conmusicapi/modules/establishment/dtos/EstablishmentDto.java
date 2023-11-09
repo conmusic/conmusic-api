@@ -1,5 +1,7 @@
 package school.sptech.conmusicapi.modules.establishment.dtos;
 
+import school.sptech.conmusicapi.modules.avaliation.dtos.AvaliationDto;
+import school.sptech.conmusicapi.modules.avaliation.entities.Avaliation;
 import school.sptech.conmusicapi.modules.events.dtos.DisplayEstablishmentEventDto;
 
 import java.util.Collections;
@@ -20,8 +22,9 @@ public class EstablishmentDto {
     private String state;
     private String zipCode;
     private Integer managerId;
-
+    private Double avaregeRating;
     private List<DisplayEstablishmentEventDto> events;
+    private  List<AvaliationDto> avaliations;
 
     public Integer getId() {
         return id;
@@ -127,11 +130,27 @@ public class EstablishmentDto {
         this.managerId = managerId;
     }
 
+    public Double getAvaregeRating() {
+        return avaregeRating;
+    }
+
+    public void setAvaregeRating(Double avaregeRating) {
+        this.avaregeRating = avaregeRating;
+    }
+
     public List<DisplayEstablishmentEventDto> getEvents() {
         return Objects.isNull(events) ? Collections.emptyList() : events;
     }
 
     public void setEvents(List<DisplayEstablishmentEventDto> events) {
         this.events = events;
+    }
+
+    public List<AvaliationDto> getAvaliations() {
+        return Objects.isNull(avaliations) ? Collections.emptyList() : avaliations;
+    }
+
+    public void setAvaliations(List<AvaliationDto> avaliations) {
+        this.avaliations = avaliations;
     }
 }

@@ -3,6 +3,7 @@ package school.sptech.conmusicapi.modules.establishment.entities;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.*;
+import school.sptech.conmusicapi.modules.avaliation.entities.Avaliation;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.manager.entities.Manager;
 
@@ -61,6 +62,9 @@ public class Establishment {
 
     @OneToMany(mappedBy = "establishment", fetch = FetchType.LAZY)
     private List<Event> events;
+
+    @OneToMany(mappedBy = "establishment", fetch = FetchType.LAZY)
+    private List<Avaliation> avaliations;
 
     public Integer getId() {
         return id;
@@ -180,5 +184,13 @@ public class Establishment {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public List<Avaliation> getAvaliations() {
+        return Objects.isNull(avaliations) ? Collections.emptyList() : avaliations;
+    }
+
+    public void setAvaliations(List<Avaliation> avaliations) {
+        this.avaliations = avaliations;
     }
 }
