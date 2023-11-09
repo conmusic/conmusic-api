@@ -1,7 +1,13 @@
 package school.sptech.conmusicapi.modules.schedules.services;
 
+import jakarta.persistence.EntityManager;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
+import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
+import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
 import org.springframework.web.multipart.MultipartFile;
 import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishmentRepository;
 import school.sptech.conmusicapi.modules.events.entities.Event;
@@ -21,6 +27,7 @@ import school.sptech.conmusicapi.shared.utils.datafiles.importers.DataImporter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ScheduleService {
@@ -33,6 +40,14 @@ public class ScheduleService {
     @Autowired
     private IScheduleRepository scheduleRepository;
 
+    @Autowired
+    private EntityManager entityManager;
+    public void filterForInactive(boolean isDeleted){
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedScheduleFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        session.disableFilter("deletedProductFilter");
+    }
     public ScheduleDto create(CreateScheduleDto dto, Integer eventId) {
         Schedule schedule = ScheduleMapper.fromDto(dto);
 
@@ -56,6 +71,7 @@ public class ScheduleService {
     }
 
     public List<ScheduleDto> listByEventId(Integer id) {
+        filterForInactive(false);
         if (!eventRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format("Event with id %d was not found", id));
         }
@@ -69,6 +85,7 @@ public class ScheduleService {
     }
 
     public List<ScheduleDto> listByEstablishmentId(Integer id) {
+        filterForInactive(false);
         if (!establishmentRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format("Establishment with id %d was not found", id));
         }
@@ -79,6 +96,23 @@ public class ScheduleService {
                 .stream()
                 .map(ScheduleMapper::toDto)
                 .toList();
+    }
+    public Iterable<ScheduleDto> findAllInactive(){
+        filterForInactive(true);
+        List<ScheduleDto> schedules =  scheduleRepository.findAll().stream().map(ScheduleMapper :: toDto).toList();
+        return (schedules);
+    }
+
+    public ScheduleDto activateSchedule(Integer id){
+        Optional<Schedule> schedule = scheduleRepository.findById(id);
+
+        if (schedule.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
+        }
+        Schedule scheduleInactive = ScheduleMapper.fromInactive(schedule.get(), false);
+        scheduleRepository.save(scheduleInactive);
+
+        return ScheduleMapper.toDto(scheduleInactive);
     }
 
     public List<ScheduleDto> importSchedules(MultipartFile file) throws RuntimeException {

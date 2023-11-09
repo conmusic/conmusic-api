@@ -1,5 +1,9 @@
 package school.sptech.conmusicapi.modules.manager.services;
 
+import com.zaxxer.hikari.HikariDataSource;
+import jakarta.persistence.EntityManager;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +29,7 @@ public class ManagerService {
     private IManagerRepository managerRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    private EntityManager entityManager;
 
     public ManagerDto create(CreateManagerDto dto) {
         Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());

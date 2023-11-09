@@ -1,11 +1,17 @@
 package school.sptech.conmusicapi.modules.events.services;
 
+import jakarta.persistence.EntityManager;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
+import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
 import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishmentRepository;
 import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
+import school.sptech.conmusicapi.modules.events.dtos.UpdateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventLineupExportDto;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.events.mappers.EventMapper;
@@ -18,6 +24,7 @@ import school.sptech.conmusicapi.modules.show.repositories.IShowRepository;
 import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
+import school.sptech.conmusicapi.shared.utils.collections.DeletionTree;
 import school.sptech.conmusicapi.shared.utils.datafiles.DataFilesEnum;
 import school.sptech.conmusicapi.shared.utils.datafiles.exporters.DataExporter;
 
@@ -34,6 +41,14 @@ public class EventService {
     private IEstablishmentRepository establishmentRepository;
     @Autowired
     private IGenreRepository genreRepository;
+    @Autowired
+    private EntityManager entityManager;
+    public void filterForInactive(boolean isDeleted){
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedEventFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        session.disableFilter("deletedProductFilter");
+    }
 
     @Autowired
     private IShowRepository showRepository;
@@ -61,8 +76,21 @@ public class EventService {
         Event createdEvent = eventRepository.save(event);
         return EventMapper.toDto(createdEvent);
     }
+    public EventDto updateEvent(UpdateEventDto dto, Integer id){
+        Optional<Event> eventOpt = eventRepository.findById(id);
+
+        if (eventOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Event with id %d was not found.", id));
+        }
+
+        Event updatedEstablishment = EventMapper.fromUpdateDto(dto, eventOpt.get());
+        updatedEstablishment.setId(id);
+        eventRepository.save(updatedEstablishment);
+        return EventMapper.toDto(updatedEstablishment);
+    }
 
     public List<EventDto> listAll() {
+        filterForInactive(false);
         return eventRepository.findAll()
                 .stream()
                 .map(EventMapper::toDto)
@@ -70,6 +98,7 @@ public class EventService {
     }
 
     public List<EventDto> listAllByEstablishmentId(Integer id) {
+        filterForInactive(false);
         return eventRepository.findByEstablishmentId(id)
                 .stream()
                 .map(EventMapper::toDto)
@@ -77,6 +106,7 @@ public class EventService {
     }
 
     public List<EventDto> listAllAvailable(LocalDateTime date) {
+        filterForInactive(false);
         return eventRepository.findBySchedulesStartDateTimeIsAfterAndSchedulesConfirmedFalse(date)
                 .stream()
                 .map(EventMapper::toDto)
@@ -91,12 +121,31 @@ public class EventService {
     }
 
     public EventDto getById(Integer id) {
+        filterForInactive(false);
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                     String.format("Event with id %d was not found", id)
                 ));
 
         return EventMapper.toDto(event);
+    }
+    
+    public Iterable<EventDto> findAllInactive(){
+        filterForInactive(true);
+        List<EventDto> events =  eventRepository.findAll().stream().map(EventMapper:: toDto).toList();
+        return (events);
+    }
+
+    public EventDto activateEvent(Integer id) {
+        Optional<Event> eventOpt = eventRepository.findById(id);
+
+        if (eventOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
+        }
+        Event eventInactive = EventMapper.fromInactive(eventOpt.get(), false);
+        eventRepository.save(eventInactive);
+
+        return EventMapper.toDto(eventInactive);
     }
 
     public String exportEventLineup(Integer id, DataFilesEnum fileFormat) {

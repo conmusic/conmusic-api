@@ -1,5 +1,8 @@
 package school.sptech.conmusicapi.modules.establishment.services;
 
+import jakarta.persistence.EntityManager;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
@@ -33,10 +36,21 @@ public class EstablishmentService {
     private IManagerRepository managerRepository;
 
     @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
     private StorageService storageService;
 
     @Autowired
     private IMediaRepository mediaRepository;
+
+    public void filterForInactive(boolean isDeleted){
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedEstablishmentFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        session.disableFilter("deletedProductFilter");
+    }
+
 
     public EstablishmentDto create(CreateEstablishmentDto dto) {
         Optional<Manager> managerOpt = managerRepository.findById(dto.getManagerId());
@@ -78,8 +92,8 @@ public class EstablishmentService {
     }
 
     public EstablishmentDto getById(Integer id) {
+        filterForInactive(false);
         Optional<Establishment> establishmentOpt = establishmentRepository.findById(id);
-
         if (establishmentOpt.isEmpty()) {
             throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
         }
@@ -88,6 +102,7 @@ public class EstablishmentService {
     }
 
     public List<EstablishmentDto> getByManagerId(Integer id) {
+        filterForInactive(false);
         Boolean managerExists = managerRepository.existsById(id);
 
         if (!managerExists) {
@@ -96,6 +111,24 @@ public class EstablishmentService {
 
         List<Establishment> establishments = establishmentRepository.findByManagerId(id);
         return establishments.stream().map(EstablishmentMapper::toDto).toList();
+    }
+
+    public Iterable<EstablishmentDto> findAllInactive(){
+        filterForInactive(true);
+        List<EstablishmentDto> establishments =  establishmentRepository.findAll().stream().map(EstablishmentMapper :: toDto).toList();
+        return (establishments);
+    }
+
+    public EstablishmentDto activateEstablishment(Integer id){
+        Optional<Establishment> establishmentOpt = establishmentRepository.findById(id);
+
+        if (establishmentOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
+        }
+        Establishment establishmentInactive = EstablishmentMapper.fromInactive(establishmentOpt.get(), false);
+        establishmentRepository.save(establishmentInactive);
+
+        return EstablishmentMapper.toDto(establishmentInactive);
     }
 
     public String uploadFile(MultipartFile file, Integer id) throws IOException {
