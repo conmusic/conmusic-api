@@ -1,5 +1,9 @@
 package school.sptech.conmusicapi.modules.establishment.mappers;
 
+import school.sptech.conmusicapi.modules.avaliation.entities.Avaliation;
+import school.sptech.conmusicapi.modules.avaliation.mapper.AvaliationMapper;
+import school.sptech.conmusicapi.modules.avaliation.services.AvaliationService;
+import school.sptech.conmusicapi.modules.avaliation.util.RoundAvaliation;
 import school.sptech.conmusicapi.modules.establishment.dtos.CreateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.DisplayScheduleEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
@@ -42,7 +46,9 @@ public class EstablishmentMapper {
         dto.setState(establishment.getState());
         dto.setZipCode(establishment.getZipCode());
         dto.setManagerId(establishment.getManager().getId());
+        dto.setAvaregeRating(RoundAvaliation.round(establishment.getAvaliations().stream().mapToDouble(Avaliation::getRating).average().orElse(0)));
         dto.setEvents(establishment.getEvents().stream().map(EventMapper::toDisplayEstablishmentEventDto).toList());
+        dto.setAvaliations(establishment.getAvaliations().stream().map(AvaliationMapper::AvaliationToEstablishmentDto).toList());
 
         return dto;
     }
@@ -65,7 +71,6 @@ public class EstablishmentMapper {
 
     public static DisplayScheduleEstablishmentDto toDisplayScheduleEstablishmentDto(Establishment entity) {
         DisplayScheduleEstablishmentDto dto = new DisplayScheduleEstablishmentDto();
-
         dto.setId(entity.getId());
         dto.setCnpj(entity.getCnpj());
         dto.setFantasyName(entity.getFantasyName());
@@ -79,7 +84,7 @@ public class EstablishmentMapper {
         dto.setState(entity.getState());
         dto.setZipCode(entity.getZipCode());
         dto.setManagerId(entity.getManager().getId());
-
+        dto.setAvaregeRating(RoundAvaliation.round(entity.getAvaliations().stream().mapToDouble(Avaliation::getRating).average().orElse(0)));
         return dto;
     }
 }
