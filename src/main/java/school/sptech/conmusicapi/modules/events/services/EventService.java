@@ -4,11 +4,14 @@ import jakarta.persistence.EntityManager;
 import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
 import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
 import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishmentRepository;
+import school.sptech.conmusicapi.modules.establishment.specifications.EstablishmentSpecificationsBuilder;
 import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
 import school.sptech.conmusicapi.modules.events.dtos.UpdateEventDto;
@@ -16,6 +19,7 @@ import school.sptech.conmusicapi.modules.events.dtos.EventLineupExportDto;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.events.mappers.EventMapper;
 import school.sptech.conmusicapi.modules.events.repositories.IEventRepository;
+import school.sptech.conmusicapi.modules.events.specifications.EventSpecificationsBuilder;
 import school.sptech.conmusicapi.modules.events.utils.datafiles.EventLineupResolver;
 import school.sptech.conmusicapi.modules.genre.entities.Genre;
 import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
@@ -32,6 +36,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class EventService {
@@ -87,6 +93,21 @@ public class EventService {
         updatedEstablishment.setId(id);
         eventRepository.save(updatedEstablishment);
         return EventMapper.toDto(updatedEstablishment);
+    }
+
+    public List<EventDto> search(String value, Pageable pageable) {
+        EventSpecificationsBuilder builder = new EventSpecificationsBuilder();
+        Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),");
+        Matcher matcher = pattern.matcher(value + ",");
+        while (matcher.find()) {
+            builder.with(matcher.group(1), matcher.group(2), matcher.group(3), null, null);
+        }
+
+        Specification<Event> spec = builder.build();
+
+        List<Event> establishments = eventRepository.findAll(spec, pageable).getContent();
+
+        return establishments.stream().map(EventMapper::toDto).toList();
     }
 
     public List<EventDto> listAll() {

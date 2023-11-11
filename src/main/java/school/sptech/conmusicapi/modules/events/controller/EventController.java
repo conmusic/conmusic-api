@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,25 @@ public class EventController {
     public ResponseEntity<EventDto> create(@RequestBody @Valid CreateEventDto dto) {
         EventDto event = eventService.create(dto);
         return ResponseEntity.status(201).body(event);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority('Manager')")
+    @Operation(summary = "Search events", description = "Searches for events based on a specified value")
+    public ResponseEntity<List<EventDto>> search(
+            @RequestParam String value,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<EventDto> establishments = eventService.search(value, pageable);
+
+        if (establishments.isEmpty()) {
+            ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(200).body(establishments);
     }
 
     @GetMapping

@@ -5,15 +5,21 @@ import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.artist.entities.Artist;
+import school.sptech.conmusicapi.modules.artist.mapper.ArtistMapper;
+import school.sptech.conmusicapi.modules.artist.specifications.ArtistSpecificationsBuilder;
 import school.sptech.conmusicapi.modules.establishment.dtos.CreateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.UpdateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
 import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
 import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishmentRepository;
+import school.sptech.conmusicapi.modules.establishment.specifications.EstablishmentSpecificationsBuilder;
 import school.sptech.conmusicapi.modules.manager.entities.Manager;
 import school.sptech.conmusicapi.modules.manager.repositories.IManagerRepository;
 import school.sptech.conmusicapi.modules.media.entities.Media;
@@ -26,6 +32,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class EstablishmentService {
@@ -70,6 +78,21 @@ public class EstablishmentService {
 
         Establishment createdEstablishment = establishmentRepository.save(establishment);
         return EstablishmentMapper.toDto(createdEstablishment);
+    }
+
+    public List<EstablishmentDto> search(String value, Pageable pageable) {
+        EstablishmentSpecificationsBuilder builder = new EstablishmentSpecificationsBuilder();
+        Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),");
+        Matcher matcher = pattern.matcher(value + ",");
+        while (matcher.find()) {
+            builder.with(matcher.group(1), matcher.group(2), matcher.group(3), null, null);
+        }
+
+        Specification<Establishment> spec = builder.build();
+
+        List<Establishment> establishments = establishmentRepository.findAll(spec, pageable).getContent();
+
+        return establishments.stream().map(EstablishmentMapper::toDto).toList();
     }
 
     public EstablishmentDto update(UpdateEstablishmentDto dto, Integer id) {

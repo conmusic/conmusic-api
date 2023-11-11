@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
@@ -41,6 +43,25 @@ public class EstablishmentController {
     public ResponseEntity<EstablishmentDto> create(@RequestBody @Valid CreateEstablishmentDto dto) {
         EstablishmentDto establishment = establishmentService.create(dto);
         return ResponseEntity.status(201).body(establishment);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority('Admin') or hasAuthority('Manager')")
+    @Operation(summary = "Search establishments", description = "Searches for establishments by name")
+    public ResponseEntity<List<EstablishmentDto>> search(
+            @RequestParam String value,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<EstablishmentDto> establishments = establishmentService.search(value, pageable);
+
+        if (establishments.isEmpty()) {
+            ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(200).body(establishments);
     }
 
     @PutMapping("/{id}")
