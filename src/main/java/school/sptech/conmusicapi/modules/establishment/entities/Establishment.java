@@ -1,6 +1,9 @@
 package school.sptech.conmusicapi.modules.establishment.entities;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
+import school.sptech.conmusicapi.modules.avaliation.entities.Avaliation;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 import school.sptech.conmusicapi.modules.manager.entities.Manager;
 
@@ -10,6 +13,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "estabelecimento")
+@FilterDef(name = "deletedEstablishmentFilter", parameters = @ParamDef(name = "isDeleted", type =boolean.class))
+@Filter(name = "deletedEstablishmentFilter", condition = "deleted = :isDeleted")
 public class Establishment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,12 +53,18 @@ public class Establishment {
     @Column(name = "cep", length = 8)
     private String zipCode;
 
+    @Column(name = "deleted", columnDefinition = "boolean default false")
+    private boolean deleted = false;
+
     @ManyToOne
     @JoinColumn(name = "fk_gerente")
     private Manager manager;
 
     @OneToMany(mappedBy = "establishment", fetch = FetchType.LAZY)
     private List<Event> events;
+
+    @OneToMany(mappedBy = "establishment", fetch = FetchType.LAZY)
+    private List<Avaliation> avaliations;
 
     public Integer getId() {
         return id;
@@ -165,5 +176,21 @@ public class Establishment {
 
     public void setEvents(List<Event> events) {
         this.events = events;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public List<Avaliation> getAvaliations() {
+        return Objects.isNull(avaliations) ? Collections.emptyList() : avaliations;
+    }
+
+    public void setAvaliations(List<Avaliation> avaliations) {
+        this.avaliations = avaliations;
     }
 }

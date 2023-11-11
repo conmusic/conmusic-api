@@ -1,5 +1,6 @@
 package school.sptech.conmusicapi.modules.events.mappers;
 
+import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
 import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
 import school.sptech.conmusicapi.modules.events.dtos.*;
 import school.sptech.conmusicapi.modules.events.entities.Event;
@@ -33,6 +34,15 @@ public class EventMapper {
 
         return dto;
     }
+    public static Event fromUpdateDto(UpdateEventDto eventDto, Event e){
+        e.setName(eventDto.getName());
+        e.setDescription(eventDto.getDescription());
+        e.setValue(eventDto.getValue());
+        e.setCoverCharge(eventDto.getCoverCharge());
+        e.setGenre(eventDto.getGenre());
+        e.setSchedules(eventDto.getSchedules());
+        return e;
+    }
 
     public static DisplayScheduleEventDto toDisplayScheduleDto(Event entity) {
         DisplayScheduleEventDto dto = new DisplayScheduleEventDto();
@@ -61,6 +71,11 @@ public class EventMapper {
         return dto;
     }
 
+    public static Event fromInactive(Event e, Boolean deleted){
+        e. setDeleted(deleted);
+        return e;
+    }
+    
     public static EventLineupExportDto toEventLineupExport(Show show) {
         EventLineupExportDto dto = new EventLineupExportDto();
 

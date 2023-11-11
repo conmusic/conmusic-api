@@ -7,11 +7,12 @@ import school.sptech.conmusicapi.modules.events.entities.Event;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface IEventRepository extends JpaRepository<Event, Integer>, JpaSpecificationExecutor<Event> {
     List<Event> findByEstablishmentId(Integer id);
 
     List<Event> findBySchedulesStartDateTimeIsAfterAndSchedulesConfirmedFalse(LocalDateTime date);
+
+    List<Event> findByEstablishmentManagerId(Integer id);
 }
