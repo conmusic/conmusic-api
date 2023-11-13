@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -112,7 +113,7 @@ public class ArtistController {
         return ResponseEntity.ok(uploadFile);
     }
 
-    @GetMapping("/media/{id}")
+    @GetMapping(value = "/media/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ByteArrayResource>> getFiles(@PathVariable Integer id){
 
