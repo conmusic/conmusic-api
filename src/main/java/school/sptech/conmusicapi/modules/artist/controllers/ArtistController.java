@@ -113,7 +113,7 @@ public class ArtistController {
         return ResponseEntity.ok(uploadFile);
     }
 
-    @GetMapping(value = "/media/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/media/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ByteArrayResource>> getFiles(@PathVariable Integer id){
 
