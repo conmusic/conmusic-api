@@ -115,11 +115,8 @@ public class ArtistController {
 
     @GetMapping(value = "/media/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<ByteArrayResource>> getFiles(@PathVariable Integer id){
-
-        List<ByteArrayResource> files = artistService.getFiles(id);
-
-        return ResponseEntity.ok(files);
+    public ResponseEntity<List<byte[]>> getFiles(@PathVariable Integer id){
+        return ResponseEntity.ok(artistService.getFiles(id));
     }
 
     @DeleteMapping("/media")

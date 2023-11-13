@@ -188,16 +188,15 @@ public class ArtistService {
         return fileName;
     }
 
-    public List<ByteArrayResource> getFiles(Integer id) {
+    public List<byte[]> getFiles(Integer id) {
 
         List<Media> medias = mediaRepository.findByUserId(id);
 
-        List<ByteArrayResource> files = new ArrayList<>();
+        List<byte[]> files = new ArrayList<>();
 
         medias.forEach(media -> {
             byte[] data = storageService.downloadFile(media.getUrl());
-            ByteArrayResource resource = new ByteArrayResource(data);
-            files.add(resource);
+            files.add(data);
         });
 
         if (files.isEmpty()){
