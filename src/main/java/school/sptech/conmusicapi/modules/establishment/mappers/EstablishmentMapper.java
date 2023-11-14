@@ -87,4 +87,8 @@ public class EstablishmentMapper {
         dto.setAvaregeRating(RoundAvaliation.round(entity.getAvaliations().stream().mapToDouble(Avaliation::getRating).average().orElse(0)));
         return dto;
     }
+    public static Establishment fromInactive(Establishment e, Boolean deleted){
+        e.setDeleted(deleted);
+        return e;
+    }
 }

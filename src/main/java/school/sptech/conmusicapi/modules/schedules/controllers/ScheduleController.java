@@ -8,6 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
+import school.sptech.conmusicapi.modules.schedules.dtos.CreateScheduleDto;
+import school.sptech.conmusicapi.modules.schedules.dtos.ScheduleDto;
+import school.sptech.conmusicapi.modules.schedules.services.ScheduleService;
+import school.sptech.conmusicapi.shared.utils.collections.DeletionTree;
 import org.springframework.web.multipart.MultipartFile;
 import school.sptech.conmusicapi.modules.schedules.dtos.CreateScheduleDto;
 import school.sptech.conmusicapi.modules.schedules.dtos.ScheduleDto;
@@ -23,6 +28,8 @@ import java.util.List;
 public class ScheduleController {
     @Autowired
     private ScheduleService scheduleService;
+    @Autowired
+    private DeletionTree deletionTree;
 
     @Operation(summary = "Create a schedule", description = "Creates a new schedule for an event")
     @PostMapping("/{id}")
@@ -59,6 +66,28 @@ public class ScheduleController {
         return ResponseEntity.status(200).body(schedules);
     }
 
+    @DeleteMapping("/inctivate/{id}")
+    @Operation(summary = "inactive schedule by ID", description = "inactive an schedule by its ID")
+    public ResponseEntity<ScheduleDto> inactivateById(@PathVariable Integer id){
+        ScheduleDto scheduleDto = deletionTree.inactivateSchedule(id);
+        return ResponseEntity.status(200).body(scheduleDto);
+    }
+    @PatchMapping("/activate/{id}")
+    @Operation(summary = "Activate an schedule", description = "Activate an existing schedule in the API")
+    @PreAuthorize("hasAuthority('Admin') or hasAuthority('Manager')")
+    public ResponseEntity<ScheduleDto> activate(@PathVariable Integer id) {
+        ScheduleDto activateSchedule = scheduleService.activateSchedule(id);
+        return ResponseEntity.status(200).body(activateSchedule);
+    }
+
+    @GetMapping("/inactive")
+    @Operation(summary = "Get inactived schedule", description = "Retrieves an inactivad schedule")
+    public ResponseEntity<Iterable<ScheduleDto>> inactiveEstablishment(){
+        Iterable<ScheduleDto> establishment = scheduleService.findAllInactive();
+        return ResponseEntity.status(200).body(establishment);
+    }
+
+    
     @Operation(
             summary = "Import schedules",
             description = "Read a csv or txt file and import its data as schedules for events"

@@ -1,3 +1,7 @@
+CREATE DATABASE db_conmusic;
+
+USE db_conmusic;
+
 INSERT INTO usuario
     (nome, email, senha, data_nascimento, cpf, telefone, tipo_usuario)
 VALUES
