@@ -1,6 +1,7 @@
 INSERT INTO usuario
     (nome, email, senha, data_nascimento, cpf, telefone, tipo_usuario)
 VALUES
+    ('Admin 2', 'admin2@conmusic.com', '$2a$10$2wuzXIpSCm36VhgGEREUfuNxWvZ4fZJ1QglrFOXqVoGfj/znqh3Q2', '2023-03-11', '33318190004', '11996489985', 'admin'),
     ('Admin conmusic', 'admin@conmusic.com', '$2a$10$5yMt9HBEz.b/onB8TSrppO3kn2vTVz3BPPH25uJV5zn9s5nUJ9Xl.', '2023-03-11', '52702055052', '11996489985', 'admin'),
     ('Leonardo Silva', 'leo.silva@email.com', '$2a$10$KZFxc7X3zu9ZuhIyVZPTS.pSczaLDkcQ7MgqAxcxbEKZ7GZV1xHYm', '2003-08-13', '76089439045', '11992489985', 'artista'),
     ('Chico Menezes', 'chico.menezes@email.com', '$2a$10$114OtetHCIqAzfSaQrL28uc3VVGqfxGTvksBvd9mjyfyMwTsRruRq', '1976-10-03', '80466979070', '11997889923', 'gerente'),
@@ -23,12 +24,12 @@ VALUES
 INSERT INTO estabelecimento
     (endereco, qtd_tomada_110, qtd_tomada_220, capacidade, cidade, cnpj, razao_social, nome_fantasia, telefone, uf, cep, fk_gerente)
 VALUES
-    ('Travessa Francisco Sá, 50 - Jacarecanga', 2, 1, 500, 'Fortaleza', '57362133000125', 'Bar do Chico - Jacarecanga', 'Bar do Chico', '11907090808', 'CE', '60010320', 3),
-    ('Avenida Paulista, 1000 - Bela Vista', 3, 2, 1000, 'São Paulo', '12345678000123', 'Restaurante Central', 'Central Restaurante', '11987654321', 'SP', '01310000', 5),
-    ('Rua da Praia, 123 - Centro', 1, 0, 200, 'Rio de Janeiro', '98765432000198', 'Pizzaria Bella Napoli', 'Bella Napoli', '2199998888', 'RJ', '20010000', 7),
-    ('Rua das Flores, 789 - Jardins', 4, 2, 300, 'São Paulo', '56789012000134', 'Café Charmoso', 'Charmoso Café', '11912345678', 'SP', '01435000', 3),
-    ('Avenida das Palmeiras, 789 - Jardim', 2, 1, 400, 'São Paulo', '87654321000109', 'Restaurante Saboroso', 'Saboroso Restaurante', '11955557777', 'SP', '04567000', 5),
-    ('Rua do Sertanejo, 123 - Centro', 1, 1, 300, 'Salvador', '34567890123456', 'Bar do Sertanejo', 'Sertanejo Bar', '71999998888', 'BA', '40020000', 7);
+    ('Travessa Francisco Sá, 50 - Jacarecanga', 2, 1, 500, 'Fortaleza', '57362133000125', 'Bar do Chico - Jacarecanga', 'Bar do Chico', '11907090808', 'CE', '60010320', 4),
+    ('Avenida Paulista, 1000 - Bela Vista', 3, 2, 1000, 'São Paulo', '12345678000123', 'Restaurante Central', 'Central Restaurante', '11987654321', 'SP', '01310000', 4),
+    ('Rua da Praia, 123 - Centro', 1, 0, 200, 'Rio de Janeiro', '98765432000198', 'Pizzaria Bella Napoli', 'Bella Napoli', '2199998888', 'RJ', '20010000', 4),
+    ('Rua das Flores, 789 - Jardins', 4, 2, 300, 'São Paulo', '56789012000134', 'Café Charmoso', 'Charmoso Café', '11912345678', 'SP', '01435000', 4),
+    ('Avenida das Palmeiras, 789 - Jardim', 2, 1, 400, 'São Paulo', '87654321000109', 'Restaurante Saboroso', 'Saboroso Restaurante', '11955557777', 'SP', '04567000', 4),
+    ('Rua do Sertanejo, 123 - Centro', 1, 1, 300, 'Salvador', '34567890123456', 'Bar do Sertanejo', 'Sertanejo Bar', '71999998888', 'BA', '40020000', 4);
 INSERT INTO evento
     (nome, descricao, valor, taxa_cover, fk_estabelecimento, fk_genero)
 VALUES
@@ -67,23 +68,23 @@ VALUES
 INSERT INTO show_table
     (status, valor, taxa_cover, fk_evento, fk_artista, fk_agenda)
 VALUES
-    (6, 100.0, 50.0, 1, 2, 1),
-    (3, 200.0, 80.0, 2, 2, 2),
-    (3, 400.0, 100.0, 3, 2, 3),
-    (3, 700.0, 200.0, 4, 6, 4),
-    (8, 300.0, 90.0, 5, 6, 5),
-    (6, 400.0, 100.0, 6, 2, 6),
-    (9, 500.0, 10.0, 7, 4, 7),
-    (6, 600.0, 30.0, 8, 4, 2),
-    (6, 100.0, 50.0, 1, 2, 12),
-    (6, 100.0, 50.0, 1, 2, 12),
-    (6, 100.0, 50.0, 1, 2, 11),
-    (6, 100.0, 50.0, 1, 2, 11),
-    (6, 100.0, 50.0, 1, 2, 11),
-    (6, 100.0, 50.0, 1, 2, 10),
-    (6, 100.0, 50.0, 1, 2, 9),
-    (6, 100.0, 50.0, 1, 2, 9),
-    (6, 100.0, 50.0, 1, 2, 8),
-    (4, 300.0, 50.0, 9, 2, 13),
-    (6, 400.0, 70.0, 10, 2, 14),
-    (4, 200.0, 40.0, 11, 4, 15);
+    (6, 100.0, 50.0, 1, 3, 1),
+    (3, 200.0, 80.0, 2, 3, 2),
+    (3, 400.0, 100.0, 3, 3, 3),
+    (3, 700.0, 200.0, 4, 3, 4),
+    (8, 300.0, 90.0, 5, 3, 5),
+    (6, 400.0, 100.0, 6, 3, 6),
+    (9, 500.0, 10.0, 7, 3, 7),
+    (6, 600.0, 30.0, 8, 3, 2),
+    (6, 100.0, 50.0, 1, 3, 12),
+    (6, 100.0, 50.0, 1, 3, 12),
+    (6, 100.0, 50.0, 1, 3, 11),
+    (6, 100.0, 50.0, 1, 3, 11),
+    (6, 100.0, 50.0, 1, 3, 11),
+    (6, 100.0, 50.0, 1, 3, 10),
+    (6, 100.0, 50.0, 1, 3, 9),
+    (6, 100.0, 50.0, 1, 3, 9),
+    (6, 100.0, 50.0, 1, 3, 8),
+    (4, 300.0, 50.0, 9, 3, 13),
+    (6, 400.0, 70.0, 10, 3, 14),
+    (4, 200.0, 40.0, 11, 3, 15);

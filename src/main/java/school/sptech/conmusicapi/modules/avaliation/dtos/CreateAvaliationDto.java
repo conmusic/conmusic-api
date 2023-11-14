@@ -8,7 +8,6 @@ public class CreateAvaliationDto {
     @Max(5)
     private Double rating;
 
-    @NotBlank
     @Size(max = 45)
     private String comentary;
 
