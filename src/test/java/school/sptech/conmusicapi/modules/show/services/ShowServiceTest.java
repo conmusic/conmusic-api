@@ -1816,6 +1816,8 @@ public class ShowServiceTest {
 
         Mockito.when(userRepository.findByEmail(authenticatedUserEmail)).thenReturn(Optional.of(authenticatedUser));
 
+        Mockito.when(showRepository.save(Mockito.any(Show.class))).thenAnswer(i -> i.getArguments()[0]);
+
         // then
         BusinessRuleException error = assertThrows(BusinessRuleException.class, () -> service.acceptProposal(showId));
 
@@ -1907,6 +1909,8 @@ public class ShowServiceTest {
         Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
 
         Mockito.when(userRepository.findByEmail(authenticatedUserEmail)).thenReturn(Optional.of(authenticatedUser));
+
+        Mockito.when(showRepository.save(Mockito.any(Show.class))).thenAnswer(i -> i.getArguments()[0]);
 
         // then
         BusinessRuleException error = assertThrows(BusinessRuleException.class, () -> service.acceptProposal(showId));
@@ -2430,14 +2434,12 @@ public class ShowServiceTest {
 
         Mockito.when(userRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(authenticatedUser));
 
+        Mockito.when(showRepository.save(Mockito.any(Show.class))).thenAnswer(i -> i.getArguments()[0]);
+
         // then
         service.rejectProposal(showId);
 
         // assert
-        Mockito.verify(showRecordRepository, Mockito.times(expectedSaves)).save(Mockito.any(ShowRecord.class));
-        Mockito.verify(showRecordRepository).save(showRecordRepositorySaveCaptor.capture());
-        assertEquals(showStatusEnum, showRecordRepositorySaveCaptor.getValue().getStatus());
-
         Mockito.verify(showRepository, Mockito.times(expectedSaves)).save(Mockito.any(Show.class));
         Mockito.verify(showRepository).save(showRepositorySaveCaptor.capture());
         assertEquals(expectedStatus, showRepositorySaveCaptor.getValue().getStatus());

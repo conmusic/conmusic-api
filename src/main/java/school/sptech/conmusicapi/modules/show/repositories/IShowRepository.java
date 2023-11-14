@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupMonthCount;
+import school.sptech.conmusicapi.shared.utils.statistics.StatusCount;
 import school.sptech.conmusicapi.modules.show.entities.Show;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,19 @@ public interface IShowRepository extends JpaRepository<Show, Integer> {
     List<Show> findAllByUserIdAndStatus(Integer id, EnumSet status);
 
     List<Show> findByIdNotAndScheduleIdEquals(Integer id, Integer id1);
+
+    @Query("""
+        SELECT 
+            new school.sptech.conmusicapi.shared.utils.statistics.StatusCount(s.status, COUNT(s.id))
+        FROM ShowRecord s
+        WHERE
+            s.status IN :status
+            AND (s.show.artist.id = :userId OR s.show.event.establishment.manager.id = :userId)
+            AND (s.show.schedule.startDateTime BETWEEN :startDate AND :endDate
+                OR s.dateAction BETWEEN :startDate AND :endDate
+        GROUP BY s.status
+    """)
+    List<StatusCount> countShowsByStatusInDateInterval(EnumSet<ShowStatusEnum> status, LocalDateTime startDate, LocalDateTime endDate, Integer userId);
 
     @Query("""
         SELECT 

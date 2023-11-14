@@ -1,6 +1,7 @@
 package school.sptech.conmusicapi.modules.show.entities;
 
 import jakarta.persistence.*;
+import school.sptech.conmusicapi.modules.show.util.RecordTypeEnum;
 import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 import school.sptech.conmusicapi.modules.user.entities.User;
 
@@ -16,6 +17,9 @@ public class ShowRecord {
     @Enumerated()
     @Column(name = "status")
     private ShowStatusEnum status;
+
+    @Column(name = "tipo")
+    private RecordTypeEnum recordType;
 
     @Column(name = "data_inicio")
     private LocalDateTime startDateTime;
@@ -54,6 +58,14 @@ public class ShowRecord {
 
     public void setStatus(ShowStatusEnum status) {
         this.status = status;
+    }
+
+    public RecordTypeEnum getRecordType() {
+        return recordType;
+    }
+
+    public void setRecordType(RecordTypeEnum recordType) {
+        this.recordType = recordType;
     }
 
     public LocalDateTime getStartDateTime() {
