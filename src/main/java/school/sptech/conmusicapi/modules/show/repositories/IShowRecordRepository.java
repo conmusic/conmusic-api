@@ -16,15 +16,13 @@ public interface IShowRecordRepository extends JpaRepository<ShowRecord, Integer
     List<ShowRecord> findByShowId(Integer id);
 
     @Query("""
-        SELECT 
-            new school.sptech.conmusicapi.shared.utils.statistics.StatusCount(s.status, COUNT(s.id))
+        SELECT s
         FROM ShowRecord s
         WHERE
-            s.status IN :status
+            s.recordType = 2
             AND (s.show.artist.id = :userId OR s.show.event.establishment.manager.id = :userId)
             AND (s.show.schedule.startDateTime BETWEEN :startDate AND :endDate
-                OR s.dateAction BETWEEN :startDate AND :endDate
-        GROUP BY s.status
+                OR s.dateAction BETWEEN :startDate AND :endDate)
     """)
-    List<StatusCount> countShowsByStatusInDateInterval(EnumSet<ShowStatusEnum> status, LocalDateTime startDate, LocalDateTime endDate, Integer userId);
+    List<ShowRecord> countShowsByStatusInDateInterval(LocalDateTime startDate, LocalDateTime endDate, Integer userId);
 }

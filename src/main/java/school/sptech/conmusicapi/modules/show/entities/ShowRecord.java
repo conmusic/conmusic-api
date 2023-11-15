@@ -1,6 +1,7 @@
 package school.sptech.conmusicapi.modules.show.entities;
 
 import jakarta.persistence.*;
+import school.sptech.conmusicapi.modules.show.util.LifeCycleEnum;
 import school.sptech.conmusicapi.modules.show.util.RecordTypeEnum;
 import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 import school.sptech.conmusicapi.modules.user.entities.User;
@@ -14,12 +15,17 @@ public class ShowRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Enumerated()
+    @Enumerated
     @Column(name = "status")
     private ShowStatusEnum status;
 
+    @Enumerated
     @Column(name = "tipo")
     private RecordTypeEnum recordType;
+
+    @Enumerated
+    @Column(name = "ciclo_vida")
+    private LifeCycleEnum lifeCycle;
 
     @Column(name = "data_inicio")
     private LocalDateTime startDateTime;
@@ -66,6 +72,14 @@ public class ShowRecord {
 
     public void setRecordType(RecordTypeEnum recordType) {
         this.recordType = recordType;
+    }
+
+    public LifeCycleEnum getLifeCycle() {
+        return lifeCycle;
+    }
+
+    public void setLifeCycle(LifeCycleEnum lifeCycle) {
+        this.lifeCycle = lifeCycle;
     }
 
     public LocalDateTime getStartDateTime() {
