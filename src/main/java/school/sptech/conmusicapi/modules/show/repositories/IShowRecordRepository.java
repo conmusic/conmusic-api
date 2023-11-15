@@ -4,11 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import school.sptech.conmusicapi.modules.show.entities.ShowRecord;
-import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
-import school.sptech.conmusicapi.shared.utils.statistics.StatusCount;
 
 import java.time.LocalDateTime;
-import java.util.EnumSet;
 import java.util.List;
 
 @Repository
