@@ -18,8 +18,8 @@ public interface IShowRecordRepository extends JpaRepository<ShowRecord, Integer
         WHERE
             s.recordType = 2
             AND (s.show.artist.id = :userId OR s.show.event.establishment.manager.id = :userId)
-            AND (s.show.schedule.startDateTime BETWEEN :startDate AND :endDate
+            AND (s.startDateTime BETWEEN :startDate AND :endDate
                 OR s.dateAction BETWEEN :startDate AND :endDate)
     """)
-    List<ShowRecord> countShowsByStatusInDateInterval(LocalDateTime startDate, LocalDateTime endDate, Integer userId);
+    List<ShowRecord> findLifeCycleChangesByUserIdBetweenInterval(LocalDateTime startDate, LocalDateTime endDate, Integer userId);
 }

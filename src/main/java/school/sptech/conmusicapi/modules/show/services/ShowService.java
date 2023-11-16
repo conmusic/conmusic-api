@@ -220,11 +220,7 @@ public class ShowService {
         }
 
         if (show.getSchedule().getConfirmed()) {
-            ShowStatusEnum newStatus = ShowStatusEnum
-                    .getStatusByName(String.format("%S_REJECTED_BY_EXCHANGE", details.getUserType()))
-                    .getOppositeUserStatus();
-
-            show.setStatus(newStatus);
+            show.setStatus(ShowStatusEnum.MANAGER_WITHDRAW_BY_EXCHANGE);
             Show updatedShow = showRepository.save(show);
             showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS));
 
@@ -326,7 +322,7 @@ public class ShowService {
 
         if (show.getSchedule().getConfirmed()) {
             ShowStatusEnum newStatus = ShowStatusEnum
-                    .getStatusByName(String.format("%S_REJECTED_BY_EXCHANGE", details.getUserType()))
+                    .getStatusByName(String.format("%S_WITHDRAW_BY_EXCHANGE", details.getUserType()))
                     .getOppositeUserStatus();
 
             show.setStatus(newStatus);
@@ -387,7 +383,7 @@ public class ShowService {
 
         if (show.getSchedule().getConfirmed()) {
             ShowStatusEnum newStatus = ShowStatusEnum
-                    .getStatusByName(String.format("%S_REJECTED_BY_EXCHANGE", details.getUserType()))
+                    .getStatusByName(String.format("%S_WITHDRAW_BY_EXCHANGE", details.getUserType()))
                     .getOppositeUserStatus();
 
             show.setStatus(newStatus);

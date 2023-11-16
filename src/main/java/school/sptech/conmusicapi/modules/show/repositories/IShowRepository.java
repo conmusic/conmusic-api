@@ -31,19 +31,6 @@ public interface IShowRepository extends JpaRepository<Show, Integer> {
 
     @Query("""
         SELECT 
-            new school.sptech.conmusicapi.shared.utils.statistics.StatusCount(s.status, COUNT(s.id))
-        FROM ShowRecord s
-        WHERE
-            s.status IN :status
-            AND (s.show.artist.id = :userId OR s.show.event.establishment.manager.id = :userId)
-            AND (s.show.schedule.startDateTime BETWEEN :startDate AND :endDate
-                OR s.dateAction BETWEEN :startDate AND :endDate
-        GROUP BY s.status
-    """)
-    List<StatusCount> countShowsByStatusInDateInterval(EnumSet<ShowStatusEnum> status, LocalDateTime startDate, LocalDateTime endDate, Integer userId);
-
-    @Query("""
-        SELECT 
             new school.sptech.conmusicapi.shared.utils.statistics.GroupMonthCount(FUNCTION('MONTH', s.schedule.startDateTime), COUNT(s.id))            
         FROM Show s
         WHERE
