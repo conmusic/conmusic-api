@@ -19,9 +19,13 @@ import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
 import school.sptech.conmusicapi.modules.artist.services.ArtistService;
 import school.sptech.conmusicapi.modules.media.services.StorageService;
+import school.sptech.conmusicapi.modules.user.dtos.UserKpiDto;
+import school.sptech.conmusicapi.modules.user.services.UserService;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/artists")
@@ -29,6 +33,9 @@ import java.util.List;
 public class ArtistController {
     @Autowired
     private ArtistService artistService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/search")
     @SecurityRequirement(name = "Bearer")
@@ -148,5 +155,16 @@ public class ArtistController {
     public ResponseEntity<String> deleteFile(@RequestParam String fileName) {
         String deletedFile = artistService.deleteFile(fileName);
         return ResponseEntity.ok(deletedFile);
+    }
+
+    @GetMapping("/kpis")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<UserKpiDto> getKpis(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
+    ) {
+        Optional<UserKpiDto> artistKpiDto = userService.getManagerOrArtistKpi(startDate, endDate);
+
+        return artistKpiDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 }

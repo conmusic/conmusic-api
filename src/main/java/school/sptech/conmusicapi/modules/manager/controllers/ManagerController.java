@@ -12,7 +12,10 @@ import school.sptech.conmusicapi.modules.manager.dtos.CreateManagerDto;
 import school.sptech.conmusicapi.modules.manager.dtos.ManagerDto;
 import school.sptech.conmusicapi.modules.manager.dtos.UpdateManagerDto;
 import school.sptech.conmusicapi.modules.manager.services.ManagerService;
+import school.sptech.conmusicapi.modules.user.dtos.UserKpiDto;
+import school.sptech.conmusicapi.modules.user.services.UserService;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @RestController
@@ -21,6 +24,9 @@ import java.util.Optional;
 public class ManagerController {
     @Autowired
     private ManagerService managerService;
+
+    @Autowired
+    private UserService userService;
 
     @Operation(summary = "Create a manager", description = "Creates a new manager")
     @PostMapping
@@ -47,5 +53,16 @@ public class ManagerController {
     public ResponseEntity<ManagerDto> getById(@PathVariable Integer id) {
         ManagerDto manager = managerService.getById(id);
         return ResponseEntity.status(200).body(manager);
+    }
+
+    @GetMapping("/kpis")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<UserKpiDto> getKpis(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
+    ) {
+        Optional<UserKpiDto> managerKpiDto = userService.getManagerOrArtistKpi(startDate, endDate);
+
+        return managerKpiDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 }

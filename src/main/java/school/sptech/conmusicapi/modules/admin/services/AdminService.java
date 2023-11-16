@@ -1,6 +1,8 @@
 package school.sptech.conmusicapi.modules.admin.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import school.sptech.conmusicapi.modules.admin.dtos.AdminDto;
@@ -8,10 +10,15 @@ import school.sptech.conmusicapi.modules.admin.dtos.CreateAdminDto;
 import school.sptech.conmusicapi.modules.admin.entities.Admin;
 import school.sptech.conmusicapi.modules.admin.mappers.AdminMapper;
 import school.sptech.conmusicapi.modules.admin.repositories.IAdminRepository;
+import school.sptech.conmusicapi.modules.show.repositories.IShowRecordRepository;
+import school.sptech.conmusicapi.modules.user.dtos.UserDetailsDto;
+import school.sptech.conmusicapi.modules.user.entities.User;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupIdCount;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +32,9 @@ public class AdminService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IShowRecordRepository showRecordRepository;
 
     public AdminDto create(CreateAdminDto dto) {
         Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
@@ -71,5 +81,16 @@ public class AdminService {
         Admin updatedAdmin = adminRepository.save(existingAdmin);
 
         return AdminMapper.toDto(updatedAdmin);
+    }
+
+    public void getKpis(LocalDate startDate, LocalDate endDate) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email %s was not found", details.getUsername())
+                ));
+
+
     }
 }

@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupMonthCount;
-import school.sptech.conmusicapi.shared.utils.statistics.StatusCount;
 import school.sptech.conmusicapi.modules.show.entities.Show;
 
 import java.time.LocalDateTime;

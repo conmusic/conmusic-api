@@ -20,6 +20,7 @@ import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
 import school.sptech.conmusicapi.modules.media.entities.Media;
 import school.sptech.conmusicapi.modules.media.repositories.IMediaRepository;
 import school.sptech.conmusicapi.modules.media.services.StorageService;
+import school.sptech.conmusicapi.modules.show.repositories.IShowRecordRepository;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
@@ -52,6 +53,9 @@ public class ArtistService {
 
     @Autowired
     private IMediaRepository mediaRepository;
+
+    @Autowired
+    private IShowRecordRepository showRecordRepository;
 
     public ArtistDto create(CreateArtistDto dto) {
         Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
