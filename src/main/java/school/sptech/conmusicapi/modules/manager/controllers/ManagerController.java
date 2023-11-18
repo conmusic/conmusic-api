@@ -14,8 +14,12 @@ import school.sptech.conmusicapi.modules.manager.dtos.UpdateManagerDto;
 import school.sptech.conmusicapi.modules.manager.services.ManagerService;
 import school.sptech.conmusicapi.modules.user.dtos.UserKpiDto;
 import school.sptech.conmusicapi.modules.user.services.UserService;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupDateDoubleSum;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupEventsCount;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupGenresCount;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -58,11 +62,38 @@ public class ManagerController {
     @GetMapping("/kpis")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UserKpiDto> getKpis(
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate
+            @RequestParam Integer lastDays
     ) {
-        Optional<UserKpiDto> managerKpiDto = userService.getManagerOrArtistKpi(startDate, endDate);
+        Optional<UserKpiDto> managerKpiDto = userService.getManagerOrArtistKpi(lastDays);
 
         return managerKpiDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    @GetMapping("/events-chart")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<GroupEventsCount>> getTopEventsCount(
+            @RequestParam Integer lastDays
+    ) {
+        List<GroupEventsCount> mostPopularEvents = managerService.getMostPopularEventsByUserId(lastDays);
+
+        if (mostPopularEvents.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(mostPopularEvents);
+    }
+
+    @GetMapping("/value-chart")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<GroupDateDoubleSum>> getTotalValueChart(
+            @RequestParam Integer lastDays
+    ) {
+        List<GroupDateDoubleSum> totalValue = userService.getTotalValueChart(lastDays);
+
+        if (totalValue.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(totalValue);
     }
 }

@@ -41,5 +41,24 @@ public interface IShowRepository extends JpaRepository<Show, Integer> {
     """)
     List<GroupMonthCount> countShowsByStatusInDateIntervalGroupByMonth(EnumSet status, LocalDateTime startDate, LocalDateTime endDate, Integer userId);
 
+    @Query("""
+        SELECT s           
+        FROM Show s
+        WHERE
+            s.status = 7
+            AND (s.artist.id = :userId OR s.event.establishment.manager.id = :userId)
+            AND s.schedule.startDateTime BETWEEN :startDate AND :endDate
+    """)
+    List<Show> findConcludedBetweenIntervalByUserId(LocalDateTime startDate, LocalDateTime endDate, Integer userId);
+
+    @Query("""
+        SELECT s           
+        FROM Show s
+        WHERE
+            s.status = 7
+            AND s.schedule.startDateTime BETWEEN :startDate AND :endDate
+    """)
+    List<Show> findConcludedBetweenInterval(LocalDateTime startDate, LocalDateTime endDate);
+
     List<Show> findAllByStatusAndScheduleEventId(ShowStatusEnum status, Integer id);
 }

@@ -15,9 +15,4 @@ public interface IArtistRepository extends JpaRepository<Artist, Integer>, JpaSp
     @Modifying
     @Query(value = "DELETE FROM usuario_genero WHERE user_id = :artistId AND genre_id = :genreId", nativeQuery = true)
     int deleteGenreArtist(Integer artistId, Integer genreId);
-
-    @Query("""
-    
-    """)
-    List
 }

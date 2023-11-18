@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,15 +22,21 @@ import school.sptech.conmusicapi.modules.media.entities.Media;
 import school.sptech.conmusicapi.modules.media.repositories.IMediaRepository;
 import school.sptech.conmusicapi.modules.media.services.StorageService;
 import school.sptech.conmusicapi.modules.show.repositories.IShowRecordRepository;
+import school.sptech.conmusicapi.modules.user.dtos.UserDetailsDto;
+import school.sptech.conmusicapi.modules.user.entities.User;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 import school.sptech.conmusicapi.shared.exceptions.UserForbiddenActionException;
 import school.sptech.conmusicapi.shared.utils.collections.GenericObjectList;
 import school.sptech.conmusicapi.shared.utils.collections.HashTable;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupGenresCount;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -212,7 +219,6 @@ public class ArtistService {
     }
 
     public List<ByteArrayResource> getFiles(Integer id) {
-
         List<Media> medias = mediaRepository.findByUserId(id);
 
         List<ByteArrayResource> files = new ArrayList<>();
@@ -232,5 +238,33 @@ public class ArtistService {
 
     public String deleteFile(String fileName) {
         return storageService.deleteFile(fileName);
+    }
+
+    public List<GroupGenresCount> getMostPopularGenresChartByUserId(Integer lastDays) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email %s was not found", details.getUsername())
+                ));
+
+        LocalDate today = LocalDate.now();
+
+        List<GroupGenresCount> genresCountList = showRecordRepository
+                .findTopGenresFromDateBetweenInterval(
+                        today.minusDays(lastDays).atStartOfDay(),
+                        today.atTime(23, 59, 59),
+                        user.getId());
+
+        if (genresCountList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Comparator<GroupGenresCount> comparator = Comparator.comparingLong(GroupGenresCount::getCount).reversed();
+
+        return genresCountList.stream()
+                .sorted(comparator)
+                .limit(5)
+                .toList();
     }
 }
