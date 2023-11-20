@@ -12,7 +12,7 @@ public class MediaArtistDto {
 
         String baseUrl = "http://ec2-54-145-89-39.compute-1.amazonaws.com:8080";
 
-        this.url = String.format("%s/media/%d", baseUrl, mediaId);
+        this.url = String.format("%s/artists/media/%d", baseUrl, mediaId);
         this.artistId = artistId;
     }
 
