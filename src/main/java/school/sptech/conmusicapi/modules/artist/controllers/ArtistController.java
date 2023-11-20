@@ -114,7 +114,6 @@ public class ArtistController {
         return ResponseEntity.ok(artistService.getImages(id));
     }
 
-
     @PostMapping("/upload/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> uploadFile(
@@ -132,10 +131,10 @@ public class ArtistController {
         return ResponseEntity.ok(artistService.getFiles(imageId));
     }
 
-    @DeleteMapping("/media")
+    @DeleteMapping("/media/{imageId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<String> deleteFile(@RequestParam String fileName) {
-        String deletedFile = artistService.deleteFile(fileName);
+    public ResponseEntity<String> deleteFile(@PathVariable Integer imageId) {
+        String deletedFile = artistService.deleteFile(imageId);
         return ResponseEntity.ok(deletedFile);
     }
 }

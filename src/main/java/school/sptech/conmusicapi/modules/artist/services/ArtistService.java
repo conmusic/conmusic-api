@@ -193,14 +193,19 @@ public class ArtistService {
     public byte[] getFiles(Integer imageId) {
 
         Media media = mediaRepository.findById(imageId).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Image with %d not found.", imageId))
+                () -> new EntityNotFoundException(String.format("Image with id %d not found.", imageId))
         );
 
         return storageService.downloadFile(media.getUrl());
     }
 
-    public String deleteFile(String fileName) {
-        return storageService.deleteFile(fileName);
+    public String deleteFile(Integer imageId) {
+
+        Media media = mediaRepository.findById(imageId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Image with id %d not found.", imageId))
+        );
+
+        return storageService.deleteFile(media.getUrl());
     }
 
     public MediaArtistDto getPerfilImage(Integer id) {

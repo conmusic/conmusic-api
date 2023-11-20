@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +14,8 @@ import school.sptech.conmusicapi.modules.establishment.dtos.CreateEstablishmentD
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.dtos.UpdateEstablishmentDto;
 import school.sptech.conmusicapi.modules.establishment.services.EstablishmentService;
+import school.sptech.conmusicapi.modules.media.dtos.MediaArtistDto;
+import school.sptech.conmusicapi.modules.media.dtos.MediaEstablishmentDto;
 
 import java.io.IOException;
 import java.util.List;
@@ -64,6 +66,18 @@ public class EstablishmentController {
         return ResponseEntity.status(200).body(establishments);
     }
 
+    @GetMapping("/image/perfil/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<MediaEstablishmentDto> getPerfilImage(@PathVariable Integer id){
+        return ResponseEntity.ok(establishmentService.getPerfilImage(id));
+    }
+
+    @GetMapping("/images/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<MediaEstablishmentDto>> getImages(@PathVariable Integer id){
+        return ResponseEntity.ok(establishmentService.getImages(id));
+    }
+
     @PostMapping("/upload/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @PathVariable Integer id) throws IOException {
@@ -72,19 +86,16 @@ public class EstablishmentController {
         return ResponseEntity.ok(uploadFile);
     }
 
-    @GetMapping("/media/{id}")
+    @GetMapping(value = "/media/{imageId}", produces = MediaType.IMAGE_JPEG_VALUE)
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<ByteArrayResource>> getMedia(@PathVariable Integer id){
-        List<ByteArrayResource> media = establishmentService.getMedia(id);
-
-        return ResponseEntity.ok(media);
+    public ResponseEntity<byte[]> getFiles(@PathVariable Integer imageId) {
+        return ResponseEntity.ok(establishmentService.getMedia(imageId));
     }
 
-    @DeleteMapping("/media")
+    @DeleteMapping("/media/{imageId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<String> deleteMedia(@RequestParam String fileName){
-        String deletedMedia = establishmentService.deleteMedia(fileName);
-
-        return ResponseEntity.ok(deletedMedia);
+    public ResponseEntity<String> deleteFile(@PathVariable Integer imageId) {
+        String deletedFile = establishmentService.deleteMedia(imageId);
+        return ResponseEntity.ok(deletedFile);
     }
 }
