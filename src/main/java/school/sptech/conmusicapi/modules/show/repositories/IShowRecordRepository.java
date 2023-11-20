@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import school.sptech.conmusicapi.modules.show.entities.ShowRecord;
+import school.sptech.conmusicapi.modules.show.util.RecordTypeEnum;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupEventsCount;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupGenresCount;
 
@@ -62,4 +63,6 @@ public interface IShowRecordRepository extends JpaRepository<ShowRecord, Integer
                 OR s.dateAction BETWEEN :startDate AND :endDate)
     """)
     List<ShowRecord> findAllLifeCycleChangesBetweenInterval(LocalDateTime startDate, LocalDateTime endDate);
+
+    List<ShowRecord> findByShowIdAndRecordType(Integer id, RecordTypeEnum recordType);
 }

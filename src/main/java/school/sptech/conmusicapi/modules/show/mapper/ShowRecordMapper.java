@@ -3,7 +3,6 @@ package school.sptech.conmusicapi.modules.show.mapper;
 import school.sptech.conmusicapi.modules.show.dtos.ShowRecordDto;
 import school.sptech.conmusicapi.modules.show.entities.Show;
 import school.sptech.conmusicapi.modules.show.entities.ShowRecord;
-import school.sptech.conmusicapi.modules.show.util.LifeCycleEnum;
 import school.sptech.conmusicapi.modules.show.util.RecordTypeEnum;
 import school.sptech.conmusicapi.modules.user.entities.User;
 
@@ -17,7 +16,6 @@ public class ShowRecordMapper {
         record.setValue(show.getValue());
         record.setCoverCharge(show.getCoverCharge());
         record.setStatus(show.getStatus());
-        record.setLifeCycle(LifeCycleEnum.getLifeCycleBasedOnShowStatus(show.getStatus()));
         record.setRecordType(recordType);
         record.setUser(user);
         record.setDateAction(LocalDateTime.now());

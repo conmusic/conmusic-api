@@ -89,7 +89,7 @@ public enum ShowStatusEnum {
             case MANAGER_CANCELED -> ARTIST_CANCELED;
             case ARTIST_WITHDRAW_BY_EXCHANGE -> MANAGER_WITHDRAW_BY_EXCHANGE;
             case MANAGER_WITHDRAW_BY_EXCHANGE -> ARTIST_WITHDRAW_BY_EXCHANGE;
-            default -> UNDEFINED;
+            default -> this;
         };
     }
 }

@@ -61,4 +61,6 @@ public interface IShowRepository extends JpaRepository<Show, Integer> {
     List<Show> findConcludedBetweenInterval(LocalDateTime startDate, LocalDateTime endDate);
 
     List<Show> findAllByStatusAndScheduleEventId(ShowStatusEnum status, Integer id);
+
+    List<Show> findAllByStatus(ShowStatusEnum status);
 }
