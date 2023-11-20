@@ -126,10 +126,10 @@ public class ArtistController {
         return ResponseEntity.ok(uploadFile);
     }
 
-    @GetMapping(value = "/media/{id}")
+    @GetMapping(value = "/media/{imageId}", produces = MediaType.ALL_VALUE)
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<byte[]>> getFiles(@PathVariable Integer id){
-        return ResponseEntity.ok(artistService.getFiles(id));
+    public ResponseEntity<byte[]> getFiles(@PathVariable Integer imageId) {
+        return ResponseEntity.ok(artistService.getFiles(imageId));
     }
 
     @DeleteMapping("/media")

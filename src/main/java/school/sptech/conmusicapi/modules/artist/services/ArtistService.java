@@ -190,22 +190,13 @@ public class ArtistService {
         return fileName;
     }
 
-    public List<byte[]> getFiles(Integer id) {
+    public byte[] getFiles(Integer imageId) {
 
-        List<Media> medias = mediaRepository.findByUserId(id);
+        Media media = mediaRepository.findById(imageId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Image with %d not found.", imageId))
+        );
 
-        List<byte[]> files = new ArrayList<>();
-
-        medias.forEach(media -> {
-            byte[] data = storageService.downloadFile(media.getUrl());
-            files.add(data);
-        });
-
-        if (files.isEmpty()){
-            throw new EntityNotFoundException(String.format("Artist with id %d was not found.", id));
-        }
-
-        return files;
+        return storageService.downloadFile(media.getUrl());
     }
 
     public String deleteFile(String fileName) {
