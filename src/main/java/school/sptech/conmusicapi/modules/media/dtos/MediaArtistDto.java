@@ -11,8 +11,8 @@ public class MediaArtistDto {
     @Value("${app.aws.backend.url}")
     private String baseUrl;
 
-    public MediaArtistDto(String url, Integer artistId) {
-        this.url = String.format("%s/media/%s", this.baseUrl, url);
+    public MediaArtistDto(Integer mediaId, Integer artistId) {
+        this.url = String.format("%s/media/%d", baseUrl, mediaId);
         this.artistId = artistId;
     }
 

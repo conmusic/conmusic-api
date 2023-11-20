@@ -225,6 +225,10 @@ public class ArtistService {
 
         List<Media> medias = mediaRepository.findByUserId(id);
 
+        if (medias.isEmpty()){
+            throw new EntityNotFoundException(String.format("Artist with id %d was not found.", id));
+        }
+
         return medias.stream()
                 .map(MediaMapper::mapToDto)
                 .toList();

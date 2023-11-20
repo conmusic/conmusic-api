@@ -24,6 +24,6 @@ public class MediaMapper {
     }
 
     public static MediaArtistDto mapToDto(Media media) {
-        return new MediaArtistDto(media.getUrl(), media.getUser().getId());
+        return new MediaArtistDto(media.getId(), media.getUser().getId());
     }
 }
