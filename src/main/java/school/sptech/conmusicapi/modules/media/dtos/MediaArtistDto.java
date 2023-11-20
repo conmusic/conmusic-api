@@ -7,11 +7,11 @@ public class MediaArtistDto {
     private String url;
 
     private Integer artistId;
-    
-    @Value("${app.aws.backend.url}")
-    private String baseUrl;
 
     public MediaArtistDto(Integer mediaId, Integer artistId) {
+
+        String baseUrl = "http://ec2-54-145-89-39.compute-1.amazonaws.com:8080";
+
         this.url = String.format("%s/media/%d", baseUrl, mediaId);
         this.artistId = artistId;
     }
