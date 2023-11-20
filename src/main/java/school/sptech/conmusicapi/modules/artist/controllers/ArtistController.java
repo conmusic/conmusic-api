@@ -17,6 +17,7 @@ import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
 import school.sptech.conmusicapi.modules.artist.services.ArtistService;
+import school.sptech.conmusicapi.modules.media.dtos.MediaArtistDto;
 import school.sptech.conmusicapi.modules.media.services.StorageService;
 
 import java.io.IOException;
@@ -99,6 +100,18 @@ public class ArtistController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/image/perfil/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<MediaArtistDto> getPerfilImage(@PathVariable Integer id){
+        return ResponseEntity.ok(artistService.getPerfilImage(id));
+    }
+
+    @GetMapping("/images/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<MediaArtistDto>> getImages(@PathVariable Integer id){
+        return ResponseEntity.ok(artistService.getImages(id));
     }
 
 

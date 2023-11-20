@@ -14,7 +14,9 @@ import school.sptech.conmusicapi.modules.artist.mapper.ArtistMapper;
 import school.sptech.conmusicapi.modules.artist.repositories.IArtistRepository;
 import school.sptech.conmusicapi.modules.genre.entities.Genre;
 import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
+import school.sptech.conmusicapi.modules.media.dtos.MediaArtistDto;
 import school.sptech.conmusicapi.modules.media.entities.Media;
+import school.sptech.conmusicapi.modules.media.mapper.MediaMapper;
 import school.sptech.conmusicapi.modules.media.repositories.IMediaRepository;
 import school.sptech.conmusicapi.modules.media.services.StorageService;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
@@ -208,5 +210,23 @@ public class ArtistService {
 
     public String deleteFile(String fileName) {
         return storageService.deleteFile(fileName);
+    }
+
+    public MediaArtistDto getPerfilImage(Integer id) {
+
+        Media media = mediaRepository.findByUserId(id).stream().findFirst().orElseThrow(
+                () -> new EntityNotFoundException(String.format("Artist with id %d was not found.", id))
+        );
+
+        return MediaMapper.mapToDto(media);
+    }
+
+    public List<MediaArtistDto> getImages(Integer id) {
+
+        List<Media> medias = mediaRepository.findByUserId(id);
+
+        return medias.stream()
+                .map(MediaMapper::mapToDto)
+                .toList();
     }
 }
