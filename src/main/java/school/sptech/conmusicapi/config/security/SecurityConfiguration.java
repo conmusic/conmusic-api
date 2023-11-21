@@ -47,6 +47,7 @@ public class SecurityConfiguration {
             new AntPathRequestMatcher("/swagger-ui/**"),
             new AntPathRequestMatcher("/users/authentication"),
             new AntPathRequestMatcher("/artists/**"),
+            new AntPathRequestMatcher("/establishments/**"),
             new AntPathRequestMatcher("/managers", HttpMethod.POST.name()),
             new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/error/**"),
