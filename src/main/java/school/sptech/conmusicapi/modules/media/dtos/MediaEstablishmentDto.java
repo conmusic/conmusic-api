@@ -22,11 +22,11 @@ public class MediaEstablishmentDto {
         this.url = url;
     }
 
-    public Integer getArtistId() {
+    public Integer getEstablishmentId() {
         return establishmentId;
     }
 
-    public void setArtistId(Integer establishmentId) {
+    public void setEstablishmentId(Integer establishmentId) {
         this.establishmentId = establishmentId;
     }
 }

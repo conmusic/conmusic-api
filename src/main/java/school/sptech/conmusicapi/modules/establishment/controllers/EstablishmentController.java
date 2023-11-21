@@ -87,7 +87,6 @@ public class EstablishmentController {
     }
 
     @GetMapping(value = "/media/{imageId}", produces = MediaType.IMAGE_JPEG_VALUE)
-    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<byte[]> getFiles(@PathVariable Integer imageId) {
         return ResponseEntity.ok(establishmentService.getMedia(imageId));
     }
