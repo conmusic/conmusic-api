@@ -22,7 +22,10 @@ import school.sptech.conmusicapi.modules.establishment.repositories.IEstablishme
 import school.sptech.conmusicapi.modules.establishment.specifications.EstablishmentSpecificationsBuilder;
 import school.sptech.conmusicapi.modules.manager.entities.Manager;
 import school.sptech.conmusicapi.modules.manager.repositories.IManagerRepository;
+import school.sptech.conmusicapi.modules.media.dtos.MediaArtistDto;
+import school.sptech.conmusicapi.modules.media.dtos.MediaEstablishmentDto;
 import school.sptech.conmusicapi.modules.media.entities.Media;
+import school.sptech.conmusicapi.modules.media.mapper.MediaMapper;
 import school.sptech.conmusicapi.modules.media.repositories.IMediaRepository;
 import school.sptech.conmusicapi.modules.media.services.StorageService;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
@@ -163,26 +166,43 @@ public class EstablishmentService {
         return storageService.uploadFileEstablishment(file, establishment);
     }
 
-    public List<ByteArrayResource> getMedia(Integer id){
+    public byte[] getMedia(Integer id){
+
+        Media media = mediaRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Image with id %d not found.", id))
+        );
+
+        return storageService.downloadFile(media.getUrl());
+    }
+
+    public String deleteMedia(Integer imageId){
+
+        Media media = mediaRepository.findById(imageId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Image with id %d not found.", imageId))
+        );
+
+        return storageService.deleteFile(media.getUrl());
+    }
+
+    public MediaEstablishmentDto getPerfilImage(Integer id) {
+
+        Media media = mediaRepository.findByEstablishmentId(id).stream().findFirst().orElseThrow(
+                () -> new EntityNotFoundException(String.format("Establishment with id %d was not found.", id))
+        );
+
+        return MediaMapper.mapToDtoEstablishment(media);
+    }
+
+    public List<MediaEstablishmentDto> getImages(Integer id) {
 
         List<Media> medias = mediaRepository.findByEstablishmentId(id);
 
-        List<ByteArrayResource> files = new ArrayList<>();
-
-        medias.forEach(media -> {
-            byte[] data = storageService.downloadFile(media.getUrl());
-            ByteArrayResource resource = new ByteArrayResource(data);
-            files.add(resource);
-        });
-
-        if (files.isEmpty()){
+        if (medias.isEmpty()){
             throw new EntityNotFoundException(String.format("Establishment with id %d was not found.", id));
         }
 
-        return files;
-    }
-
-    public String deleteMedia(String fileName){
-        return storageService.deleteFile(fileName);
+        return medias.stream()
+                .map(MediaMapper::mapToDtoEstablishment)
+                .toList();
     }
 }
