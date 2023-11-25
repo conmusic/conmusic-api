@@ -2,6 +2,8 @@ package school.sptech.conmusicapi.modules.artist.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
 import school.sptech.conmusicapi.modules.artist.entities.Artist;
 import school.sptech.conmusicapi.modules.artist.mapper.ArtistMapper;
 import school.sptech.conmusicapi.modules.artist.repositories.IArtistRepository;
+import school.sptech.conmusicapi.modules.artist.specifications.ArtistSpecificationsBuilder;
 import school.sptech.conmusicapi.modules.genre.entities.Genre;
 import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
 import school.sptech.conmusicapi.modules.media.dtos.MediaArtistDto;
@@ -29,7 +32,8 @@ import school.sptech.conmusicapi.shared.utils.collections.HashTable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class ArtistService {
@@ -69,6 +73,21 @@ public class ArtistService {
 
         Artist createdArtist = artistRepository.save(ArtistMapper.fromDto(dto));
         return ArtistMapper.toDto(createdArtist);
+    }
+
+    public List<ArtistDto> search(String value, Pageable pageable) {
+        ArtistSpecificationsBuilder builder = new ArtistSpecificationsBuilder();
+        Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),");
+        Matcher matcher = pattern.matcher(value + ",");
+        while (matcher.find()) {
+            builder.with(matcher.group(1), matcher.group(2), matcher.group(3), null, null);
+        }
+
+        Specification<Artist> spec = builder.build();
+
+        List<Artist> artists = artistRepository.findAll(spec, pageable).getContent();
+
+        return artists.stream().map(ArtistMapper::toDto).toList();
     }
 
     public ArtistDto updateArtistDto(UpdateArtistDto dto, Integer id){

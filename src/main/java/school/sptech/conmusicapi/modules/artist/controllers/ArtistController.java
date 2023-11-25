@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -29,6 +31,26 @@ import java.util.List;
 public class ArtistController {
     @Autowired
     private ArtistService artistService;
+
+    @GetMapping("/search")
+    @SecurityRequirement(name = "Bearer")
+    @PreAuthorize("hasAuthority('Artist') or hasAuthority('Admin')")
+    @Operation(summary = "Search artists", description = "Searches for artists by name")
+    public ResponseEntity<List<ArtistDto>> search(
+            @RequestParam String value,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<ArtistDto> artists = artistService.search(value, pageable);
+
+        if (artists.isEmpty()) {
+            ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(200).body(artists);
+    }
 
     @GetMapping
     @SecurityRequirement(name = "Bearer")

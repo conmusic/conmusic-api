@@ -1,7 +1,11 @@
+CREATE DATABASE db_conmusic;
+
+USE db_conmusic;
+
 INSERT INTO usuario
     (nome, email, senha, data_nascimento, cpf, telefone, tipo_usuario)
 VALUES
-    ('Admin conmusic', 'admin@conmusic.com', '$2a$10$5yMt9HBEz.b/onB8TSrppO3kn2vTVz3BPPH25uJV5zn9s5nUJ9Xl.', '2023-03-11', '52702055052', '11996489985', 'admin'),
+    ('Admin 2', 'admin2@conmusic.com', '$2a$10$2wuzXIpSCm36VhgGEREUfuNxWvZ4fZJ1QglrFOXqVoGfj/znqh3Q2', '2023-03-11', '33318190004', '11996489985', 'admin'),
     ('Leonardo Silva', 'leo.silva@email.com', '$2a$10$KZFxc7X3zu9ZuhIyVZPTS.pSczaLDkcQ7MgqAxcxbEKZ7GZV1xHYm', '2003-08-13', '76089439045', '11992489985', 'artista'),
     ('Chico Menezes', 'chico.menezes@email.com', '$2a$10$114OtetHCIqAzfSaQrL28uc3VVGqfxGTvksBvd9mjyfyMwTsRruRq', '1976-10-03', '80466979070', '11997889923', 'gerente'),
     ('João Silva', 'joao.silva@example.com', '@Aa12345678', '1990-01-01', '12345678901', '987654321', 'artista'),
@@ -29,6 +33,7 @@ VALUES
     ('Rua das Flores, 789 - Jardins', 4, 2, 300, 'São Paulo', '56789012000134', 'Café Charmoso', 'Charmoso Café', '11912345678', 'SP', '01435000', 3),
     ('Avenida das Palmeiras, 789 - Jardim', 2, 1, 400, 'São Paulo', '87654321000109', 'Restaurante Saboroso', 'Saboroso Restaurante', '11955557777', 'SP', '04567000', 5),
     ('Rua do Sertanejo, 123 - Centro', 1, 1, 300, 'Salvador', '34567890123456', 'Bar do Sertanejo', 'Sertanejo Bar', '71999998888', 'BA', '40020000', 7);
+
 INSERT INTO evento
     (nome, descricao, valor, taxa_cover, fk_estabelecimento, fk_genero)
 VALUES
@@ -87,3 +92,4 @@ VALUES
     (4, 300.0, 50.0, 9, 2, 13),
     (6, 400.0, 70.0, 10, 2, 14),
     (4, 200.0, 40.0, 11, 4, 15);
+
