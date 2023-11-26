@@ -1,8 +1,7 @@
 package school.sptech.conmusicapi.jobs;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import school.sptech.conmusicapi.modules.show.entities.Show;
 import school.sptech.conmusicapi.modules.show.entities.ShowRecord;
@@ -25,9 +24,9 @@ public class ShowRecordConsistencyJob {
     @Autowired
     private IShowRecordRepository showRecordRepository;
 
-    @EventListener(ApplicationReadyEvent.class)
+    @Scheduled(cron = "0 0 7 * * *")
     public void run() {
-        System.out.println("["+ this.getClass().getSimpleName() + "]: Starting Job at " + LocalDateTime.now());
+        System.out.println("["+ this.getClass().getSimpleName() + "]: Starting at " + LocalDateTime.now());
         ShowStatusEnum[] showStatus = ShowStatusEnum.values();
 
         List<ShowRecord> recordsToInsert = new ArrayList<>();
@@ -61,7 +60,7 @@ public class ShowRecordConsistencyJob {
         }
 
         System.out.println(String.format("%d Records were missing. We inserted a total of %d records", recordsToInsert.size(), countInsertedRecords));
-        System.out.println(String.format("Job finished at %s", LocalDateTime.now()));
+        System.out.println(String.format("["+ this.getClass().getSimpleName() + "] finished at %s", LocalDateTime.now()));
     }
 
     private List<ShowStatusEnum> getMissingStatusChanges(ShowStatusEnum currentStatus, List<ShowRecord> records) {
