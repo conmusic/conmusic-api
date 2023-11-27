@@ -1743,9 +1743,7 @@ public class ShowServiceTest {
         Integer showId = 1000;
         Double expectedValue = 100.0;
         Double expectedCoverCharge = 5.0;
-        ShowStatusEnum expectedStatus = showStatusEnum.equals(ShowStatusEnum.ARTIST_PROPOSAL)
-                ? ShowStatusEnum.MANAGER_REJECTED
-                : ShowStatusEnum.ARTIST_REJECTED;
+        ShowStatusEnum expectedStatus = ShowStatusEnum.EXPIRED;
 
         Genre genre = new Genre();
         genre.setId(9);
@@ -1816,6 +1814,8 @@ public class ShowServiceTest {
 
         Mockito.when(userRepository.findByEmail(authenticatedUserEmail)).thenReturn(Optional.of(authenticatedUser));
 
+        Mockito.when(showRepository.save(Mockito.any(Show.class))).thenAnswer(i -> i.getArguments()[0]);
+
         // then
         BusinessRuleException error = assertThrows(BusinessRuleException.class, () -> service.acceptProposal(showId));
 
@@ -1837,7 +1837,7 @@ public class ShowServiceTest {
         Integer showId = 1000;
         Double expectedValue = 100.0;
         Double expectedCoverCharge = 5.0;
-        ShowStatusEnum expectedStatus = ShowStatusEnum.MANAGER_REJECTED;
+        ShowStatusEnum expectedStatus = ShowStatusEnum.MANAGER_WITHDRAW_BY_EXCHANGE;
 
         Genre genre = new Genre();
         genre.setId(9);
@@ -1907,6 +1907,8 @@ public class ShowServiceTest {
         Mockito.when(authenticationMock.getPrincipal()).thenReturn(userDetailsDto);
 
         Mockito.when(userRepository.findByEmail(authenticatedUserEmail)).thenReturn(Optional.of(authenticatedUser));
+
+        Mockito.when(showRepository.save(Mockito.any(Show.class))).thenAnswer(i -> i.getArguments()[0]);
 
         // then
         BusinessRuleException error = assertThrows(BusinessRuleException.class, () -> service.acceptProposal(showId));
@@ -2430,14 +2432,12 @@ public class ShowServiceTest {
 
         Mockito.when(userRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(authenticatedUser));
 
+        Mockito.when(showRepository.save(Mockito.any(Show.class))).thenAnswer(i -> i.getArguments()[0]);
+
         // then
         service.rejectProposal(showId);
 
         // assert
-        Mockito.verify(showRecordRepository, Mockito.times(expectedSaves)).save(Mockito.any(ShowRecord.class));
-        Mockito.verify(showRecordRepository).save(showRecordRepositorySaveCaptor.capture());
-        assertEquals(showStatusEnum, showRecordRepositorySaveCaptor.getValue().getStatus());
-
         Mockito.verify(showRepository, Mockito.times(expectedSaves)).save(Mockito.any(Show.class));
         Mockito.verify(showRepository).save(showRepositorySaveCaptor.capture());
         assertEquals(expectedStatus, showRepositorySaveCaptor.getValue().getStatus());

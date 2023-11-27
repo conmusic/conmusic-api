@@ -11,19 +11,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
 import school.sptech.conmusicapi.modules.artist.services.ArtistService;
+import school.sptech.conmusicapi.modules.user.dtos.UserKpiDto;
+import school.sptech.conmusicapi.modules.user.services.UserService;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupDateDoubleSum;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupGenresCount;
 import school.sptech.conmusicapi.modules.media.dtos.MediaArtistDto;
 import school.sptech.conmusicapi.modules.media.services.StorageService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/artists")
@@ -31,6 +34,9 @@ import java.util.List;
 public class ArtistController {
     @Autowired
     private ArtistService artistService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/search")
     @SecurityRequirement(name = "Bearer")
@@ -157,5 +163,43 @@ public class ArtistController {
     public ResponseEntity<String> deleteFile(@PathVariable Integer imageId) {
         String deletedFile = artistService.deleteFile(imageId);
         return ResponseEntity.ok(deletedFile);
+    }
+
+    @GetMapping("/kpis")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<UserKpiDto> getKpis(
+            @RequestParam Integer lastDays
+    ) {
+        Optional<UserKpiDto> artistKpiDto = userService.getManagerOrArtistKpi(lastDays);
+
+        return artistKpiDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    @GetMapping("/genres-chart")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<GroupGenresCount>> getTopGenresChart(
+            @RequestParam Integer lastDays
+    ) {
+        List<GroupGenresCount> topGenres = artistService.getMostPopularGenresChartByUserId(lastDays);
+
+        if (topGenres.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(topGenres);
+    }
+
+    @GetMapping("/value-chart")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<GroupDateDoubleSum>> getTotalValueChart(
+            @RequestParam Integer lastDays
+    ) {
+        List<GroupDateDoubleSum> totalValue = userService.getTotalValueChart(lastDays);
+
+        if (totalValue.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(totalValue);
     }
 }

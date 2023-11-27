@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.admin.dtos.AdminDto;
 import school.sptech.conmusicapi.modules.admin.dtos.CreateAdminDto;
 import school.sptech.conmusicapi.modules.admin.services.AdminService;
+import school.sptech.conmusicapi.modules.admin.dtos.AdminKpiDto;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupDateDoubleSum;
 
 import java.util.List;
 
@@ -53,5 +55,32 @@ public class AdminController {
     ) {
         AdminDto updatedAdmin = adminService.updateAdmin(adminId, adminDto);
         return ResponseEntity.ok(updatedAdmin);
+    }
+
+    @GetMapping("/kpis")
+    public ResponseEntity<List<AdminKpiDto>> getKpis(
+            @RequestParam Integer lastDays
+    ) {
+        List<AdminKpiDto> kpis = adminService.getKpis(lastDays);
+
+        if (kpis.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(kpis);
+    }
+
+    @GetMapping("/value-chart")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<GroupDateDoubleSum>> getTotalValueChart(
+            @RequestParam Integer lastDays
+    ) {
+        List<GroupDateDoubleSum> totalValue = adminService.getTotalValueChart(lastDays);
+
+        if (totalValue.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(totalValue);
     }
 }
