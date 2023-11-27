@@ -33,7 +33,6 @@ VALUES
     ('Rua das Flores, 789 - Jardins', 4, 2, 300, 'São Paulo', '56789012000134', 'Café Charmoso', 'Charmoso Café', '11912345678', 'SP', '01435000', 3),
     ('Avenida das Palmeiras, 789 - Jardim', 2, 1, 400, 'São Paulo', '87654321000109', 'Restaurante Saboroso', 'Saboroso Restaurante', '11955557777', 'SP', '04567000', 5),
     ('Rua do Sertanejo, 123 - Centro', 1, 1, 300, 'Salvador', '34567890123456', 'Bar do Sertanejo', 'Sertanejo Bar', '71999998888', 'BA', '40020000', 7);
-
 INSERT INTO evento
     (nome, descricao, valor, taxa_cover, fk_estabelecimento, fk_genero)
 VALUES
@@ -92,4 +91,3 @@ VALUES
     (4, 300.0, 50.0, 9, 2, 13),
     (6, 400.0, 70.0, 10, 2, 14),
     (4, 200.0, 40.0, 11, 4, 15);
-
