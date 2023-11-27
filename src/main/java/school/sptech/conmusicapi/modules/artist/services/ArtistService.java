@@ -18,7 +18,9 @@ import school.sptech.conmusicapi.modules.artist.repositories.IArtistRepository;
 import school.sptech.conmusicapi.modules.artist.specifications.ArtistSpecificationsBuilder;
 import school.sptech.conmusicapi.modules.genre.entities.Genre;
 import school.sptech.conmusicapi.modules.genre.repository.IGenreRepository;
+import school.sptech.conmusicapi.modules.media.dtos.MediaArtistDto;
 import school.sptech.conmusicapi.modules.media.entities.Media;
+import school.sptech.conmusicapi.modules.media.mapper.MediaMapper;
 import school.sptech.conmusicapi.modules.media.repositories.IMediaRepository;
 import school.sptech.conmusicapi.modules.media.services.StorageService;
 import school.sptech.conmusicapi.modules.show.repositories.IShowRecordRepository;
@@ -218,26 +220,44 @@ public class ArtistService {
         return fileName;
     }
 
-    public List<ByteArrayResource> getFiles(Integer id) {
+    public byte[] getFiles(Integer imageId) {
+
+        Media media = mediaRepository.findById(imageId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Image with id %d not found.", imageId))
+        );
+
+        return storageService.downloadFile(media.getUrl());
+    }
+
+    public String deleteFile(Integer imageId) {
+
+        Media media = mediaRepository.findById(imageId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Image with id %d not found.", imageId))
+        );
+
+        return storageService.deleteFile(media.getUrl());
+    }
+
+    public MediaArtistDto getPerfilImage(Integer id) {
+
+        Media media = mediaRepository.findByUserId(id).stream().findFirst().orElseThrow(
+                () -> new EntityNotFoundException(String.format("Artist with id %d was not found.", id))
+        );
+
+        return MediaMapper.mapToDto(media);
+    }
+
+    public List<MediaArtistDto> getImages(Integer id) {
+
         List<Media> medias = mediaRepository.findByUserId(id);
 
-        List<ByteArrayResource> files = new ArrayList<>();
-
-        medias.forEach(media -> {
-            byte[] data = storageService.downloadFile(media.getUrl());
-            ByteArrayResource resource = new ByteArrayResource(data);
-            files.add(resource);
-        });
-
-        if (files.isEmpty()){
+        if (medias.isEmpty()){
             throw new EntityNotFoundException(String.format("Artist with id %d was not found.", id));
         }
 
-        return files;
-    }
-
-    public String deleteFile(String fileName) {
-        return storageService.deleteFile(fileName);
+        return medias.stream()
+                .map(MediaMapper::mapToDto)
+                .toList();
     }
 
     public List<GroupGenresCount> getMostPopularGenresChartByUserId(Integer lastDays) {

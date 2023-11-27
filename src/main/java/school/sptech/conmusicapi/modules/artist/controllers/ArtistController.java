@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ import school.sptech.conmusicapi.modules.user.dtos.UserKpiDto;
 import school.sptech.conmusicapi.modules.user.services.UserService;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupDateDoubleSum;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupGenresCount;
+import school.sptech.conmusicapi.modules.media.dtos.MediaArtistDto;
+import school.sptech.conmusicapi.modules.media.services.StorageService;
 
 import java.io.IOException;
 import java.util.List;
@@ -127,6 +130,17 @@ public class ArtistController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/image/perfil/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<MediaArtistDto> getPerfilImage(@PathVariable Integer id){
+        return ResponseEntity.ok(artistService.getPerfilImage(id));
+    }
+
+    @GetMapping("/images/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<MediaArtistDto>> getImages(@PathVariable Integer id){
+        return ResponseEntity.ok(artistService.getImages(id));
+    }
 
     @PostMapping("/upload/{id}")
     @SecurityRequirement(name = "Bearer")
@@ -139,19 +153,15 @@ public class ArtistController {
         return ResponseEntity.ok(uploadFile);
     }
 
-    @GetMapping("/media/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<ByteArrayResource>> getFiles(@PathVariable Integer id){
-
-        List<ByteArrayResource> files = artistService.getFiles(id);
-
-        return ResponseEntity.ok(files);
+    @GetMapping(value = "/media/{imageId}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getFiles(@PathVariable Integer imageId) {
+        return ResponseEntity.ok(artistService.getFiles(imageId));
     }
 
-    @DeleteMapping("/media")
+    @DeleteMapping("/media/{imageId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<String> deleteFile(@RequestParam String fileName) {
-        String deletedFile = artistService.deleteFile(fileName);
+    public ResponseEntity<String> deleteFile(@PathVariable Integer imageId) {
+        String deletedFile = artistService.deleteFile(imageId);
         return ResponseEntity.ok(deletedFile);
     }
 

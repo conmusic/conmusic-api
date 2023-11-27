@@ -1,3 +1,3 @@
 # ConMusic-API
 
-API da conmusic.
+API da conmusic para o backend
