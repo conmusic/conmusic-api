@@ -63,4 +63,13 @@ public interface IShowRepository extends JpaRepository<Show, Integer> {
     List<Show> findAllByStatusAndScheduleEventId(ShowStatusEnum status, Integer id);
 
     List<Show> findAllByStatus(ShowStatusEnum status);
+
+    @Query("""
+        SELECT s
+        FROM Show s
+        WHERE
+            s.status IN :status
+            AND s.schedule.endDateTime <= :now
+    """)
+    List<Show> findAllShowsBeforeDateTimeAndStatusIn(LocalDateTime now, EnumSet<ShowStatusEnum> status);
 }
