@@ -5,13 +5,13 @@ import school.sptech.conmusicapi.modules.user.dtos.UpdateUserDto;
 import java.util.List;
 
 public class UpdateArtistDto extends UpdateUserDto {
-    private List<Integer> musicalGenres;
+    private List<String> musicalGenres;
 
-    public List<Integer> getMusicalGenres() {
+    public List<String> getMusicalGenres() {
         return musicalGenres;
     }
 
-    public void setMusicalGenres(List<Integer> musicalGenres) {
+    public void setMusicalGenres(List<String> musicalGenres) {
         this.musicalGenres = musicalGenres;
     }
 }

@@ -122,24 +122,25 @@ public class ArtistService {
             throw new BusinessRuleException("CPF is already in use.");
         }
 
-        List<Integer> currentGenres = artistOpt.getMusicalGenres().stream().map(Genre::getId).toList();
+        List<String> currentGenres = artistOpt.getMusicalGenres().stream().map(Genre::getName).toList();
 
         Artist updatedArtist = ArtistMapper.fromDtoUpdate(dto, artistOpt);
         updatedArtist.setId(id);
 
         if (Objects.nonNull(dto.getMusicalGenres()) && !dto.getMusicalGenres().isEmpty()) {
-            List<Integer> genresToRemove = new ArrayList<>(currentGenres);
+            List<String> genresToRemove = new ArrayList<>(currentGenres);
             genresToRemove.removeAll(dto.getMusicalGenres());
 
-            List<Integer> genresToAdd = new ArrayList<>(dto.getMusicalGenres());
-            genresToAdd.removeAll(dto.getMusicalGenres());
+            List<String> genresToAdd = new ArrayList<>(dto.getMusicalGenres());
+            genresToAdd.removeAll(currentGenres);
 
             if (!genresToRemove.isEmpty()) {
-                artistRepository.deleteGenreArtist(artistOpt.getId(), genresToRemove);
+                List<Genre> oldGenres = genreRepository.findAllByNameIgnoreCaseIn(genresToRemove);
+                artistRepository.deleteGenreArtist(artistOpt.getId(), oldGenres.stream().map(Genre::getId).toList());
             }
 
             if (!genresToAdd.isEmpty()) {
-                List<Genre> newGenres = genreRepository.findAllById(genresToAdd);
+                List<Genre> newGenres = genreRepository.findAllByNameIgnoreCaseIn(genresToRemove);
                 newGenres.forEach(updatedArtist::addMusicalGenre);
             }
         }

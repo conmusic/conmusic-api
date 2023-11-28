@@ -12,7 +12,7 @@ public abstract class UpdateUserDto {
     @NotBlank
     @Pattern(
             regexp = "^[-A-Za-z0-9!#$%&'*+\\/=?^_`{|}~]+(?:\\.[-A-Za-z0-9!#$%&'*+\\/=?^_`{|}~]+)*@(?:[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[-A-Za-z0-9]*[A-Za-z0-9])?$",
-            message = "Email must be in RFC2822 e-mail"
+            message = "Email must be in RFC2822 e-mail."
     )
     @Size(min = 5, max = 45)
     @Schema(example = "email@email.com")
