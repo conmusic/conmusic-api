@@ -22,10 +22,11 @@ import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 import school.sptech.conmusicapi.modules.admin.dtos.AdminKpiDto;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupDateDoubleSum;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupEventsCount;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupGenresCount;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -134,10 +135,10 @@ public class AdminService {
                     .filter(r -> r.getStatus().equals(ShowStatusEnum.MANAGER_CANCELED))
                     .count();
 
-            kpis.add(AdminMapper.toKpiDto("Propostas enviadas", proposalsByArtists, proposalsByManagers));
-            kpis.add(AdminMapper.toKpiDto("Negociações iniciadas", startedByArtist, startedByManager));
-            kpis.add(AdminMapper.toKpiDto("Shows confirmados", confirmed));
-            kpis.add(AdminMapper.toKpiDto("Shows cancelados", canceledByArtist, canceledByManager));
+            kpis.add(AdminMapper.toKpiDto("proposals", proposalsByArtists, proposalsByManagers));
+            kpis.add(AdminMapper.toKpiDto("negotiations", startedByArtist, startedByManager));
+            kpis.add(AdminMapper.toKpiDto("confirmed", confirmed));
+            kpis.add(AdminMapper.toKpiDto("canceled", canceledByArtist, canceledByManager));
         }
 
         return kpis;
@@ -151,15 +152,60 @@ public class AdminService {
                 start.atStartOfDay(),
                 today.atTime(23, 59, 59));
 
-        List<GroupDateDoubleSum> chartData = new ArrayList<>();
-        if (!concluded.isEmpty()) {
-            concluded.stream()
-                    .collect(Collectors.groupingBy((x) -> x.getSchedule().getStartDateTime().toLocalDate()))
-                    .forEach((key, shows) ->
-                            chartData.add(new GroupDateDoubleSum(key, shows.stream().mapToDouble(Show::getValue).sum()))
-                    );
+        Map<LocalDate, Double> groupedShowsByDate = concluded.stream()
+                .collect(Collectors.groupingBy(
+                        (x) -> x.getSchedule().getStartDateTime().toLocalDate(),
+                        Collectors.summingDouble(Show::getValue)
+                ));
+
+        while (!start.isAfter(today)) {
+            groupedShowsByDate.putIfAbsent(start, 0.0);
+            start = start.plusDays(1);
         }
 
-        return chartData;
+        return groupedShowsByDate.entrySet().stream()
+                .map(entry -> new GroupDateDoubleSum(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparing(GroupDateDoubleSum::getDate))
+                .toList();
+    }
+
+    public List<GroupGenresCount> getMostPopularGenresChart(Integer lastDays) {
+        LocalDate today = LocalDate.now();
+
+        List<GroupGenresCount> genresCountList = showRecordRepository
+                .findTopGenresFromDateBetweenInterval(
+                        today.minusDays(lastDays).atStartOfDay(),
+                        today.atTime(23, 59, 59));
+
+        if (genresCountList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Comparator<GroupGenresCount> comparator = Comparator.comparingLong(GroupGenresCount::getCount).reversed();
+
+        return genresCountList.stream()
+                .sorted(comparator)
+                .limit(5)
+                .toList();
+    }
+
+    public List<GroupEventsCount> getMostPopularEvents(Integer lastDays) {
+        LocalDate today = LocalDate.now();
+
+        List<GroupEventsCount> eventsCountList = showRecordRepository
+                .findTopEventsFromDateBetweenInterval(
+                        today.minusDays(lastDays).atStartOfDay(),
+                        today.atTime(23, 59, 59));
+
+        if (eventsCountList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Comparator<GroupEventsCount> comparator = Comparator.comparingLong(GroupEventsCount::getCount).reversed();
+
+        return eventsCountList.stream()
+                .sorted(comparator)
+                .limit(5)
+                .toList();
     }
 }

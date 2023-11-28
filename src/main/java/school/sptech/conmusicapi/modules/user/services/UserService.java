@@ -25,9 +25,7 @@ import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupDateDoubleSum;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -134,15 +132,20 @@ public class UserService {
                 today.atTime(23, 59, 59),
                 user.getId());
 
-        List<GroupDateDoubleSum> chartData = new ArrayList<>();
-        if (!concluded.isEmpty()) {
-            concluded.stream()
-                    .collect(Collectors.groupingBy((x) -> x.getSchedule().getStartDateTime().toLocalDate()))
-                    .forEach((key, shows) ->
-                        chartData.add(new GroupDateDoubleSum(key, shows.stream().mapToDouble(Show::getValue).sum()))
-                    );
+        Map<LocalDate, Double> groupedShowsByDate = concluded.stream()
+                .collect(Collectors.groupingBy(
+                        (x) -> x.getSchedule().getStartDateTime().toLocalDate(),
+                        Collectors.summingDouble(Show::getValue)
+                ));
+
+        while (!start.isAfter(today)) {
+            groupedShowsByDate.putIfAbsent(start, 0.0);
+            start = start.plusDays(1);
         }
 
-        return chartData;
+        return groupedShowsByDate.entrySet().stream()
+                .map(entry -> new GroupDateDoubleSum(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparing(GroupDateDoubleSum::getDate))
+                .toList();
     }
 }

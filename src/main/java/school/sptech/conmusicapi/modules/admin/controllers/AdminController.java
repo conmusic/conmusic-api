@@ -13,6 +13,8 @@ import school.sptech.conmusicapi.modules.admin.dtos.CreateAdminDto;
 import school.sptech.conmusicapi.modules.admin.services.AdminService;
 import school.sptech.conmusicapi.modules.admin.dtos.AdminKpiDto;
 import school.sptech.conmusicapi.shared.utils.statistics.GroupDateDoubleSum;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupEventsCount;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupGenresCount;
 
 import java.util.List;
 
@@ -76,6 +78,34 @@ public class AdminController {
             @RequestParam Integer lastDays
     ) {
         List<GroupDateDoubleSum> totalValue = adminService.getTotalValueChart(lastDays);
+
+        if (totalValue.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(totalValue);
+    }
+
+    @GetMapping("/genres-chart")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<GroupGenresCount>> getTopGenresChart(
+            @RequestParam Integer lastDays
+    ) {
+        List<GroupGenresCount> totalValue = adminService.getMostPopularGenresChart(lastDays);
+
+        if (totalValue.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(totalValue);
+    }
+
+    @GetMapping("/events-chart")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<GroupEventsCount>> getTopEventsCount(
+            @RequestParam Integer lastDays
+    ) {
+        List<GroupEventsCount> totalValue = adminService.getMostPopularEvents(lastDays);
 
         if (totalValue.isEmpty()) {
             return ResponseEntity.noContent().build();
