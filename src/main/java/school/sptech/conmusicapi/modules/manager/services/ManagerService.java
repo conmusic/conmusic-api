@@ -1,6 +1,7 @@
 package school.sptech.conmusicapi.modules.manager.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,11 +11,19 @@ import school.sptech.conmusicapi.modules.manager.dtos.UpdateManagerDto;
 import school.sptech.conmusicapi.modules.manager.entities.Manager;
 import school.sptech.conmusicapi.modules.manager.mapper.ManagerMapper;
 import school.sptech.conmusicapi.modules.manager.repositories.IManagerRepository;
+import school.sptech.conmusicapi.modules.show.repositories.IShowRecordRepository;
+import school.sptech.conmusicapi.modules.user.dtos.UserDetailsDto;
+import school.sptech.conmusicapi.modules.user.entities.User;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
 import school.sptech.conmusicapi.shared.exceptions.BusinessRuleException;
 import school.sptech.conmusicapi.shared.exceptions.EntityNotFoundException;
 import school.sptech.conmusicapi.shared.exceptions.UserForbiddenActionException;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupEventsCount;
 
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,6 +34,8 @@ public class ManagerService {
     private IManagerRepository managerRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private IShowRecordRepository showRecordRepository;
 
     public ManagerDto create(CreateManagerDto dto) {
         Boolean isEmailAlreadyInUse = userRepository.existsByEmail(dto.getEmail());
@@ -85,5 +96,33 @@ public class ManagerService {
         }
 
         return ManagerMapper.toDto(managerOpt.get());
+    }
+
+    public List<GroupEventsCount> getMostPopularEventsByUserId(Integer lastDays) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsDto details = (UserDetailsDto) authentication.getPrincipal();
+        User user = userRepository.findByEmail(details.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email %s was not found", details.getUsername())
+                ));
+
+        LocalDate today = LocalDate.now();
+
+        List<GroupEventsCount> eventsCountList = showRecordRepository
+                .findTopEventsFromDateBetweenInterval(
+                        today.minusDays(lastDays).atStartOfDay(),
+                        today.atTime(23, 59, 59),
+                        user.getId());
+
+        if (eventsCountList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Comparator<GroupEventsCount> comparator = Comparator.comparingLong(GroupEventsCount::getCount).reversed();
+
+        return eventsCountList.stream()
+                .sorted(comparator)
+                .limit(5)
+                .toList();
     }
 }

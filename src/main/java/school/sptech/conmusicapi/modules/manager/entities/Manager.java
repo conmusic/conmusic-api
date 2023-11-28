@@ -2,6 +2,8 @@ package school.sptech.conmusicapi.modules.manager.entities;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import school.sptech.conmusicapi.modules.user.entities.User;
+
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import school.sptech.conmusicapi.modules.establishment.entities.Establishment;

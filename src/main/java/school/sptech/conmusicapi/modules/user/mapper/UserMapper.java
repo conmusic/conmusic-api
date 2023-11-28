@@ -1,6 +1,6 @@
 package school.sptech.conmusicapi.modules.user.mapper;
 
-import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
+import school.sptech.conmusicapi.modules.user.dtos.UserKpiDto;
 import school.sptech.conmusicapi.modules.user.dtos.*;
 import school.sptech.conmusicapi.modules.user.entities.User;
 
@@ -44,5 +44,29 @@ public class UserMapper {
         dto.setNeedCompletion(user);
 
         return dto;
+    }
+
+
+    public static UserKpiDto toKpiDto(
+            long receivedProposals,
+            long negotiations,
+            long startedByYou,
+            long confirmed,
+            long canceled
+    ) {
+        UserKpiDto kpiDto = new UserKpiDto();
+
+        double percentageConfirmed =  ((double) confirmed / (double) negotiations) * 100;
+        double percentageCanceled = ((double) confirmed / (double) negotiations) * 100;
+
+        kpiDto.setReceivedProposals(receivedProposals);
+        kpiDto.setNegotiations(negotiations);
+        kpiDto.setNegotiationsStartedByYou(startedByYou);
+        kpiDto.setConfirmed(confirmed);
+        kpiDto.setCanceled(canceled);
+        kpiDto.setPercentageConfirmed(percentageConfirmed);
+        kpiDto.setPercentageCanceled(percentageCanceled);
+
+        return kpiDto;
     }
 }

@@ -1,11 +1,7 @@
 package school.sptech.conmusicapi.modules.artist.mapper;
 
-import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
-import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
-import school.sptech.conmusicapi.modules.artist.dtos.ShowArtistDto;
-import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
+import school.sptech.conmusicapi.modules.artist.dtos.*;
 import school.sptech.conmusicapi.modules.artist.entities.Artist;
-import school.sptech.conmusicapi.modules.user.entities.User;
 import school.sptech.conmusicapi.modules.user.mapper.UserMapper;
 
 public class ArtistMapper {

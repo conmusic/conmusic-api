@@ -20,8 +20,8 @@ import school.sptech.conmusicapi.modules.show.mapper.ShowMapper;
 import school.sptech.conmusicapi.modules.show.mapper.ShowRecordMapper;
 import school.sptech.conmusicapi.modules.show.repositories.IShowRecordRepository;
 import school.sptech.conmusicapi.modules.show.repositories.IShowRepository;
+import school.sptech.conmusicapi.modules.show.util.RecordTypeEnum;
 import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
-import school.sptech.conmusicapi.modules.show.util.ShowUtil;
 import school.sptech.conmusicapi.modules.user.dtos.UserDetailsDto;
 import school.sptech.conmusicapi.modules.user.entities.User;
 import school.sptech.conmusicapi.modules.user.repositories.IUserRepository;
@@ -116,6 +116,7 @@ public class ShowService {
         show.setStatus(status);
 
         Show createdShow = showRepository.save(show);
+        showRecordRepository.save(ShowRecordMapper.createRecord(createdShow, user, RecordTypeEnum.STATUS));
         return ShowMapper.toDto(createdShow);
     }
 
@@ -162,12 +163,11 @@ public class ShowService {
             throw new BusinessRuleException("It's not possible to negotiate the details of this show");
         }
 
-        showRecordRepository.save(ShowUtil.createRecord(show, user));
-
         ShowMapper.fromDtoUpdate(dto, show);
         show.setStatus(ShowStatusEnum.NEGOTIATION);
 
         Show updatedShow = showRepository.save(show);
+        showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.NEGOTIATION));
         return ShowMapper.toDto(updatedShow);
     }
 
@@ -208,27 +208,28 @@ public class ShowService {
             throw new BusinessRuleException("The user who made the proposal cannot accept it");
         }
 
-        showRecordRepository.save(ShowUtil.createRecord(show, user));
-
         if (
                 show.getSchedule().getStartDateTime().isBefore(LocalDateTime.now())
                 || show.getSchedule().getStartDateTime().equals(LocalDateTime.now())
         ) {
-            show.setStatus(ShowStatusEnum.getStatusByName(String.format("%S_REJECTED", details.getUserType())));
-            showRepository.save(show);
+            show.setStatus(ShowStatusEnum.EXPIRED);
+            Show updatedShow = showRepository.save(show);
+            showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS));
 
             throw new BusinessRuleException("The proposal date has passed");
         }
 
         if (show.getSchedule().getConfirmed()) {
-            show.setStatus(ShowStatusEnum.MANAGER_REJECTED);
-            showRepository.save(show);
+            show.setStatus(ShowStatusEnum.MANAGER_WITHDRAW_BY_EXCHANGE);
+            Show updatedShow = showRepository.save(show);
+            showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS));
 
             throw new BusinessRuleException("The schedule already has one show confirmed");
         }
 
         show.setStatus(ShowStatusEnum.NEGOTIATION);
         Show updatedShow = showRepository.save(show);
+        showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS));
         return ShowMapper.toDto(updatedShow);
     }
 
@@ -262,10 +263,9 @@ public class ShowService {
             ));
         }
 
-        showRecordRepository.save(ShowUtil.createRecord(show, user));
-
         show.setStatus(status);
-        showRepository.save(show);
+        Show updatedShow = showRepository.save(show);
+        showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS));
     }
 
     public ShowDto acceptTermsOfNegotiation(Integer id) {
@@ -292,12 +292,16 @@ public class ShowService {
         ShowStatusEnum status = ShowStatusEnum.getStatusByName(String.format("%S_ACCEPTED", details.getUserType()));
         if (show.getStatus().equals(status)) {
             throw new BusinessRuleException("Both have to accept the terms of negotiation for the show to be confirmed");
-        } else if (
+        }
+
+        if (
                 show.getStatus().equals(ShowStatusEnum.MANAGER_ACCEPTED)
                 || show.getStatus().equals(ShowStatusEnum.ARTIST_ACCEPTED)
         ) {
             return this.confirmShow(id);
-        } else if (!show.getStatus().isStatusChangeValid(status)) {
+        }
+
+        if (!show.getStatus().isStatusChangeValid(status)) {
             throw new BusinessRuleException(String.format(
                     "It is forbidden to change status from %s to %s",
                     show.getStatus().name(),
@@ -305,27 +309,32 @@ public class ShowService {
             ));
         }
 
-        showRecordRepository.save(ShowUtil.createRecord(show, user));
-
         if (
                 show.getSchedule().getStartDateTime().isBefore(LocalDateTime.now())
                 || show.getSchedule().getStartDateTime().equals(LocalDateTime.now())
         ) {
-            show.setStatus(ShowStatusEnum.getStatusByName(String.format("%S_WITHDRAW", details.getUserType())));
-            showRepository.save(show);
+            show.setStatus(ShowStatusEnum.EXPIRED);
+            Show updatedShow = showRepository.save(show);
+            showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS));
 
             throw new BusinessRuleException("The schedule date has already passed");
         }
 
         if (show.getSchedule().getConfirmed()) {
-            show.setStatus(ShowStatusEnum.MANAGER_WITHDRAW);
-            showRepository.save(show);
+            ShowStatusEnum newStatus = ShowStatusEnum
+                    .getStatusByName(String.format("%S_WITHDRAW_BY_EXCHANGE", details.getUserType()))
+                    .getOppositeUserStatus();
+
+            show.setStatus(newStatus);
+            Show updatedShow = showRepository.save(show);
+            showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS));
 
             throw new BusinessRuleException("Schedule has already one show confirmed");
         }
 
         show.setStatus(status);
         Show updatedShow = showRepository.save(show);
+        showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS));
         return ShowMapper.toDto(updatedShow);
     }
 
@@ -361,35 +370,47 @@ public class ShowService {
             ));
         }
 
-        showRecordRepository.save(ShowUtil.createRecord(show, user));
-
         if (
                 show.getSchedule().getStartDateTime().isBefore(LocalDateTime.now())
                         || show.getSchedule().getStartDateTime().equals(LocalDateTime.now())
         ) {
-            show.setStatus(ShowStatusEnum.getStatusByName(String.format("%S_WITHDRAW", details.getUserType())));
-            showRepository.save(show);
+            show.setStatus(ShowStatusEnum.EXPIRED);
+            Show updatedShow = showRepository.save(show);
+            showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS));
 
             throw new BusinessRuleException("The schedule date has already passed");
         }
 
         if (show.getSchedule().getConfirmed()) {
-            show.setStatus(ShowStatusEnum.MANAGER_WITHDRAW);
-            showRepository.save(show);
+            ShowStatusEnum newStatus = ShowStatusEnum
+                    .getStatusByName(String.format("%S_WITHDRAW_BY_EXCHANGE", details.getUserType()))
+                    .getOppositeUserStatus();
+
+            show.setStatus(newStatus);
+            Show updatedShow = showRepository.save(show);
+            showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS));
 
             throw new BusinessRuleException("Schedule has already one show confirmed");
         }
 
         show.setStatus(ShowStatusEnum.CONFIRMED);
         Show updatedShow = showRepository.save(show);
+        ShowRecord record = ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS);
+
+        List<ShowRecord> records = new ArrayList<>();
+        records.add(record);
 
         List<Show> otherShowWithSameSchedule = showRepository.findByIdNotAndScheduleIdEquals(show.getId(), show.getSchedule().getId());
 
-        List<ShowRecord> records = otherShowWithSameSchedule.stream().map(s -> ShowUtil.createRecord(s, user)).toList();
         otherShowWithSameSchedule.forEach(s -> s.setStatus(ShowStatusEnum.MANAGER_WITHDRAW));
+        records.addAll(otherShowWithSameSchedule.stream().map(s -> ShowRecordMapper.createRecord(s, user, RecordTypeEnum.STATUS)).toList());
 
         showRecordRepository.saveAll(records);
         showRepository.saveAll(otherShowWithSameSchedule);
+
+        Schedule scheduleToUpdate = show.getSchedule();
+        scheduleToUpdate.setConfirmed(true);
+        scheduleRepository.save(scheduleToUpdate);
 
         return ShowMapper.toDto(updatedShow);
     }
@@ -424,10 +445,9 @@ public class ShowService {
             ));
         }
 
-        showRecordRepository.save(ShowUtil.createRecord(show, user));
-
         show.setStatus(status);
-        showRepository.save(show);
+        Show updatedShow = showRepository.save(show);
+        showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS));
     }
 
     public ShowDto concludeShow(Integer id) {
@@ -463,10 +483,9 @@ public class ShowService {
             throw new BusinessRuleException("Show has not finished yet.");
         }
 
-        showRecordRepository.save(ShowUtil.createRecord(show, user));
-
         show.setStatus(ShowStatusEnum.CONCLUDED);
         Show updatedShow = showRepository.save(show);
+        showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow, user, RecordTypeEnum.STATUS));
         return ShowMapper.toDto(updatedShow);
     }
 
@@ -500,10 +519,13 @@ public class ShowService {
             ));
         }
 
-        showRecordRepository.save(ShowUtil.createRecord(show,user));
-
         show.setStatus(status);
-        showRepository.save(show);
+        Show updatedShow = showRepository.save(show);
+        showRecordRepository.save(ShowRecordMapper.createRecord(updatedShow,user, RecordTypeEnum.STATUS));
+
+        Schedule schedule = show.getSchedule();
+        schedule.setConfirmed(false);
+        scheduleRepository.save(schedule);
     }
 
     public List<ShowDto> listByStatus(EnumSet status) {

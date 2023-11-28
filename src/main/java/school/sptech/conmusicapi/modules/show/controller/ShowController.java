@@ -118,7 +118,8 @@ public class ShowController {
                         ShowStatusEnum.ARTIST_WITHDRAW,
                         ShowStatusEnum.MANAGER_WITHDRAW,
                         ShowStatusEnum.ARTIST_CANCELED,
-                        ShowStatusEnum.MANAGER_CANCELED
+                        ShowStatusEnum.MANAGER_CANCELED,
+                        ShowStatusEnum.CONCLUDED
                 ));
 
         if (showDtos.isEmpty()) {

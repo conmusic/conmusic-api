@@ -6,20 +6,27 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import school.sptech.conmusicapi.modules.artist.dtos.ArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.CreateArtistDto;
 import school.sptech.conmusicapi.modules.artist.dtos.UpdateArtistDto;
 import school.sptech.conmusicapi.modules.artist.services.ArtistService;
+import school.sptech.conmusicapi.modules.user.dtos.UserKpiDto;
+import school.sptech.conmusicapi.modules.user.services.UserService;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupDateDoubleSum;
+import school.sptech.conmusicapi.shared.utils.statistics.GroupGenresCount;
+import school.sptech.conmusicapi.modules.media.dtos.MediaArtistDto;
 import school.sptech.conmusicapi.modules.media.services.StorageService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/artists")
@@ -27,6 +34,29 @@ import java.util.List;
 public class ArtistController {
     @Autowired
     private ArtistService artistService;
+
+    @Autowired
+    private UserService userService;
+
+    @GetMapping("/search")
+    @SecurityRequirement(name = "Bearer")
+    @PreAuthorize("hasAuthority('Artist') or hasAuthority('Admin')")
+    @Operation(summary = "Search artists", description = "Searches for artists by name")
+    public ResponseEntity<List<ArtistDto>> search(
+            @RequestParam String value,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<ArtistDto> artists = artistService.search(value, pageable);
+
+        if (artists.isEmpty()) {
+            ResponseEntity.status(204).build();
+        }
+
+        return ResponseEntity.status(200).body(artists);
+    }
 
     @GetMapping
     @SecurityRequirement(name = "Bearer")
@@ -100,6 +130,17 @@ public class ArtistController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/image/perfil/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<MediaArtistDto> getPerfilImage(@PathVariable Integer id){
+        return ResponseEntity.ok(artistService.getPerfilImage(id));
+    }
+
+    @GetMapping("/images/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<MediaArtistDto>> getImages(@PathVariable Integer id){
+        return ResponseEntity.ok(artistService.getImages(id));
+    }
 
     @PostMapping("/upload/{id}")
     @SecurityRequirement(name = "Bearer")
@@ -112,19 +153,53 @@ public class ArtistController {
         return ResponseEntity.ok(uploadFile);
     }
 
-    @GetMapping("/media/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<ByteArrayResource>> getFiles(@PathVariable Integer id){
-
-        List<ByteArrayResource> files = artistService.getFiles(id);
-
-        return ResponseEntity.ok(files);
+    @GetMapping(value = "/media/{imageId}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getFiles(@PathVariable Integer imageId) {
+        return ResponseEntity.ok(artistService.getFiles(imageId));
     }
 
-    @DeleteMapping("/media")
+    @DeleteMapping("/media/{imageId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<String> deleteFile(@RequestParam String fileName) {
-        String deletedFile = artistService.deleteFile(fileName);
+    public ResponseEntity<String> deleteFile(@PathVariable Integer imageId) {
+        String deletedFile = artistService.deleteFile(imageId);
         return ResponseEntity.ok(deletedFile);
+    }
+
+    @GetMapping("/kpis")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<UserKpiDto> getKpis(
+            @RequestParam Integer lastDays
+    ) {
+        Optional<UserKpiDto> artistKpiDto = userService.getManagerOrArtistKpi(lastDays);
+
+        return artistKpiDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    @GetMapping("/genres-chart")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<GroupGenresCount>> getTopGenresChart(
+            @RequestParam Integer lastDays
+    ) {
+        List<GroupGenresCount> topGenres = artistService.getMostPopularGenresChartByUserId(lastDays);
+
+        if (topGenres.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(topGenres);
+    }
+
+    @GetMapping("/value-chart")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<GroupDateDoubleSum>> getTotalValueChart(
+            @RequestParam Integer lastDays
+    ) {
+        List<GroupDateDoubleSum> totalValue = userService.getTotalValueChart(lastDays);
+
+        if (totalValue.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(totalValue);
     }
 }

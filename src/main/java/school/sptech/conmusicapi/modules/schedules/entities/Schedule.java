@@ -1,12 +1,18 @@
 package school.sptech.conmusicapi.modules.schedules.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
 import school.sptech.conmusicapi.modules.events.entities.Event;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "agenda")
+@FilterDef(name = "deletedScheduleFilter", parameters = @ParamDef(name = "isDeleted", type =boolean.class))
+@Filter(name = "deletedScheduleFilter", condition = "deleted = :isDeleted")
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +26,8 @@ public class Schedule {
 
     @Column(name = "confirmado")
     private Boolean confirmed;
+    @Column(name = "deleted", columnDefinition = "boolean default false")
+    private Boolean deleted  = false;
 
     @ManyToOne
     @JoinColumn(name = "fk_evento")
@@ -55,6 +63,14 @@ public class Schedule {
 
     public void setConfirmed(Boolean confirmed) {
         this.confirmed = confirmed;
+    }
+
+    public Boolean getDeleted() {
+        return this.deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Event getEvent() {
