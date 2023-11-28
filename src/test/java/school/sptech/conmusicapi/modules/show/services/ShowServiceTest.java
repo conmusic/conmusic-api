@@ -595,7 +595,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -692,7 +692,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -816,7 +816,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -898,7 +898,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer otherArtistId = 3;
         String otherArtistEmail = "artist3@email.com";
@@ -1000,7 +1000,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -1085,7 +1085,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -1167,7 +1167,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -1275,7 +1275,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -1350,7 +1350,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer otherArtistId = 3;
         String otherArtistEmail = "artist3@email.com";
@@ -1431,7 +1431,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -1512,7 +1512,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -1591,7 +1591,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -1667,7 +1667,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -1754,7 +1754,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -1848,7 +1848,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -1941,7 +1941,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -2052,7 +2052,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -2127,7 +2127,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer otherArtistId = 3;
         String otherArtistEmail = "artist3@email.com";
@@ -2208,7 +2208,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -2293,7 +2293,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -2371,7 +2371,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";
@@ -2479,7 +2479,7 @@ public class ShowServiceTest {
         Artist artist = new Artist();
         artist.setId(artistId);
         artist.setEmail(artistEmail);
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         Integer managerId = 2;
         String managerEmail = "manager2@email.com";

@@ -1,7 +1,6 @@
 package school.sptech.conmusicapi.modules.artist.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
@@ -36,12 +35,11 @@ import school.sptech.conmusicapi.shared.utils.statistics.GroupGenresCount;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ArtistService {
@@ -124,8 +122,28 @@ public class ArtistService {
             throw new BusinessRuleException("CPF is already in use.");
         }
 
+        List<Integer> currentGenres = artistOpt.getMusicalGenres().stream().map(Genre::getId).toList();
+
         Artist updatedArtist = ArtistMapper.fromDtoUpdate(dto, artistOpt);
         updatedArtist.setId(id);
+
+        if (Objects.nonNull(dto.getMusicalGenres()) && !dto.getMusicalGenres().isEmpty()) {
+            List<Integer> genresToRemove = new ArrayList<>(currentGenres);
+            genresToRemove.removeAll(dto.getMusicalGenres());
+
+            List<Integer> genresToAdd = new ArrayList<>(dto.getMusicalGenres());
+            genresToAdd.removeAll(dto.getMusicalGenres());
+
+            if (!genresToRemove.isEmpty()) {
+                artistRepository.deleteGenreArtist(artistOpt.getId(), genresToRemove);
+            }
+
+            if (!genresToAdd.isEmpty()) {
+                List<Genre> newGenres = genreRepository.findAllById(genresToAdd);
+                newGenres.forEach(updatedArtist::addMusicalGenre);
+            }
+        }
+
         artistRepository.save(updatedArtist);
         return ArtistMapper.toDto(updatedArtist);
     }
@@ -186,7 +204,7 @@ public class ArtistService {
                 () -> new EntityNotFoundException(String.format("Artist with id %d was not found.", id))
         );
 
-        artist.addGenders(genre);
+        artist.addMusicalGenre(genre);
 
         return ArtistMapper.toDto(artistRepository.save(artist));
     }

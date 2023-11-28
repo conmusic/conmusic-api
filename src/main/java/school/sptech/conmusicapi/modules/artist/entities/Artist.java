@@ -23,7 +23,7 @@ public class Artist extends User {
         return musicalGenres;
     }
 
-    public void addGenders(Genre genre) {
+    public void addMusicalGenre(Genre genre) {
         this.musicalGenres.add(genre);
     }
 
