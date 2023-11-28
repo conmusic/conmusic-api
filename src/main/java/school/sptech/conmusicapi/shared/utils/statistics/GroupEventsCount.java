@@ -7,9 +7,9 @@ public class GroupEventsCount {
 
     public GroupEventsCount() {}
 
-    public GroupEventsCount(String establishmentName, String eventName, Long count) {
-        this.establishmentName = establishmentName;
+    public GroupEventsCount(String eventName, String establishmentName, Long count) {
         this.eventName = eventName;
+        this.establishmentName = establishmentName;
         this.count = count;
     }
 
