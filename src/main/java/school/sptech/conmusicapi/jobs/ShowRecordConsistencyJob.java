@@ -1,6 +1,9 @@
 package school.sptech.conmusicapi.jobs;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import school.sptech.conmusicapi.modules.show.entities.Show;
@@ -11,6 +14,8 @@ import school.sptech.conmusicapi.modules.show.repositories.IShowRepository;
 import school.sptech.conmusicapi.modules.show.util.RecordTypeEnum;
 import school.sptech.conmusicapi.modules.show.util.ShowStatusEnum;
 import school.sptech.conmusicapi.modules.user.entities.User;
+import school.sptech.conmusicapi.shared.applicationevents.ShowRecordConsistencyEvent;
+import school.sptech.conmusicapi.shared.applicationevents.StatusConsistencyEvent;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,7 +29,7 @@ public class ShowRecordConsistencyJob {
     @Autowired
     private IShowRecordRepository showRecordRepository;
 
-    @Scheduled(cron = "0 0 7 * * *")
+    @EventListener(ShowRecordConsistencyEvent.class)
     public void run() {
         System.out.println("["+ this.getClass().getSimpleName() + "]: Starting at " + LocalDateTime.now());
         ShowStatusEnum[] showStatus = ShowStatusEnum.values();

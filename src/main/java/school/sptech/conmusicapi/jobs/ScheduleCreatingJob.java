@@ -2,6 +2,7 @@ package school.sptech.conmusicapi.jobs;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import school.sptech.conmusicapi.modules.events.repositories.IEventRepository;
 import school.sptech.conmusicapi.modules.schedules.entities.Schedule;
 import school.sptech.conmusicapi.modules.schedules.repositories.IScheduleRepository;
 import school.sptech.conmusicapi.modules.schedules.utils.ScheduleUtil;
+import school.sptech.conmusicapi.shared.applicationevents.StatusConsistencyEvent;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,8 +23,11 @@ public class ScheduleCreatingJob {
     private IScheduleRepository scheduleRepository;
     @Autowired
     private IEventRepository eventRepository;
+    @Autowired
+    private ApplicationEventPublisher appEventPublisher;
 
-    @Scheduled(cron = "0 0 1 * * *")
+    @Scheduled(cron = "0 0 0/2 * * *")
+    @EventListener(ApplicationReadyEvent.class)
     public void run() {
         LocalDateTime today = LocalDateTime.now();
 
@@ -53,6 +58,8 @@ public class ScheduleCreatingJob {
 
         System.out.println(String.format("Created %d schedules", createdSchedules));
         System.out.println(String.format("["+ this.getClass().getSimpleName() + "] finished at %s", LocalDateTime.now()));
+
+        appEventPublisher.publishEvent(new StatusConsistencyEvent(this));
     }
 
     private int randomInteger(int start, int end) {
