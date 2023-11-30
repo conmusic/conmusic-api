@@ -13,9 +13,7 @@ public class UpdateEventDto {
     private String description;
     private Double value;
     private Double coverCharge;
-    private DisplayScheduleEstablishmentDto establishment;
-    private Genre genre;
-    private List<Schedule> schedules;
+    private String genre;
 
     public String getName() {
         return name;
@@ -49,27 +47,12 @@ public class UpdateEventDto {
         this.coverCharge = coverCharge;
     }
 
-    public DisplayScheduleEstablishmentDto getEstablishment() {
-        return establishment;
-    }
-
-    public void setEstablishment(DisplayScheduleEstablishmentDto establishment) {
-        this.establishment = establishment;
-    }
-
-    public Genre getGenre() {
+    public String getGenre() {
         return genre;
     }
 
-    public void setGenre(Genre genre) {
+    public void setGenre(String genre) {
         this.genre = genre;
     }
 
-    public List<Schedule> getSchedules() {
-        return schedules;
-    }
-
-    public void setSchedules(List<Schedule> schedules) {
-        this.schedules = schedules;
-    }
 }

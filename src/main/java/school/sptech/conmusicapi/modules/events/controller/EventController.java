@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import school.sptech.conmusicapi.modules.establishment.dtos.EstablishmentDto;
 import school.sptech.conmusicapi.modules.events.dtos.CreateEventDto;
 import school.sptech.conmusicapi.modules.events.dtos.EventDto;
+import school.sptech.conmusicapi.modules.events.dtos.UpdateEventDto;
 import school.sptech.conmusicapi.modules.events.services.EventService;
 import school.sptech.conmusicapi.shared.utils.collections.DeletionTree;
 import school.sptech.conmusicapi.shared.utils.collections.TypeForDeletionEnum;
@@ -39,6 +40,14 @@ public class EventController {
     @Operation(summary = "Register a new event", description = "Registers a new music event in the API")
     public ResponseEntity<EventDto> create(@RequestBody @Valid CreateEventDto dto) {
         EventDto event = eventService.create(dto);
+        return ResponseEntity.status(201).body(event);
+    }
+    @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    @PreAuthorize("hasAuthority('Manager')")
+    @Operation(summary = "Register a new event", description = "Registers a new music event in the API")
+    public ResponseEntity<EventDto> update(@RequestBody @Valid UpdateEventDto dto, @PathVariable Integer id) {
+        EventDto event = eventService.updateEvent(dto, id);
         return ResponseEntity.status(201).body(event);
     }
 

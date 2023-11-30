@@ -4,6 +4,7 @@ import school.sptech.conmusicapi.modules.establishment.entities.Establishment;
 import school.sptech.conmusicapi.modules.establishment.mappers.EstablishmentMapper;
 import school.sptech.conmusicapi.modules.events.dtos.*;
 import school.sptech.conmusicapi.modules.events.entities.Event;
+import school.sptech.conmusicapi.modules.genre.entities.Genre;
 import school.sptech.conmusicapi.modules.genre.mapper.GenreMapper;
 import school.sptech.conmusicapi.modules.schedules.mappers.ScheduleMapper;
 import school.sptech.conmusicapi.modules.show.entities.Show;
@@ -34,13 +35,12 @@ public class EventMapper {
 
         return dto;
     }
-    public static Event fromUpdateDto(UpdateEventDto eventDto, Event e){
+    public static Event fromUpdateDto(UpdateEventDto eventDto, Genre genre, Event e){
         e.setName(eventDto.getName());
         e.setDescription(eventDto.getDescription());
         e.setValue(eventDto.getValue());
         e.setCoverCharge(eventDto.getCoverCharge());
-        e.setGenre(eventDto.getGenre());
-        e.setSchedules(eventDto.getSchedules());
+        e.setGenre(genre);
         return e;
     }
 
