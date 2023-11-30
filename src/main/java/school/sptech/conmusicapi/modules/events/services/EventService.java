@@ -89,7 +89,12 @@ public class EventService {
             throw new EntityNotFoundException(String.format("Event with id %d was not found.", id));
         }
 
-        Event updatedEstablishment = EventMapper.fromUpdateDto(dto, eventOpt.get());
+        Optional<Genre> genreOpt = genreRepository.findByNameIgnoreCase(dto.getGenre());
+        if (genreOpt.isEmpty()) {
+            throw new EntityNotFoundException(String.format("genre was not found."));
+        }
+
+        Event updatedEstablishment = EventMapper.fromUpdateDto(dto, genreOpt.get() ,eventOpt.get());
         updatedEstablishment.setId(id);
         eventRepository.save(updatedEstablishment);
         return EventMapper.toDto(updatedEstablishment);
