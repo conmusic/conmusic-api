@@ -57,7 +57,7 @@ public class UserMapper {
         UserKpiDto kpiDto = new UserKpiDto();
 
         double percentageConfirmed =  ((double) confirmed / (double) negotiations) * 100;
-        double percentageCanceled = ((double) confirmed / (double) negotiations) * 100;
+        double percentageCanceled = ((double) canceled / (double) negotiations) * 100;
 
         kpiDto.setReceivedProposals(receivedProposals);
         kpiDto.setNegotiations(negotiations);
